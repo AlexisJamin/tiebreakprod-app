@@ -16,12 +16,7 @@ export default class Home extends React.Component {
             <MenuHeader/>
           </View>
 
-          <View style={{
-          	flex: 2.5,
-          	flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          <View style={{flex: 3}}>
             <MenuContent/>
           </View>
 

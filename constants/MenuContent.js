@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
 import { Col, Row, Grid } from "react-native-easy-grid"
-import { Font } from 'expo'
+import { Font, Svg } from 'expo'
 
 export default class MenuContent extends React.Component {
 
@@ -28,76 +28,75 @@ constructor() {
     return (
 
     	<View style={{
-    		flex: 1,
+    		    flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
     	}}>
 
-    	  <View style={{flex: 1}}>
-            <Image source={require('../assets/icons/General/StarActive.imageset/icStarSelected.png')} />
-          </View>
+    	  <View style={{flex: 10, top: -15}}>
+          <Svg height={100} width={100}>
+            <Svg.Circle
+              cx={50}
+              cy={50}
+              r={45}
+              strokeWidth={0.5}
+              stroke="black"
+              fill="white"
+            />
+          </Svg>
+        </View>
           
-          <View style={{flex: 1}}>
+          <View style={{flex: 1, top: -10}}>
             {
         this.state.fontAvenirNextLoaded ? (<Text style={styles.title}> MON PROFIL </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 10}}>
+          <View style={{flex: 1, paddingTop: 20}}>
             <Image source={require('../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1}}>
+           <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> MON CALENDRIER </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 10}}>
+          <View style={{flex: 1, paddingTop: 20}}>
             <Image source={require('../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1}}>
+           <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> MES AMIS </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 10}}>
+          <View style={{flex: 1, paddingTop: 20}}>
             <Image source={require('../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1}}>
-            {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> MES PRÉFÉRENCES </Text>) : null 
-          }
-          </View>
-
-          <View style={{flex: 1, paddingTop: 10}}>
-            <Image source={require('../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
-          </View>
-
-           <View style={{flex: 1}}>
+           <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> INVITER DES AMIS </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 10}}>
+          <View style={{flex: 1, paddingTop: 20}}>
             <Image source={require('../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1}}>
+           <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> À PROPOS </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 10}}>
+          <View style={{flex: 1, paddingTop: 20}}>
             <Image source={require('../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1}}>
+           <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> CONTACT </Text>) : null 
           }
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
-    fontSize: 12,
+    fontSize: 13,
     paddingTop: 2,
     alignItem:'center', 
     justifyContent: 'center',

@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'SevenOneEightUltra',
     fontSize: 15,
+    top: 3,
     textAlign: 'center',
   },
 });

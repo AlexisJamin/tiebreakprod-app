@@ -1,11 +1,12 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
 import { ButtonGroup } from 'react-native-elements'
 
 import { Font } from 'expo';
 
+import ProfileContent from '../constants/ProfileContent'
 
-export default class ChatButton extends React.Component {
+export default class ProfileButton extends React.Component {
 
   constructor () {
     super()
@@ -29,12 +30,19 @@ export default class ChatButton extends React.Component {
 
   render() {
 
-    const buttons = ['Notifications', 'Chat']
+    const buttons = ['Mon profil', 'Mes préférences']
     const { selectedIndex } = this.state
 
     return (
 
-    	 
+    	 <View style={{
+        flex:1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+
+     
       <ButtonGroup 
       onPress={this.updateIndex}
       selectedIndex={selectedIndex}
@@ -43,6 +51,17 @@ export default class ChatButton extends React.Component {
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
       containerStyle={styles.container}/>
+
+
+      <View >
+
+
+
+
+      </View>
+  
+
+       </View>
         
     );
   }

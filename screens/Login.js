@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   container: {
+    backgroundColor: 'white',
     height: 60,
     marginRight: 0,
     marginLeft: 0,

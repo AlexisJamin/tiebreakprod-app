@@ -1,5 +1,21 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
+import Svg,{
+    Circle,
+    Ellipse,
+    G,
+    LinearGradient,
+    RadialGradient,
+    Line,
+    Path,
+    Polygon,
+    Polyline,
+    Rect,
+    Symbol,
+    Use,
+    Defs,
+    Stop
+} from 'react-native-svg';
 
 
 import HomeHeader from '../constants/HomeHeader'
@@ -16,24 +32,46 @@ export default class Home extends React.Component {
 
     	  <View style={{flex: 1}}>
             <HomeHeader/>
-          </View>
+        </View>
 
-            <View style={{flex: 0.8}}>
-          </View>
+        <View style={{flex: 0.8}}>
+          
+        </View>
 
-          <View style={{flex: 2}}>
+        <View style={{flex: 2}}>
             <HomeSlideSearch/>
-          </View>
+        </View>
 
-          <View style={{flex: 2}}>
+        <View style={{
+          flex: 0.5,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <Svg
+            height="100"
+            width="300"
+          >
+            <Line
+              x1="0"
+              y1="0"
+              x2="300"
+              y2="0"
+              stroke="rgb(210,210,210)"
+              strokeWidth="2"
+             />
+          </Svg>
+        </View>
+
+        <View style={{flex: 2, top: -20}}>
             <HomeSlideAdd/>
-          </View>
+        </View>
 
-          <View style={{flex: 2}}>
+        <View style={{flex: 2}}>
             <Footer />
-          </View>
+        </View>
 
-          <View style={{
+        <View style={{
         flexDirection: 'column',
         justifyContent: 'center',
         backgroundColor: 'rgba(200,90,24,1)', 
@@ -41,9 +79,9 @@ export default class Home extends React.Component {
         height: 60,
          }}>
               <HomeButton/>
-          </View>
-
         </View>
+
+      </View>
 
     );
   }
