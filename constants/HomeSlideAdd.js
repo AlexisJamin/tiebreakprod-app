@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo';
 
 
@@ -29,8 +28,8 @@ export default class HomeSlideAdd extends Component {
   render() {
 
     return (
-      <Grid>
-        <Col size={25} style={{paddingLeft: 20}}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+        <View>
           <Image source={require('../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
           style={{
         justifyContent: 'center',
@@ -38,30 +37,27 @@ export default class HomeSlideAdd extends Component {
            }}>
             <Image source={require('../assets/icons/Add/Add.imageset/combinedShape.png')} />
           </Image>
-        </Col>
+        </View>
 
-        <Col size={65} style={{paddingTop: 5, paddingLeft: 15}}>
+        <View style={{top: 10}}>
         {
         this.state.fontAvenirNextLoaded ? ( <Text style={styles.title}> PROPOSER UNE PARTIE </Text> ) : null 
         }
         {
         this.state.fontAvenirLoaded ? ( 
-            <View>
+          <View>
           <Text style={styles.subtitle}> Vous avez reservé un terrain mais vous</Text> 
           <Text style={styles.subtitle}> n'avez pas de partenaire. </Text> 
-            </View>
-          ) : null 
+            </View> ) : null 
         }       
-        </Col>
+        </View>
 
-        <Col size={5} style={{paddingTop: 30}}>
+        <View style={{top: 30}}>
           <Image source={require('../assets/icons/General/ArrowRightBlack.imageset/fill72.png')} />
-        </Col>
+        </View>
 
-          <Col size={5}>
-        </Col>
 
-      </Grid>
+      </View>
     )
   }
 }

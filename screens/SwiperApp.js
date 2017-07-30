@@ -5,14 +5,13 @@ import Swiper from 'react-native-swiper'
 import Menu from './Menu'
 import Home from './Home'
 import Chat from './Chat'
+import Profile from './Profile'
 
 export default class SwiperApp extends React.Component {
 
 viewStyle() {
     return {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
     }
   }
 
@@ -21,14 +20,17 @@ viewStyle() {
         <Swiper
         loop={false}
         showsPagination={false}
-        index={1}>
+        index={2}>
+        <View style={this.viewStyle()}>
+          <Profile/>
+        </View>  
         <View style={this.viewStyle()}>
           <Menu/>
         </View>    
         <View style={this.viewStyle()}>
           <Home/>
         </View>
-        <View>
+        <View style={this.viewStyle()}>
           <Chat/>
         </View>
       </Swiper>

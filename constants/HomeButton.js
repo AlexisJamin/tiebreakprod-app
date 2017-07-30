@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 18,
-    paddingTop: 0,
     alignItem:'center', 
     justifyContent: 'center',
   },

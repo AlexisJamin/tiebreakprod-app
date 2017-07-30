@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
 import Svg,{
     Circle,
     Ellipse,
@@ -20,21 +20,22 @@ import Svg,{
 
 import ProfileHeader from '../constants/ProfileHeader'
 import ProfileButton from '../constants/ProfileButton'
+import ProfileContent from '../constants/ProfileContent'
 
 export default class Profile extends React.Component {
   render() {
     return (
 
-    	<View>
-        <View style={{position: 'relative', top: 100}}>
-           <ProfileButton/>
-        </View>
+    	  <View style={{flex:1}}>
+      <View style={{flex:1}}>
+          <View style={{flex:1, top:50}}>
+            <ProfileButton/>
+          </View>
+          <View style={{top:-70, height:110}}>
+           <ProfileHeader/>
+          </View>
 
-        <View style={{flex: 1, position:'absolute'}}>
-              <ProfileHeader/>    
-        </View>
-
-          <View style={{alignItems: 'center', top:30}}>
+          <View style={{flex:0.5, alignItems:'center', top:-120}}>
           <Svg height={70} width={70}>
             <Circle
               cx={35}
@@ -46,9 +47,38 @@ export default class Profile extends React.Component {
             />
           </Svg>
         </View>
+        
+        </View>
+          <View style={{flex:3, height:250, alignItems: 'center'}}>
+            <ProfileContent/>
+          </View>
+        </View>
 
-      </View>
+
 
     );
   }
 }
+
+const styles = StyleSheet.create({
+  title: {
+    color: 'black',
+    backgroundColor: 'rgba(0,0,0,0)',
+    fontFamily: 'AvenirNext',
+    fontSize: 13,
+    paddingTop: 2,
+    alignItem:'center', 
+    justifyContent: 'center',
+  },
+  subtitle: {
+    color: 'black',
+    backgroundColor: 'rgba(0,0,0,0)',
+    fontFamily: 'Avenir',
+    fontSize: 12,
+    paddingTop: 2,
+    alignItem:'center', 
+    justifyContent: 'center',
+  },
+});
+
+

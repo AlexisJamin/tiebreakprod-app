@@ -35,12 +35,7 @@ export default class ProfileButton extends React.Component {
 
     return (
 
-    	 <View style={{
-        flex:1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
+    	 
 
      
       <ButtonGroup 
@@ -53,15 +48,7 @@ export default class ProfileButton extends React.Component {
       containerStyle={styles.container}/>
 
 
-      <View >
-
-
-
-
-      </View>
-  
-
-       </View>
+      
         
     );
   }
@@ -85,7 +72,7 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    height: 60,
+    height: 80,
     marginRight: 0,
     marginLeft: 0,
   },

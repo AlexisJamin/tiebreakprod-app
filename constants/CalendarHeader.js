@@ -22,26 +22,21 @@ export default class CalendarHeader extends Component {
 
     return (
 
-       <Image source={require('../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
+       <Image style={{flex:1, width:null, height:null, resizeMode: 'cover'}} source={require('../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
        
          <View style={{
-          flex: 1,
           flexDirection: 'row',
           justifyContent: 'space-around',
-          paddingTop: 35
+          top: 70,
         }}>
 
-           <View>
              <Image source={require('../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
-           </View>
        
              {
         this.state.fontLoaded ? (<Text style={styles.title}> Mon Calendrier </Text> ) : null 
        }
 
-           <View>
              <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-           </View>
 
          </View>
       </Image>

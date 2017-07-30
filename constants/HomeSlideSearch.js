@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo';
 
 
@@ -29,8 +28,8 @@ export default class HomeSlideSearch extends Component {
   render() {
 
     return (
-      <Grid>
-        <Col size={25} style={{paddingLeft: 20}}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+        <View>
           <Image source={require('../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
           style={{
         justifyContent: 'center',
@@ -38,25 +37,23 @@ export default class HomeSlideSearch extends Component {
            }}>
             <Image source={require('../assets/icons/Search/SearchWhite.imageset/fill56.png')} />
           </Image>
-        </Col>
+        </View>
 
-        <Col size={65} style={{paddingTop: 10, paddingLeft: 15}}>
+        <View style={{top: 10}}>
         {
         this.state.fontAvenirNextLoaded ? ( <Text style={styles.title}> RECHERCHER UNE PARTIE </Text> ) : null 
         }
         {
         this.state.fontAvenirLoaded ? ( <Text style={styles.subtitle}> Vous n'avez pas reservé de terrain. </Text> ) : null 
         }       
-        </Col>
+        </View>
 
-        <Col size={5} style={{paddingTop: 30}}>
+        <View style={{top: 30}}>
           <Image source={require('../assets/icons/General/ArrowRightBlack.imageset/fill72.png')} />
-        </Col>
+        </View>
 
-        <Col size={5}>
-        </Col>
 
-      </Grid>
+      </View>
     )
   }
 }

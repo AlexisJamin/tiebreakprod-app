@@ -29,27 +29,24 @@ export default class Home extends React.Component {
     return (
 
     	<View style={{flex: 1}} >
-
-    	  <View style={{flex: 1}}>
+ 
+            <View style={{height:120}}>
             <HomeHeader/>
-        </View>
+            </View>
 
-        <View style={{flex: 0.8}}>
-          
-        </View>
-
-        <View style={{flex: 2}}>
+             <View style={{flex: 1}}>
             <HomeSlideSearch/>
-        </View>
+            </View>
 
         <View style={{
-          flex: 0.5,
-          flexDirection: 'row',
+          flex:1,
           justifyContent: 'center',
           alignItems: 'center',
+          marginBottom:-35,
+          marginTop:-55,
         }}>
           <Svg
-            height="100"
+            height="10"
             width="300"
           >
             <Line
@@ -63,13 +60,15 @@ export default class Home extends React.Component {
           </Svg>
         </View>
 
-        <View style={{flex: 2, top: -20}}>
-            <HomeSlideAdd/>
-        </View>
 
-        <View style={{flex: 2}}>
-            <Footer />
-        </View>
+            <View style={{flex: 1}}>
+            <HomeSlideAdd/>
+            </View>
+
+            <View style={{flex: 1}}>
+            <Footer/>
+            </View>
+
 
         <View style={{
         flexDirection: 'column',

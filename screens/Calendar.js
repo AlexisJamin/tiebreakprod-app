@@ -8,17 +8,19 @@ export default class Calendar extends React.Component {
   render() {
     return (
 
-    	<View>
-        <View style={{position: 'relative', top: 60}}>
-           <CalendarButton/>
+    	<View style={{flex:1}}>
+      <View style={{flex:1}}>
+          <View style={{flex:1, top:60}}>
+            <CalendarButton/>
+          </View>
+          <View style={{top:-90, height:110}}>
+           <CalendarHeader/>
+          </View>
+        
         </View>
-
-        <View style={{flex: 1, position:'absolute'}}>
-              <CalendarHeader/>    
+          <View style={{flex:3, backgroundColor:'blue'}}/>
+    
         </View>
-
-
-      </View>
 
     );
   }

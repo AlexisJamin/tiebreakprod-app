@@ -33,7 +33,7 @@ constructor() {
             alignItems: 'center',
     	}}>
 
-    	  <View style={{flex: 10, top: -15}}>
+    	  <View style={{flex: 10, top: -25}}>
           <Svg height={100} width={100}>
             <Svg.Circle
               cx={50}

@@ -23,24 +23,20 @@ export default class HomeHeader extends Component {
     return (
 
        
-       <Image source={require('../assets/icons/AppSpecific/Header.imageset/header_bg.png')} >
+       <Image style={{flex:1, width:null, height:null, resizeMode: 'cover'}} source={require('../assets/icons/AppSpecific/Header.imageset/header_bg.png')} >
        
        <View style={{
-       	flex: 1,
+        flex:1,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        paddingTop: 35,
+        top: 40,
         }}>
 
-       <View> 
        		<Image source={require('../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
-       </View>
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }
-       <View> 
        <Image source={require('../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
-       </View>
        
        </View>
        

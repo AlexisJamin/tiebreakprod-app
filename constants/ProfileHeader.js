@@ -39,35 +39,25 @@ export default class ProfileHeader extends Component {
 
     return (
 
-      <View>
-
-       <Image source={require('../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
-       
-         <View style={{
-          flex: 1,
+        <Image style={{flex:1, width:null, height:null, resizeMode: 'cover'}} source={require('../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
+        <View style={{
+          flex:1,
           flexDirection: 'row',
           justifyContent: 'space-around',
-          paddingTop: 35
+          top: 70,
         }}>
 
-           <View>
              <Image source={require('../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
-           </View>
        
-             <View>
-               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-             </View>
+              <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
 
-           <View>
              <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-           </View>
 
          </View>
-      </Image>
+        </Image>
 
-    
 
-        </View>
+  
 
       
     );

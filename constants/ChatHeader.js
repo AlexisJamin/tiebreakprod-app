@@ -11,13 +11,13 @@ export default class ChatHeader extends Component {
 
     return (
 
-       <Image source={require('../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
+       <Image style={{flex:1, width:null, height:null, resizeMode: 'cover'}} source={require('../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
        
          <View style={{
-          flex: 1,
+          flex:1,
           flexDirection: 'row',
           justifyContent: 'space-around',
-          paddingTop: 35
+          top: 70,
         }}>
 
            <View>

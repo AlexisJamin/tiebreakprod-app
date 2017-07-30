@@ -11,20 +11,21 @@ export default class Home extends React.Component {
     return (
 
     	<View style={{flex: 1}} >
-
-    	  <View style={{flex: 1}}>
-            <MenuHeader/>
+          
+          <View style={{height:120}}>
+          <MenuHeader/>
           </View>
 
           <View style={{flex: 3}}>
-            <MenuContent/>
+          <MenuContent/>
           </View>
 
           <View style={{flex: 1}}>
-            <Footer />
+          <Footer/>
           </View>
 
-          <View style={{
+
+          <View style={{ 
         flexDirection: 'column',
         justifyContent: 'center',
         backgroundColor: 'rgba(200,90,24,1)', 

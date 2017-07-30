@@ -8,17 +8,19 @@ export default class Community extends React.Component {
   render() {
     return (
 
-    	<View>
-        <View style={{position: 'relative', top: 60}}>
-           <CommunityButton/>
+    	<View style={{flex:1}}>
+      <View style={{flex:1}}>
+          <View style={{flex:1, top:60}}>
+            <CommunityButton/>
+          </View>
+          <View style={{top:-90, height:110}}>
+           <CommunityHeader/>
+          </View>
+        
         </View>
-
-        <View style={{flex: 1, position:'absolute'}}>
-              <CommunityHeader/>    
+          <View style={{flex:3, backgroundColor:'blue'}}/>
+    
         </View>
-
-
-      </View>
 
     );
   }

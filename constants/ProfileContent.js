@@ -47,31 +47,8 @@ constructor() {
   render() {
     return (
 
-     <View style={{flex:1}}>
-        <View style={{position: 'relative', top: 100}}>
-           <ProfileButton/>
-        </View>
+      <View style={{flex:1}}>
 
-        <View style={{flex: 1, position:'absolute'}}>
-              <ProfileHeader/>    
-        </View>
-
-          <View style={{alignItems: 'center', top:30}}>
-          <Svg height={70} width={70}>
-            <Circle
-              cx={35}
-              cy={35}
-              r={35}
-              strokeWidth={0.5}
-              stroke="black"
-              fill="white"
-            />
-          </Svg>
-        </View>
-
-
-      <View style={{flex:1, height:50, top: 80, alignItems: 'center'}}>
-        
         <ScrollView>
 
         <View>
@@ -79,7 +56,16 @@ constructor() {
           <View style={{flex:1, justifyContent: 'space-around', flexDirection: 'row'}}>
             
             <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-            <Text style={styles.title}> Alexis J. (28 ans) </Text> 
+            <View style={{flexDirection:'row'}}>
+            {
+             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> Alexis J.</Text> 
+             ) : null 
+            }
+            {
+             this.state.fontAvenirLoaded ? (<Text style={styles.age}> (28 ans) </Text> 
+             ) : null 
+            }
+            </View>
             <Image source={require('../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
           
           </View>
@@ -105,17 +91,23 @@ constructor() {
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../assets/icons/Profile/Level.imageset/icRank.png')} />
-              <Text style={{color: 'black', top: 10}}>30/5 (30/5)</Text> 
+              {
+              this.state.fontAvenirLoaded ? (<Text style={styles.level}>30/5 (30/5)</Text>) : null 
+              } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../assets/icons/Profile/Style.imageset/shape.png')} />
-              <Text style={{color: 'black', top: 10}}>Droitier</Text> 
+              {
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>Droitier</Text>) : null 
+              } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../assets/icons/Profile/Gender.imageset/group5.png')} />
-              <Text style={{color: 'black', top: 10}}>Homme</Text> 
+              {
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>Homme</Text>) : null 
+              }  
             </View>
 
             </View>
@@ -139,10 +131,13 @@ constructor() {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'space-around',
         }}>
 
-               <Text style={{color: 'black'}}>MES CLUBS</Text> 
+               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
+               {
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES CLUBS</Text>) : null 
+              }   
        
              <Image source={require('../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
 
@@ -150,24 +145,29 @@ constructor() {
 
           <View style={{
           flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'space-around',
-          top: 10,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'stretch',
+          top: 20,
         }}>
 
-           <View style={{paddingTop:10, paddingBottom: 10}}>
-               <Image style={{top:13}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
-               <Text style={{color: 'black', left:15}}>Tennis Luxembourg</Text> 
-          </View>
+              <View style={{justifyContent: 'space-around'}}>
+               <Image style={{marginBottom: 12}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
+               <Image style={{marginBottom: 12}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
+               <Image style={{marginBottom: 12}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
 
-            <View style={{paddingTop:10, paddingBottom: 10}}>
-               <Image style={{top:13}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
-               <Text style={{color: 'black', left:15}}>Tennis Atlantique</Text> 
-          </View>
+               </View>
 
-          <View style={{paddingTop:10, paddingBottom: 10}}>
-               <Image style={{top:13}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
-               <Text style={{color: 'black', left:15}}>Tennis Elisabeth</Text> 
+          <View style={{justifyContent: 'space-around'}}>
+               {
+               this.state.fontAvenirLoaded ? (<Text style={styles.clubs}>Tennis Elisabeth</Text>) : null 
+               }    
+               {
+               this.state.fontAvenirLoaded ? (<Text style={styles.clubs}>Tennis Atlantique</Text>) : null 
+               }    
+               {
+               this.state.fontAvenirLoaded ? (<Text style={styles.clubs}>Tennis Luxembourg</Text>) : null 
+               }    
           </View>
 
         </View>
@@ -191,39 +191,142 @@ constructor() {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'space-around',
         }}>
 
-               <Text style={{color: 'black'}}>MES DISPONIBILITÉS</Text> 
+               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
+               {
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES DISPONIBILITÉS</Text>) : null 
+              }   
        
              <Image source={require('../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
 
           </View>
 
+
           <View style={{
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'space-around',
+          top: 10,
         }}>
 
-           <View style={{paddingTop:10, paddingBottom: 10, flexDirection: 'row', alignItems: 'center'}}>
-                 <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')} />
-                 <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', right:35}}>Sam</Text>
-                 <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
-                   <Text style={{color: 'white', backgroundColor: 'green', padding:8, marginRight: 5}}>8h</Text>
-                   <Text style={{color: 'white', backgroundColor: 'green', padding:8, marginRight: 5}}>19h</Text>
-                 </View>
-          </View>
+           <View style={{paddingTop:10, paddingBottom: 10, marginRight:40}}>
+                
+                    <View style={{flexDirection: 'row'}}>
 
-            <View style={{paddingTop:10, paddingBottom: 10}}>
-               <Image style={{top:13}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
-               <Text style={{color: 'black', left:15}}>Tennis Atlantique</Text> 
-          </View>
+                    <View style={{alignItems:'center', marginLeft:20}}>
+                      <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                      </Image>
+                    </View>
 
-          <View style={{paddingTop:10, paddingBottom: 10}}>
-               <Image style={{top:13}} source={require('../assets/icons/Profile/ClubDotGreen.imageset/imgClubStatus.png')} />
-               <Text style={{color: 'black', left:15}}>Tennis Elisabeth</Text> 
-          </View>
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              
+              </View>
+              
+                  </View>
+                </View>
+ <View style={{paddingTop:10, paddingBottom: 10, marginRight:40}}>
+                
+                    <View style={{flexDirection: 'row'}}>
+
+                    <View style={{alignItems:'center', marginLeft:20}}>
+                      <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                      </Image>
+                    </View>
+
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              
+              
+              </View>
+              
+                  </View>
+                </View>
+
+
+
+            <View style={{paddingTop:10, paddingBottom: 10, marginRight:40}}>
+                
+                    <View style={{flexDirection: 'row'}}>
+
+                    <View style={{alignItems:'center', marginLeft:20}}>
+                      <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                      </Image>
+                    </View>
+
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <Text style={styles.button}>8h</Text>
+              
+              
+              </View>
+              
+                  </View>
+                </View> 
+
+                 <View style={{paddingTop:10, paddingBottom: 10, marginRight:40}}>
+                
+                    <View style={{flexDirection: 'row'}}>
+
+                    <View style={{alignItems:'center', marginLeft:20}}>
+                      <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                      </Image>
+                    </View>
+
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              
+              
+              </View>
+              
+                  </View>
+                </View>
+
+                 <View style={{paddingTop:10, paddingBottom: 10, marginRight:40}}>
+                
+                    <View style={{flexDirection: 'row'}}>
+
+                    <View style={{alignItems:'center', marginLeft:20}}>
+                      <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                      </Image>
+                    </View>
+
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              <Text style={styles.button}>8h</Text>
+              <Text style={styles.button}>15h</Text>
+              
+              </View>
+              
+                  </View>
+                </View>
+
+
+          
 
         </View>
 
@@ -238,7 +341,7 @@ constructor() {
            
         </View>
 
-   </View>
+
       
 
 
@@ -247,23 +350,66 @@ constructor() {
 }
 
 const styles = StyleSheet.create({
-  title: {
+  name: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
-    fontSize: 13,
+    fontSize: 15,
     paddingTop: 2,
     alignItem:'center', 
     justifyContent: 'center',
   },
-  subtitle: {
+  age: {
+    color: 'black',
+    backgroundColor: 'rgba(0,0,0,0)',
+    fontFamily: 'Avenir',
+    fontSize: 13,
+    paddingTop: 4,
+    alignItem:'center', 
+    justifyContent: 'center',
+  },
+  gender: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 12,
-    paddingTop: 2,
+    paddingTop: 4,
     alignItem:'center', 
     justifyContent: 'center',
+  },
+  level: {
+    color: 'black',
+    backgroundColor: 'rgba(0,0,0,0)',
+    fontFamily: 'Avenir',
+    fontSize: 12,
+    paddingTop: 9,
+    alignItem:'center', 
+    justifyContent: 'center',
+  },
+  clubs: {
+    color: 'black',
+    backgroundColor: 'rgba(0,0,0,0)',
+    fontFamily: 'Avenir',
+    fontSize: 14,
+    left:5,
+    marginBottom: 12,
+    alignItem:'center', 
+    justifyContent: 'center',
+  },
+  button: {
+    width:50,
+    height: 30, 
+    borderWidth:1, 
+    borderColor:'rgb(42,129,82)', 
+    borderRadius:'3', 
+    overflow:'hidden', 
+    paddingTop:5, 
+    paddingBottom: 5, 
+    marginBottom:5,
+    marginRight: 10, 
+    color: 'white', 
+    backgroundColor: 'rgb(42,129,82)', 
+    textAlign:'center'
   },
 });
 
