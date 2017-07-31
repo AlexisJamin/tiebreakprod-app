@@ -56,7 +56,7 @@ constructor() {
           top:-20,
         }}>
 
-           <View style={{marginRight:40}}>
+           <View style={{marginRight:50}}>
                 
                     <View style={{flexDirection: 'row'}}>
 
@@ -67,17 +67,33 @@ constructor() {
                     </View>
 
               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>8h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>11h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>12h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>15h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>20h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>21h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                  <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
+                </View>
               
               </View>
               
@@ -93,7 +109,7 @@ constructor() {
                        <Text style={styles.days}>Mar</Text>
 
                        <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, marginTop:5, alignItems:'center'}}>
-                        <Text style={styles.buttonPlus}><Image style={{marginTop:12}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></Text>
+                        <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
                        </View>
               
                     </View>
@@ -112,13 +128,18 @@ constructor() {
                     </View>
 
               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
-              <Text style={styles.button}>8h</Text>
-              
-              
-              </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>8h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                  <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
+                </View>
               
                   </View>
                 </View> 
+
+              </View>
 
                  <View style={{marginRight:40}}>
                 
@@ -130,12 +151,34 @@ constructor() {
                       </Image>
                     </View>
 
-              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              
+               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>8h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>11h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>12h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>15h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>20h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>21h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                  <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
+                </View>
               
               </View>
               
@@ -152,14 +195,34 @@ constructor() {
                       </Image>
                     </View>
 
-              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
+               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>8h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>11h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>12h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>15h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>20h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>21h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                  <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
+                </View>
               
               </View>
               
@@ -177,14 +240,34 @@ constructor() {
                       </Image>
                     </View>
 
-              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
+               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>8h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>11h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>12h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>15h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>20h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>21h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                  <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
+                </View>
               
               </View>
               
@@ -201,14 +284,34 @@ constructor() {
                       </Image>
                     </View>
 
-              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
-              <Text style={styles.button}>8h</Text>
-              <Text style={styles.button}>15h</Text>
+               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>8h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>11h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>12h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>15h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>20h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                  <Text style={styles.button}>21h</Text>
+                  <View style={styles.delete}><Image style={{marginTop:8}} source={require('../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')}/></View>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+                  <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../assets/icons/General/Add.imageset/icAdd.png')}/></View>
+                </View>
               
               </View>
               
@@ -241,7 +344,7 @@ const styles = StyleSheet.create({
     fontFamily: 'AvenirNext',
     fontSize: 15,
     paddingTop: 2,
-    alignItem:'center', 
+    alignItems:'center', 
     justifyContent: 'center',
   },
   age: {
@@ -250,7 +353,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 13,
     paddingTop: 4,
-    alignItem:'center', 
+    alignItems:'center', 
     justifyContent: 'center',
   },
   gender: {
@@ -259,7 +362,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 12,
     paddingTop: 4,
-    alignItem:'center', 
+    alignItems:'center', 
     justifyContent: 'center',
   },
   level: {
@@ -268,7 +371,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 12,
     paddingTop: 9,
-    alignItem:'center', 
+    alignItems:'center', 
     justifyContent: 'center',
   },
   clubs: {
@@ -278,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     left:5,
     marginBottom: 12,
-    alignItem:'center', 
+    alignItems:'center', 
     justifyContent: 'center',
   },
   button: {
@@ -288,8 +391,7 @@ const styles = StyleSheet.create({
     borderColor:'rgb(42,129,82)', 
     paddingTop:5, 
     paddingBottom: 5, 
-    marginBottom:5,
-    marginRight: 10, 
+    marginBottom:5, 
     color: 'white', 
     backgroundColor: 'rgb(42,129,82)', 
     textAlign:'center'
@@ -299,12 +401,10 @@ const styles = StyleSheet.create({
     height:28, 
     borderWidth:1, 
     borderColor:'rgb(200,90,24)', 
-    paddingTop:5, 
-    paddingBottom: 5, 
     marginBottom:5,
     marginRight: 10, 
     backgroundColor: 'rgb(200,90,24)', 
-    textAlign:'center',
+    alignItems:'center', 
   },
   days: {
     marginLeft:20, 
@@ -317,6 +417,17 @@ const styles = StyleSheet.create({
     borderWidth:0.5, 
     borderColor:'grey', 
     borderRadius:20
+  },
+  delete: {
+    width:28,
+    height:28, 
+    borderWidth:0.5, 
+    borderColor:'grey', 
+    marginBottom:5,
+    marginRight: 10,
+    marginLeft: 0.5,
+    backgroundColor: 'white',
+    alignItems:'center', 
   },
 });
 
