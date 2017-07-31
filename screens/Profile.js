@@ -49,7 +49,7 @@ export default class Profile extends React.Component {
         </View>
         
         </View>
-          <View style={{flex:3, height:250, alignItems: 'center'}}>
+          <View style={{flex:3, height:300, alignItems: 'center'}}>
             <ProfileContent/>
           </View>
         </View>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
+import { List, ListItem, ListView } from 'react-native-elements'
 import Svg,{
     Circle,
     Ellipse,
@@ -17,6 +18,7 @@ import Svg,{
     Stop
 } from 'react-native-svg'
 
+
 import Home from './screens/Home'
 import Profile from './screens/Profile'
 import Menu from './screens/Menu'
@@ -26,14 +28,18 @@ import Community from './screens/Community'
 import Login from './screens/Login'
 import SignIn from './screens/SignIn'
 import Dispo from './screens/Dispo'
+import Info from './screens/Info'
 
 export default class App extends React.Component {
 
-  render() {
-    return (
-    	            <Dispo/>
+
+render () {
+  return (
+
+    <Info/>
            
 
     );
   }
 }
+
