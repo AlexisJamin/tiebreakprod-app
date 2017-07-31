@@ -16,11 +16,11 @@ export default class Home extends React.Component {
           <MenuHeader/>
           </View>
 
-          <View style={{flex: 3}}>
+          <View style={{flex: 1}}>
           <MenuContent/>
           </View>
 
-          <View style={{flex: 1}}>
+          <View style={{height:160}}>
           <Footer/>
           </View>
 

@@ -1,10 +1,11 @@
 import React from 'react'
 import { StyleSheet, View, Image, Alert } from 'react-native'
-import { Button } from 'react-native-elements'
+import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import { Facebook } from 'expo';
 
 
 import Footer from '../constants/Footer'
+import HomeHeader from '../constants/HomeHeader'
 
 export default class Login extends React.Component {
 
@@ -53,31 +54,66 @@ export default class Login extends React.Component {
 
     	<View style={{
         flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
       }}>
 
-    	  <View style={{flex: 1}}>
+      <View style={{flex:1, alignItems:'center'}}>
+
+          <View style={{height:55}}/>
+
+          <View style={{flex: 1, justifyContent:'center'}}>
+            <Image source={require('../assets/icons/AppSpecific/Logo.imageset/logoBlack.png')}/>
           </View>
 
-          <View style={{flex: 4}}>
-            <Image source={require('../assets/icons/AppSpecific/Logo.imageset/logoBlack.png')}/>
+          <View style={{flex: 1, justifyContent:'center'}}>
 
+          <FormLabel>Email</FormLabel>
+          <FormInput onChangeText={'good'}
+          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
+          <FormLabel>Mot de passe</FormLabel>
+          <FormInput onChangeText={'good'}
+          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
+          <FormValidationMessage>Identifiant ou mot de passe incorrect</FormValidationMessage>
+
+
+          </View>
+
+          <View style={{flex: 1, justifyContent:'center'}}>
+          
+           <View style={{marginTop: 10}}>
             <Button
-              title="Se connecter avec Facebook"
-              onPress={this._handleFacebookLogin}
-              backgroundColor="blue"
+              title="Connexion"
+              onPressLogIn={this._handleLogin}
+              backgroundColor="rgb(200,90,24)"
               borderRadius= '5'
               containerViewStyle={{width:300}} />
+            </View>
 
+            <View style={{marginTop: 10}}>
+            <Button
+              title="Se connecter avec Facebook"
+              onPressFacebookLogIn={this._handleFacebookLogin}
+              backgroundColor="rgb(41,72,125)"
+              borderRadius= '5'
+              containerViewStyle={{width:300}} />
+              </View>
+
+              <View style={{marginTop: 10}}>
+
+              <Button
+              title="Créer un compte"
+              onPressSignIn={this._handleFacebookLogin}
+              backgroundColor="white"
+              containerViewStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}
+              textStyle={{color:'black'}} />
+              </View>
+
+          </View>
 
           </View>
 
 
-
-          <View style={{flex: 3}}>
-            <Footer />
+          <View style={{height:160}}>
+            <Footer/>
           </View>
 
         </View>

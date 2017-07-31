@@ -39,14 +39,12 @@ export default class Home extends React.Component {
             </View>
 
         <View style={{
-          flex:1,
+          height:30,
           justifyContent: 'center',
           alignItems: 'center',
-          marginBottom:-35,
-          marginTop:-55,
         }}>
           <Svg
-            height="10"
+            height="60"
             width="300"
           >
             <Line
@@ -61,11 +59,11 @@ export default class Home extends React.Component {
         </View>
 
 
-            <View style={{flex: 1}}>
+            <View style={{flex:1}}>
             <HomeSlideAdd/>
             </View>
 
-            <View style={{flex: 1}}>
+            <View style={{height:160}}>
             <Footer/>
             </View>
 
