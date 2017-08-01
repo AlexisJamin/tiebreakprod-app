@@ -9,6 +9,17 @@ import SignInButton from '../constants/SignInButton'
 
 export default class SignIn extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = { 
+      firsName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+  };
+  }
+
   _handleFacebookLogin = async () => {
     try {
       const { type, token } = await Facebook.logInWithReadPermissionsAsync(
@@ -87,21 +98,56 @@ export default class SignIn extends React.Component {
               containerViewStyle={{width:300}} />
               </View>
 
-          <FormLabel>Prénom</FormLabel>
-          <FormInput onChangeText={'good'}
-          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
-          <FormLabel>Nom</FormLabel>
-          <FormInput onChangeText={'good'}
-          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
-          <FormLabel>Email</FormLabel>
-          <FormInput onChangeText={'good'}
-          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
-          <FormLabel>Mot de passe</FormLabel>
-          <FormInput onChangeText={'good'}
-          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
-          <FormLabel>Confirmer le mot de passe</FormLabel>
-          <FormInput onChangeText={'good'}
-          containerStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}/>
+          <FormInput 
+          ref='forminput'
+          textInputRef='firsName'
+          placeholder='Prénom'
+          autoCapitalize='words'
+          returnKeyType='next'
+          onChangeText={(firsName) => this.setState({firsName})}
+          value={this.state.firsName}
+          inputStyle={{marginLeft:20}}
+          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
+          <FormInput 
+          ref='forminput'
+          textInputRef='lastName'
+          placeholder='Nom'
+          autoCapitalize='words'
+          returnKeyType='next'
+          onChangeText={(lastName) => this.setState({lastName})}
+          value={this.state.lastName}
+          inputStyle={{marginLeft:20}}
+          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
+          <FormInput 
+          ref='forminput'
+          textInputRef='email'
+          placeholder='Email'
+          keyboardType='email-address'
+          returnKeyType='next'
+          onChangeText={(email) => this.setState({email})}
+          value={this.state.email}
+          inputStyle={{marginLeft:20}}
+          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
+          <FormInput 
+          ref='forminput'
+          textInputRef='password'
+          placeholder='Mot de passe'
+          returnKeyType='next'
+          secureTextEntry='true'
+          onChangeText={(password) => this.setState({password})}
+          value={this.state.password}
+          inputStyle={{marginLeft:20}}
+          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
+          <FormInput 
+          ref='forminput'
+          textInputRef='confirmPassword'
+          placeholder='Confirmer mot de passe'
+          returnKeyType='done'
+          secureTextEntry='true'
+          onChangeText={(confirmPassword) => this.setState({confirmPassword})}
+          value={this.state.confirmPassword}
+          inputStyle={{marginLeft:20}}
+          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
           <FormValidationMessage>Merci de remplir tous les champs</FormValidationMessage>
 
 
