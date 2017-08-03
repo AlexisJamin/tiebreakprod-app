@@ -17,10 +17,12 @@ import Svg,{
     Stop
 } from 'react-native-svg';
 
-
 import ProfileHeader from '../constants/ProfileHeader'
 import ProfileButton from '../constants/ProfileButton'
 import ProfileContent from '../constants/ProfileContent'
+
+
+
 
 export default class Profile extends React.Component {
   render() {

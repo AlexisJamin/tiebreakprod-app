@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import { Font } from 'expo'
+import { Actions } from 'react-native-router-flux'
 
 
 export default class HomeHeader extends Component {
@@ -32,11 +32,15 @@ export default class HomeHeader extends Component {
         top: 40,
         }}>
 
-       		<Image source={require('../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
+       		<TouchableWithoutFeedback onPress={Actions.menu}>
+          <Image source={require('../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
+          </TouchableWithoutFeedback>
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }
+       <TouchableWithoutFeedback onPress={Actions.chat}>
        <Image source={require('../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
+       </TouchableWithoutFeedback>
        
        </View>
        

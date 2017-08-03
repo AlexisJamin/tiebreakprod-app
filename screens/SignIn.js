@@ -1,7 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TouchableWithoutFeedback } from 'react-native'
 import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { Facebook } from 'expo';
+import { Facebook } from 'expo'
+import { Actions } from 'react-native-router-flux'
 
 
 import Footer from '../constants/Footer'
@@ -65,6 +66,7 @@ export default class SignIn extends React.Component {
 
     	<View style={{
         flex: 1,
+        backgroundColor:'white'
       }}>
 
 
@@ -75,17 +77,16 @@ export default class SignIn extends React.Component {
            }}>
 
 
-           <Image source={require('../assets/icons/General/Back.imageset/icBackGrey.png')} /> 
-           <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
+           <TouchableWithoutFeedback onPress={Actions.login}>
+           <Image source={require('../assets/icons/General/Back.imageset/icBackGrey.png')} />
+            </TouchableWithoutFeedback> 
+
+           <Image source={require('../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
            <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
        
            </View>
 
-          <View style={{flex:1, alignItems:'center', top:-80}}>
-
-          <View style={{flex: 1, justifyContent:'center', marginBottom:-30}}>
-            <Image source={require('../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
-          </View>
+          <View style={{flex:1, alignItems:'center'}}>
 
           <View style={{flex: 1, justifyContent:'center'}}>
 

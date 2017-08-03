@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo'
 import Svg,{
@@ -17,7 +17,8 @@ import Svg,{
     Use,
     Defs,
     Stop
-} from 'react-native-svg';
+} from 'react-native-svg'
+import { Actions } from 'react-native-router-flux'
 
 
 
@@ -47,7 +48,9 @@ export default class ProfileHeader extends Component {
           top: 70,
         }}>
 
+             <TouchableWithoutFeedback onPress={Actions.pop}>
              <Image source={require('../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
+             </TouchableWithoutFeedback>
        
               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
 

@@ -22,17 +22,42 @@ import Svg,{
 import ProfileHeader from '../constants/ProfileHeader'
 import ProfileButton from '../constants/ProfileButton'
 
+
+import { Parse } from 'parse/react-native'
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+
+
+
+
 export default class MenuContent extends React.Component {
 
 constructor() {
     super();
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false  
+      fontAvenirLoaded: false,
+      lastName:'toto'  
     };
   }
 
   async componentDidMount() {
+   
+   var User = Parse.Object.extend("User");
+   var query = new Parse.Query(User);
+   var MenuContent = this
+   query.get("8wov7FG8u9", {
+    success: function(gameScore) {
+    // The object was retrieved successfully.
+    var lastName = gameScore.get("lastName");
+      MenuContent.setState({lastName:lastName})
+    },
+     error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+    }
+    });
+
     await Font.loadAsync({
       'AvenirNext': require('../assets/fonts/AvenirNext.ttf'),
       'Avenir': require('../assets/fonts/Avenir.ttf'),
@@ -57,7 +82,7 @@ constructor() {
             <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
             <View style={{flexDirection:'row'}}>
             {
-             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> Alexis J.</Text> 
+             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.state.lastName} </Text> 
              ) : null 
             }
             {

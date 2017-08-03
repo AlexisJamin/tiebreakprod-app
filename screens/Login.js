@@ -1,7 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text } from 'react-native'
 import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { Facebook } from 'expo';
+import { Facebook } from 'expo'
+import { Actions } from 'react-native-router-flux'
 
 
 import Footer from '../constants/Footer'
@@ -54,6 +55,7 @@ export default class Login extends React.Component {
 
     	<View style={{
         flex: 1,
+        backgroundColor:'white'
       }}>
 
       <View style={{flex:1, alignItems:'center'}}>
@@ -82,7 +84,7 @@ export default class Login extends React.Component {
            <View style={{marginTop: 10}}>
             <Button
               title="Connexion"
-              onPressLogIn={this._handleLogin}
+              onPress={Actions.home}
               backgroundColor="rgb(200,90,24)"
               borderRadius= '5'
               containerViewStyle={{width:300}} />
@@ -101,7 +103,7 @@ export default class Login extends React.Component {
 
               <Button
               title="Créer un compte"
-              onPressSignIn={this._handleFacebookLogin}
+              onPress={Actions.signIn}
               backgroundColor="white"
               containerViewStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}
               textStyle={{color:'black'}} />

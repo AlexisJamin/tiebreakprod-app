@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo'
+import { Actions } from 'react-native-router-flux'
 
 
 export default class ChatHeader extends Component {
@@ -20,17 +21,17 @@ export default class ChatHeader extends Component {
           top: 70,
         }}>
 
-           <View>
+            <TouchableWithoutFeedback onPress={Actions.pop}>
              <Image source={require('../assets/icons/Menu/Home.imageset/ic_white_ball_header.png')} />
-           </View>
+            </TouchableWithoutFeedback>
        
-           <View> 
+   
              <Image source={require('../assets/icons/Menu/Messages.imageset/icMessageBig.png')} /> 
-           </View>
+        
 
-           <View style={{backgroundColor:'rgba(0,0,0,0)'}}>
-             <Text style={{color: 'rgba(0,0,0,0)'}}>H</Text> 
-           </View>
+         
+             <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
+
 
          </View>
       </Image>

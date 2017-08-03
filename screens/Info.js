@@ -17,13 +17,7 @@ import Svg,{
     Defs,
     Stop
 } from 'react-native-svg';
-const DropDown = require('react-native-dropdown');
-const {
-  Select,
-  Option,
-  OptionList,
-  updatePosition
-} = DropDown;
+import ModalPicker from 'react-native-modal-picker'
 
 
 
@@ -41,23 +35,39 @@ constructor(props) {
   };
   }
 
-componentDidMount() {
-    updatePosition(this.refs['SELECT1']);
-    updatePosition(this.refs['OPTIONLIST']);
-  }
 
-  _getOptionList() {
-    return this.refs['OPTIONLIST'];
-  }
-
- _canada(province) {
-
-    this.setState({
-      canada: province
-    });
-  }
 
   render() {
+
+    let index = 0;
+        const data = [
+            { key: index++, label: 'Débutant' },
+            { key: index++, label: 'Intermédiaire' },
+            { key: index++, label: 'Avancé' },
+            { key: index++, label: '30/5' },
+            { key: index++, label: '30/4' },
+            { key: index++, label: '30/3' },
+            { key: index++, label: '30/2' },
+            { key: index++, label: '30/1' },
+            { key: index++, label: '30' },
+            { key: index++, label: '15/5' },
+            { key: index++, label: '15/4' },
+            { key: index++, label: '15/3' },
+            { key: index++, label: '15/2' }
+        ];
+
+        const gender = [
+            { key: index++, label: 'Homme' },
+            { key: index++, label: 'Femme' },
+        ];
+
+        const hand = [
+            { key: index++, label: 'Droitier' },
+            { key: index++, label: 'Gaucher' },
+        ];
+
+
+
     return (
 
     	<View style={{flex: 1}} >
@@ -112,32 +122,39 @@ componentDidMount() {
           inputStyle={{marginLeft:20}}
           containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
           <FormValidationMessage>Merci de remplir tous les champs</FormValidationMessage>
-
-
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Select
-            width={250}
-            ref="SELECT1"
-            optionListRef={this._getOptionList.bind(this)}
-            defaultValue="Select a Province in Canada ..."
-            onSelect={this._canada.bind(this)}>
-            <Option>Alberta</Option>
-            <Option>British Columbia</Option>
-            <Option>Manitoba</Option>
-            <Option>New Brunswick</Option>
-            <Option>Newfoundland and Labrador</Option>
-            <Option>Northwest Territories</Option>
-            <Option>Nova Scotia</Option>
-            <Option>Nunavut</Option>
-            <Option>Ontario</Option>
-            <Option>Prince Edward Island</Option>
-            <Option>Quebec</Option>
-            <Option>Saskatchewan</Option>
-            <Option>Yukon</Option>
-          </Select>
           
-          <OptionList ref="OPTIONLIST"/>
-      </View>
+
+          <View style={{marginTop:20}}>
+          <ModalPicker
+          style={{width:300}}
+          data={data}
+          initValue="Niveau actuel" />
+          </View>
+
+          <View style={{marginTop:20}}>
+          <ModalPicker
+          style={{width:300}}
+          data={data}
+          initValue="Meilleur niveau" />
+          </View>
+
+          <View style={{marginTop:20}}>
+          <ModalPicker
+          style={{width:300}}
+          data={gender}
+          initValue="Genre" />
+          </View>
+
+          <View style={{marginTop:20}}>
+          <ModalPicker
+          optionStyle={{height:50}}
+          style={{width:300}}
+          data={hand}
+          initValue="Style" />
+          </View>
+
+
+
 
             </View>
 

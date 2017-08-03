@@ -9,7 +9,7 @@ export default class Chat extends React.Component {
   render() {
     return (
 
-    	<View style={{flex:1}}>
+    	<View style={{flex:1, backgroundColor:'white'}}>
       <View style={{flex:1}}>
           <View style={{flex:1, top:60}}>
             <ChatButton/>

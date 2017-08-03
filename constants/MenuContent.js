@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font, Svg } from 'expo'
+import { Actions } from 'react-native-router-flux'
 
 export default class MenuContent extends React.Component {
 
@@ -34,6 +35,7 @@ constructor() {
     	}}>
 
     	  <View style={{flex: 10, top: -25}}>
+          <TouchableWithoutFeedback onPress={Actions.profil}>
           <Svg height={100} width={100}>
             <Svg.Circle
               cx={50}
@@ -44,11 +46,12 @@ constructor() {
               fill="white"
             />
           </Svg>
+          </TouchableWithoutFeedback>
         </View>
           
           <View style={{flex: 1, top: -10}}>
             {
-        this.state.fontAvenirNextLoaded ? (<Text style={styles.title}> MON PROFIL </Text>) : null 
+        this.state.fontAvenirNextLoaded ? (<Text onPress={Actions.profil} style={styles.title}> MON PROFIL </Text>) : null 
           }
           </View>
 

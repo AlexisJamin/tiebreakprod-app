@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Col, Row, Grid } from "react-native-easy-grid"
-import { Font } from 'expo';
+import { Font } from 'expo'
+import { Actions } from 'react-native-router-flux'
 
 
 export default class MenuHeader extends Component {
@@ -35,7 +36,9 @@ export default class MenuHeader extends Component {
 
        		 <Image source={require('../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
          
+          <TouchableWithoutFeedback onPress={Actions.pop}>
           <Image source={require('../assets/icons/Menu/Home.imageset/ic_white_ball_header.png')} />
+          </TouchableWithoutFeedback>
        
        </View>
        
