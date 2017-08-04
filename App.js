@@ -20,6 +20,29 @@ import Svg,{
 import { Router, Scene } from 'react-native-router-flux';
 
 
+import { Provider } from 'react-redux';
+import { createStore } from 'redux'
+
+
+function userReducer(store, action) {
+  if(action.type == 'user') {
+   
+    return {user: action.value} 
+   }
+  else {
+      return {user: {lastName:null,
+      firstName:null,
+      style:null,
+      gender:null,
+      currentLevel:null,
+      highestLevel:null
+  }}
+  }
+}
+
+var store = createStore(userReducer);
+
+
 
 import Home from './screens/Home'
 import Chat from './screens/Chat'
@@ -36,12 +59,6 @@ import HomeHeader from './constants/HomeHeader'
 
 
 
-
- const header = {
-  uri: 'https://www.google.fr/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwiD_8__3rrVAhVLPxoKHXFnBFAQjRwIBw&url=https%3A%2F%2Ffashionapplis.wordpress.com%2F2015%2F02%2F05%2Fhermes-tie-break%2F&psig=AFQjCNHhW3uzpjObnH1izoR6YiCVR9jVhQ&ust=1501838619321986',
-  height: 19, width: 163, 
-};
-
   export default class App extends React.Component {
 
 
@@ -49,7 +66,8 @@ import HomeHeader from './constants/HomeHeader'
        
 
     return (
-
+        
+      <Provider store={store}>
     	<Router>
         <Scene key="root">
           <Scene key="login" 
@@ -68,16 +86,17 @@ import HomeHeader from './constants/HomeHeader'
           key="menu" 
           component={Menu} 
           hideNavBar={true}/>
-            <Scene
-            key="profil" 
-            component={Profile} 
-            hideNavBar={true}/>
+          <Scene
+          key="profil" 
+          component={Profile} 
+          hideNavBar={true}/>
           <Scene 
           key="chat" 
           component={Chat} 
           hideNavBar={true}/>
         </Scene>
-      </Router>
+        </Router>
+      </Provider>
 
 
 

@@ -22,56 +22,42 @@ import Svg,{
 import ProfileHeader from '../constants/ProfileHeader'
 import ProfileButton from '../constants/ProfileButton'
 
-
-import { Parse } from 'parse/react-native'
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+import { connect } from 'react-redux';
 
 
+function mapStateToProps(store) {
+  return { user: store.user }
+}
 
 
-export default class MenuContent extends React.Component {
+class ProfileContent extends React.Component {
 
 constructor() {
     super();
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
-      lastName:'toto'  
     };
   }
 
   async componentDidMount() {
    
-   var User = Parse.Object.extend("User");
-   var query = new Parse.Query(User);
-   var MenuContent = this
-   query.get("8wov7FG8u9", {
-    success: function(gameScore) {
-    // The object was retrieved successfully.
-    var lastName = gameScore.get("lastName");
-      MenuContent.setState({lastName:lastName})
-    },
-     error: function(object, error) {
-    // The object was not retrieved successfully.
-    // error is a Parse.Error with an error code and message.
-    }
-    });
-
     await Font.loadAsync({
       'AvenirNext': require('../assets/fonts/AvenirNext.ttf'),
       'Avenir': require('../assets/fonts/Avenir.ttf'),
     });
     this.setState({ 
       fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true 
+      fontAvenirLoaded: true,
+
     });
   }
+
 
   render() {
     return (
 
-      <View style={{flex:1}}>
+      <View style={{flex:1, backgroundColor:'white'}}>
 
         <ScrollView>
 
@@ -82,7 +68,7 @@ constructor() {
             <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
             <View style={{flexDirection:'row'}}>
             {
-             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.state.lastName} </Text> 
+             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.props.user.firstName} {this.props.user.lastName[0]}. </Text> 
              ) : null 
             }
             {
@@ -116,21 +102,21 @@ constructor() {
             <View style={{alignItems: 'center'}}>
               <Image source={require('../assets/icons/Profile/Level.imageset/icRank.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.level}>30/5 (30/5)</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{this.props.user.currentLevel} ({this.props.user.highestLevel})</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../assets/icons/Profile/Style.imageset/shape.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>Droitier</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.user.style}</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../assets/icons/Profile/Gender.imageset/group5.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>Homme</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.user.gender}</Text>) : null 
               }  
             </View>
 
@@ -268,7 +254,7 @@ constructor() {
 
                     <View style={{alignItems:'center', marginLeft:20}}>
                       <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Mar</Text>
                       </Image>
                     </View>
 
@@ -290,7 +276,7 @@ constructor() {
 
                     <View style={{alignItems:'center', marginLeft:20}}>
                       <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Mer</Text>
                       </Image>
                     </View>
 
@@ -309,7 +295,7 @@ constructor() {
 
                     <View style={{alignItems:'center', marginLeft:20}}>
                       <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Jeu</Text>
                       </Image>
                     </View>
 
@@ -331,7 +317,7 @@ constructor() {
 
                     <View style={{alignItems:'center', marginLeft:20}}>
                       <Image source={require('../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Lun</Text>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', paddingTop:12, paddingLeft: 8}}>Ven</Text>
                       </Image>
                     </View>
 
@@ -349,14 +335,9 @@ constructor() {
                   </View>
                 </View>
 
-
-          
-
         </View>
 
 
-
-           
 
           </View>
 
@@ -366,12 +347,11 @@ constructor() {
         </View>
 
 
-      
-
-
     );
   }
 }
+
+export default connect(mapStateToProps, null) (ProfileContent);
 
 const styles = StyleSheet.create({
   name: {

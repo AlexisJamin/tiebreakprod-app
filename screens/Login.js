@@ -3,12 +3,86 @@ import { StyleSheet, View, Image, Alert, Text } from 'react-native'
 import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import { Facebook } from 'expo'
 import { Actions } from 'react-native-router-flux'
+import { connect } from 'react-redux';
+
+
+
+function mapDispatchToProps(dispatch) {
+  return {
+        user: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    }
+  }
+}
 
 
 import Footer from '../constants/Footer'
 import HomeHeader from '../constants/HomeHeader'
 
-export default class Login extends React.Component {
+import { Parse } from 'parse/react-native'
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+
+class Login extends React.Component {
+
+constructor() {
+    super();
+    this.onLoginButtonPress = this.onLoginButtonPress.bind(this);
+    this.state = {
+      fontAvenirNextLoaded: false,
+      fontAvenirLoaded: false,
+      lastName:'',
+      firstName:'',
+      style:'',
+      gender:'',
+      currentLevel:'',
+      highestLevel:''
+    };
+  }
+
+  async componentDidMount() {
+   
+   var User = Parse.Object.extend("User");
+   var query = new Parse.Query(User);
+   var MenuContent = this
+   query.get("8wov7FG8u9", {
+    success: function(users) {
+    // The object was retrieved successfully.
+    var lastName = users.get("lastName");
+    var firstName = users.get("firstName");
+    var style = users.get("style");
+    var gender = users.get("gender");
+    var currentLevel = users.get("currentLevel");
+    var highestLevel = users.get("highestLevel");
+
+    MenuContent.setState({
+      lastName:lastName,
+      firstName:firstName,
+      style:style,
+      gender:gender,
+      currentLevel:currentLevel,
+      highestLevel:highestLevel
+    })
+    },
+     error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+    }
+    });
+  }
+
+  onLoginButtonPress(){
+    this.props.user({
+      lastName:this.state.lastName,
+      firstName:this.state.firstName,
+      style:this.state.style,
+      gender:this.state.gender,
+      currentLevel:this.state.currentLevel,
+      highestLevel:this.state.highestLevel
+    });
+    Actions.home();
+  }
+
 
   _handleFacebookLogin = async () => {
     try {
@@ -84,7 +158,7 @@ export default class Login extends React.Component {
            <View style={{marginTop: 10}}>
             <Button
               title="Connexion"
-              onPress={Actions.home}
+              onPress={this.onLoginButtonPress}
               backgroundColor="rgb(200,90,24)"
               borderRadius= '5'
               containerViewStyle={{width:300}} />
@@ -123,6 +197,8 @@ export default class Login extends React.Component {
     );
   }
 }
+
+export default connect(null, mapDispatchToProps) (Login);
 
 const styles = StyleSheet.create({
   title: {

@@ -28,7 +28,7 @@ export default class Profile extends React.Component {
   render() {
     return (
 
-    	  <View style={{flex:1}}>
+    	  <View style={{flex:1, backgroundColor:'white'}}>
       <View style={{flex:1}}>
           <View style={{flex:1, top:50}}>
             <ProfileButton/>
