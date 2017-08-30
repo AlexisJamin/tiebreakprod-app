@@ -2,7 +2,7 @@
   "name": "tiebreaktest",
   "version": "0.0.0",
   "description": "Hello Expo!",
-  "author": null,
+  "author": "AJ",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
@@ -11,7 +11,6 @@
     "react": "16.0.0-alpha.12",
     "react-native": "https://github.com/expo/react-native/archive/sdk-19.0.0.tar.gz",
     "react-native-button": "^2.1.0",
-    "react-native-easy-grid": "^0.1.14",
     "react-native-elements": "^0.15.0",
     "react-native-modal-picker": "0.0.16",
     "react-native-picker": "^4.0.19",
@@ -20,9 +19,7 @@
     "react-native-svg": "^5.3.2",
     "react-native-swiper": "^1.5.4",
     "react-native-vector-icons": "^4.2.0",
-    "react-navigation": "^1.0.0-beta.11",
     "react-redux": "^5.0.5",
-    "redux": "^3.7.2",
-    "swiper": "^3.4.2"
+    "redux": "^3.7.2"
   }
 }
