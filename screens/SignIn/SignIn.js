@@ -60,6 +60,7 @@ class SignIn extends React.Component {
           user.set("password", this.state.password);
           user.set("firstName", this.state.firstName);
           user.set("lastName", this.state.lastName);
+          user.set("email", this.state.username);
           
           user.signUp(null, {
             success: function(user) {              
