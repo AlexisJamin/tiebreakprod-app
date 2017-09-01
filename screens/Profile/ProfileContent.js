@@ -27,7 +27,7 @@ import { connect } from 'react-redux';
 
 
 function mapStateToProps(store) {
-  return { user: store.user }
+  return { user: store.user, userClub: store.userClub }
 }
 
 
@@ -58,18 +58,17 @@ constructor() {
   render() {
 
     var clubList = [];
-     console.log(this.props.user.clubs);
-    for (var i = 0; i < this.props.user.clubs.length; i++) {
-      clubList.push(<ProfileContentClubs clubName = {this.props.user.clubs[i]} />)
+     console.log(this.props.userClub);
+    for (var i = 0; i < this.props.userClub.length; i++) {
+      clubList.push(<ProfileContentClubs clubName = {this.props.userClub[i]} />)
     }
 
     var clubListBullets = [];
-    for (var i = 0; i < this.props.user.clubs.length; i++) {
+    for (var i = 0; i < this.props.userClub.length; i++) {
       clubListBullets.push(<ProfileContentClubsBullets/>)
     }
 
     var dayList = [];
-     console.log(this.props.user.availability[0].day.slice(0,3));
     for (var i = 0; i < this.props.user.availability.length; i++) {
       if (this.props.user.availability[i].hours.length > 0) {
       dayList.push(<ProfileContentDispo days = {this.props.user.availability[i].day.slice(0,3)} hours = {this.props.user.availability[i].hours}/>)

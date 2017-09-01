@@ -1,9 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text } from 'react-native'
-import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard } from 'react-native'
 import { Facebook } from 'expo'
 import { Actions } from 'react-native-router-flux'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
 
 
@@ -11,6 +10,9 @@ function mapDispatchToProps(dispatch) {
   return {
         user: function(value) { 
         dispatch( {type: 'user', value: value} ) 
+    },
+    userClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
     }
   }
 }
@@ -23,101 +25,87 @@ Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 class Login extends React.Component {
 
-constructor() {
-    super();
-    this.onLoginButtonPress = this.onLoginButtonPress.bind(this);
+constructor(props) {
+    super(props);
+    this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
-      lastName:'',
-      firstName:'',
-      style:'',
-      gender:'',
-      currentLevel:'',
-      highestLevel:'',
-      clubs:'',
-      availability:'',
-      username:'',
-      password:''
+      fontAvenirLoaded: false
     };
   }
+    
+    _onPressLogInButton(){
 
-  async componentDidMount() {
-   
-   var User = Parse.Object.extend("User");
-   var query = new Parse.Query(User);
-   var MenuContent = this
-   query.get("jdrulqlkX1", {
-    success: function(users) {
-      // The object was retrieved successfully.
-      var lastName = users.get("lastName");
-      var firstName = users.get("firstName");
-      var style = users.get("style");
-      var gender = users.get("gender");
-      var currentLevel = users.get("currentLevel");
-      var highestLevel = users.get("highestLevel");
-      var availability = users.get("availability");
-      
-      MenuContent.setState({
-        lastName:lastName,
-        firstName:firstName,
-        style:style,
-        gender:gender,
-        currentLevel:currentLevel,
-        highestLevel:highestLevel,
-        availability:availability,
-      })
+    console.log("Submit ok");
+    console.log(this.state.username);
+    console.log(this.state.password);
 
-      var clubs = users.get("clubs");
-      //console.log(clubs);
-      //console.log(clubs[0].id);
+   var user = new Parse.User();
+   var login = this;
 
-      var clubList=[];
+   Parse.User.logIn(this.state.username, this.state.password, {
+   success: function(user) {
+    console.log("Trouvé !");
+    var userId = user.id;
+    // Do stuff after successful login.
+           var User = Parse.Object.extend("User");
+           var query = new Parse.Query(User);
+           
+           query.get(userId, {
+            success: function(users) {
+                // The object was retrieved successfully.
+                var lastName = users.get("lastName");
+                var firstName = users.get("firstName");
+                var style = users.get("style");
+                var gender = users.get("gender");
+                var currentLevel = users.get("currentLevel");
+                var highestLevel = users.get("highestLevel");
+                var availability = users.get("availability");
+                
+                login.props.user({
+                  lastName:lastName,
+                  firstName:firstName,
+                  style:style,
+                  gender:gender,
+                  currentLevel:currentLevel,
+                  highestLevel:highestLevel,
+                  availability:availability,
+                })
 
-       var Club = Parse.Object.extend("Club");
-       
-       for (var i = 0; i < clubs.length; i++) {
-       var queryClub = new Parse.Query(Club);
-          //console.log(clubs[i].id);
-          queryClub.get(clubs[i].id, {
-            success: function(club) {
-            // The object was retrieved successfully.
-            var clubName = club.get("name");
-            clubList.unshift(clubName);
-            //console.log(clubName);
-            //console.log(clubList);
-            MenuContent.setState({
-              clubs : clubList,
-            })
-          },
-          error: function(object, error) {
-            // The object was not retrieved successfully.
+                var clubs = users.get("clubs");
+                console.log(clubs);
+                var Club = Parse.Object.extend("Club");
+                 
+                 for (var i = 0; i < clubs.length; i++) {
+                 var queryClub = new Parse.Query(Club);
+                    console.log(clubs[i].id);
+                    queryClub.get(clubs[i].id, {
+                      success: function(club) {
+                      // The object was retrieved successfully.
+                      var clubName = club.get("name");
+                      console.log(clubName);
+                      login.props.userClub(clubName)
+                    },
+                    error: function(object, error) {
+                      // The object was not retrieved successfully.
+                    }
+                  });
+                }  
+              },
+           error: function(object, error) {
+              // The object was not retrieved successfully.
           }
-        });
-      }  
-    },
-     error: function(object, error) {
-    // The object was not retrieved successfully.
-    // error is a Parse.Error with an error code and message.
-    }
-   });
-  }
-
-  onLoginButtonPress(){
-    this.props.user({
-      lastName:this.state.lastName,
-      firstName:this.state.firstName,
-      style:this.state.style,
-      gender:this.state.gender,
-      currentLevel:this.state.currentLevel,
-      highestLevel:this.state.highestLevel,
-      clubs:this.state.clubs,
-      availability:this.state.availability,
-    });
+         }); 
     Actions.home();
-  }
-
-
+   },
+   error: function(user, error) {
+    console.log("pas trouvé")
+    Alert.alert("Identifiant et/ou mot de passe invalide(s)");
+    // The login failed. Check error to see why.
+   }
+   });
+  } 
+  
   _handleFacebookLogin = async () => {
     try {
       const { type, token } = await Facebook.logInWithReadPermissionsAsync(
@@ -157,6 +145,13 @@ constructor() {
     }
   };
 
+  _onPressSignInButton() {
+    Parse.User.logOut().then(() => {
+    var currentUser = Parse.User.current();  // this will now be null
+    });
+    Actions.signIn();
+  }
+
 
   render() {
     return (
@@ -166,69 +161,55 @@ constructor() {
         backgroundColor:'white'
       }}>
 
-      <View style={{flex:1, alignItems:'center'}}>
+      <View style={{flex:0.1}}/>
 
-          <View style={{height:55}}/>
+      <View style={{flex:5, alignItems:'center'}}>
 
           <View style={{flex: 1, justifyContent:'center'}}>
             <Image source={require('../../assets/icons/AppSpecific/Logo.imageset/logoBlack.png')}/>
           </View>
 
-          <View style={{flex: 1, justifyContent:'center'}}>
+          <View style={{flex: 3, justifyContent:'center'}}>
 
-          <FormLabel>Email</FormLabel>
-          <FormInput
-          ref='forminput'
-          textInputRef='username'
-          returnKeyType='next'
-          keyboardType='email-address' 
-          onChangeText={(username) => this.setState({username})}
-          value={this.state.username}
-          inputStyle={{left:15}}
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5}}/>
-          <FormLabel>Mot de passe</FormLabel>
-          <FormInput 
-          ref='forminput'
-          textInputRef='password'
-          onChangeText={(password) => this.setState({password})}
-          value={this.state.password}
-          inputStyle={{left:15}}
-          returnKeyType='done'
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5}}/>
-          <FormValidationMessage>Identifiant ou mot de passe incorrect</FormValidationMessage>
+            <Text style={styles.title}>Email</Text>
+            <TextInput 
+            ref='username'
+            style={styles.input} 
+            keyboardType="email-address"
+            returnKeyType='next'
+            autoCapitalize='none'
+            autoCorrect='false'
+            onChangeText={(username) => this.setState({username})}
+            value={this.state.username}
+            blurOnSubmit={false}
+            onSubmitEditing={(event) => {this.refs.password.focus();
+            }}
+            />
+            <Text style={styles.title}>Mot de passe</Text>
+            <TextInput 
+            ref='password'
+            style={styles.input} 
+            keyboardType="default"
+            returnKeyType='done'
+            autoCapitalize='none'
+            autoCorrect='false'
+            secureTextEntry='true'
+            onChangeText={(password) => this.setState({password})}
+            value={this.state.password}
+            onSubmitEditing={Keyboard.dismiss}
+            />
+            <Text style={styles.subtitle}>Mot de passe oublié?</Text>
+            <TouchableOpacity onPress={this._onPressLogInButton}>
+            <Text style={styles.buttonLogIn}>Connexion</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+            <Text style={styles.buttonFacebook}>Se connecter avec Facebook</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this._onPressSignInButton}>
+            <Text style={styles.buttonSignIn}>Créer un compte</Text>
+            </TouchableOpacity>
 
 
-          </View>
-
-          <View style={{flex: 1, justifyContent:'center'}}>
-          
-           <View style={{marginTop: 10}}>
-            <Button
-              title="Connexion"
-              onPress={this.onLoginButtonPress}
-              backgroundColor="rgb(200,90,24)"
-              borderRadius= '5'
-              containerViewStyle={{width:300}} />
-            </View>
-
-            <View style={{marginTop: 10}}>
-            <Button
-              title="Se connecter avec Facebook"
-              onPressFacebookLogIn={this._handleFacebookLogin}
-              backgroundColor="rgb(41,72,125)"
-              borderRadius= '5'
-              containerViewStyle={{width:300}} />
-              </View>
-
-              <View style={{marginTop: 10}}>
-
-              <Button
-              title="Créer un compte"
-              onPress={Actions.signIn}
-              backgroundColor="white"
-              containerViewStyle={{width:300, borderWidth:1, borderColor:'black', overflow:'hidden', borderRadius:5}}
-              textStyle={{color:'black'}} />
-              </View>
 
           </View>
 
@@ -248,25 +229,74 @@ constructor() {
 export default connect(null, mapDispatchToProps) (Login);
 
 const styles = StyleSheet.create({
+  buttonLogIn: {
+    backgroundColor: 'rgb(200,90,24)',
+    color: 'white',
+    fontSize: 16,
+    width: 300,
+    lineHeight: 30,
+    marginTop: 10,
+    textAlign: 'center',
+    borderWidth:1,
+    borderColor:'white',
+    overflow:'hidden', 
+    borderRadius:5,
+    paddingTop:8,
+    paddingBottom:8 
+  },
+  buttonFacebook: {
+    backgroundColor: 'rgb(41,72,125)',
+    color: 'white',
+    fontSize: 16,
+    width: 300,
+    lineHeight: 30,
+    marginTop: 10,
+    textAlign: 'center',
+    borderWidth:1,
+    borderColor:'white',
+    overflow:'hidden', 
+    borderRadius:5,
+    paddingTop:8,
+    paddingBottom:8  
+  },
+  buttonSignIn: {
+    backgroundColor: 'white',
+    color: 'black',
+    fontSize: 16,
+    width: 300,
+    lineHeight: 30,
+    marginTop: 10,
+    textAlign: 'center',
+    borderWidth:1,
+    overflow:'hidden', 
+    borderRadius:5,
+    paddingTop:8,
+    paddingBottom:8  
+  },
+  input: {
+    width:300,
+    height:40, 
+    borderWidth:1, 
+    borderColor:'rgb(213,212,216)', 
+    overflow:'hidden', 
+    borderRadius:5,
+  },
   title: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 15,
-    textAlign: 'center',
-    top: 8,
   },
    subtitle: {
-    color: 'white',
+    color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center',
+    fontSize: 11,
+    left: 20,
+    top:5,
+    marginBottom:10
   },
   container: {
-    backgroundColor: 'white',
-    height: 60,
-    marginRight: 0,
-    marginLeft: 0,
+    justifyContent:'center',
   },
 });

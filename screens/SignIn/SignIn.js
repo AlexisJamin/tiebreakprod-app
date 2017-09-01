@@ -1,25 +1,95 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TouchableWithoutFeedback } from 'react-native'
-import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native'
 import { Facebook } from 'expo'
 import { Actions } from 'react-native-router-flux'
+import { connect } from 'react-redux'
 
+import { Parse } from 'parse/react-native'
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
-import Footer from '../../constants/Footer'
-import SignInButton from './SignInButton'
+function mapDispatchToProps(dispatch) {
+  return {
+        user: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    }
+  }
+}
 
-export default class SignIn extends React.Component {
+class SignIn extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { 
-      firsName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-  };
+    this._onPressSignInButton = this._onPressSignInButton.bind(this);
+    this.state = {
+      fontAvenirNextLoaded: false,
+      fontAvenirLoaded: false,
+      firstName:'',
+      lastName:'',
+      username:'',
+      password:'',
+      confirmPassword:''
+    };
   }
+
+  _onPressSignInButton() {
+    
+    var signin= this;
+    var user = new Parse.User();
+      
+    function validateEmail(email) 
+      {
+          var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return re.test(email);
+      }
+      // Verify if all inputs are completed & two passwords are equals and email is good format
+
+      var emailFormatisFalse=true;
+
+      if (this.state.firstName.length>0 && 
+        this.state.lastName.length>0 && 
+        this.state.username.length>0 && 
+        this.state.password.length>0 && 
+        this.state.confirmPassword.length>0
+        ) {
+        if (this.state.password===this.state.confirmPassword && validateEmail(this.state.username)) 
+        { 
+          emailFormatisFalse=false;
+          console.log("ok");
+          user.set("username", this.state.username);
+          user.set("password", this.state.password);
+          user.set("firstName", this.state.firstName);
+          user.set("lastName", this.state.lastName);
+          
+          user.signUp(null, {
+            success: function(user) {              
+              // Hooray! Let them use the app now.
+              console.log("signUp ok");
+              
+              signin.props.user({
+                lastName:this.state.lastName,
+                firstName:this.state.firstName,
+              })
+              
+              Actions.home();
+            },
+            error: function(user, error) {
+              // Show the error message somewhere and let the user try again.
+              alert("Erreur: " + error.code + " " + error.message);
+            }
+          });
+        }
+         else if (this.state.password!=this.state.confirmPassword) {
+           Alert.alert('Veuillez confirmer votre mot de passe');
+        }
+        else if (emailFormatisFalse) {
+          Alert.alert("Format de l'email invalide");
+        }
+          
+       } else {
+        Alert.alert('Veuillez compléter tous les champs');
+        }
+      }
 
   _handleFacebookLogin = async () => {
     try {
@@ -64,11 +134,13 @@ export default class SignIn extends React.Component {
   render() {
     return (
 
-    	<View style={{
+
+      <View style={{
         flex: 1,
         backgroundColor:'white'
       }}>
 
+          <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
 
           <View style={{
            flexDirection: 'row',
@@ -77,9 +149,9 @@ export default class SignIn extends React.Component {
            }}>
 
 
-           <TouchableWithoutFeedback onPress={Actions.login}>
+           <TouchableWithoutFeedback onPress={Actions.logIn}>
            <Image source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
-            </TouchableWithoutFeedback> 
+          </TouchableWithoutFeedback> 
 
            <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
            <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
@@ -89,82 +161,90 @@ export default class SignIn extends React.Component {
           <View style={{flex:1, alignItems:'center'}}>
 
           <View style={{flex: 1, justifyContent:'center'}}>
+            
+            <TouchableOpacity>
+            <Text style={styles.buttonFacebook}>Remplir avec Facebook</Text>
+            </TouchableOpacity>
 
-            <View style={{left:5}}>
-            <Button
-              title="Remplir avec Facebook"
-              onPressFacebookLogIn={this._handleFacebookLogin}
-              backgroundColor="rgb(41,72,125)"
-              borderRadius= '5'
-              containerViewStyle={{width:300}} />
-              </View>
-
-          <FormInput 
-          ref='forminput'
-          textInputRef='firsName'
-          placeholder='Prénom'
-          autoCapitalize='words'
-          returnKeyType='next'
-          onChangeText={(firsName) => this.setState({firsName})}
-          value={this.state.firsName}
-          inputStyle={{marginLeft:20}}
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
-          <FormInput 
-          ref='forminput'
-          textInputRef='lastName'
-          placeholder='Nom'
-          autoCapitalize='words'
-          returnKeyType='next'
-          onChangeText={(lastName) => this.setState({lastName})}
-          value={this.state.lastName}
-          inputStyle={{marginLeft:20}}
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
-          <FormInput 
-          ref='forminput'
-          textInputRef='email'
-          placeholder='Email'
-          keyboardType='email-address'
-          returnKeyType='next'
-          onChangeText={(email) => this.setState({email})}
-          value={this.state.email}
-          inputStyle={{marginLeft:20}}
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
-          <FormInput 
-          ref='forminput'
-          textInputRef='password'
-          placeholder='Mot de passe'
-          returnKeyType='next'
-          secureTextEntry='true'
-          onChangeText={(password) => this.setState({password})}
-          value={this.state.password}
-          inputStyle={{marginLeft:20}}
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
-          <FormInput 
-          ref='forminput'
-          textInputRef='confirmPassword'
-          placeholder='Confirmer mot de passe'
-          returnKeyType='done'
-          secureTextEntry='true'
-          onChangeText={(confirmPassword) => this.setState({confirmPassword})}
-          value={this.state.confirmPassword}
-          inputStyle={{marginLeft:20}}
-          containerStyle={{width:300, borderWidth:1, borderColor:'rgb(213,212,216)', overflow:'hidden', borderRadius:5, marginTop: 20}}/>
-          <FormValidationMessage>Merci de remplir tous les champs</FormValidationMessage>
+          <TextInput 
+            ref='firsName'
+            style={styles.input} 
+            keyboardType="default"
+            returnKeyType='next'
+            autoCorrect='false'
+            placeholder='Prénom'
+            onChangeText={(firstName) => this.setState({firstName})}
+            blurOnSubmit={false}
+            onSubmitEditing={(event) => {this.refs.lastName.focus();
+            }}
+            />
+          <TextInput 
+            ref='lastName'
+            style={styles.input} 
+            keyboardType="default"
+            returnKeyType='next'
+            autoCorrect='false'
+            placeholder='Nom'
+            onChangeText={(lastName) => this.setState({lastName})}
+            blurOnSubmit={false}
+            onSubmitEditing={(event) => {this.refs.username.focus();
+            }}
+            />
+          <TextInput 
+            ref='username'
+            style={styles.input} 
+            keyboardType="email-address"
+            returnKeyType='next'
+            autoCapitalize='none'
+            autoCorrect='false'
+            placeholder='Email'
+            onChangeText={(username) => this.setState({username})}
+            blurOnSubmit={false}
+            onSubmitEditing={(event) => {this.refs.password.focus();
+            }}
+            />
+          <TextInput 
+            ref='password'
+            style={styles.input} 
+            keyboardType="default"
+            returnKeyType='next'
+            autoCapitalize='none'
+            autoCorrect='false'
+            secureTextEntry='true'
+            placeholder='Mot de passe'
+            onChangeText={(password) => this.setState({password})}
+            blurOnSubmit={false}
+            onSubmitEditing={(event) => {this.refs.confirmPassword.focus();
+            }}
+            />
+          <TextInput 
+            ref='confirmPassword'
+            style={styles.input} 
+            keyboardType="default"
+            returnKeyType='done'
+            autoCapitalize='none'
+            autoCorrect='false'
+            secureTextEntry='true'
+            placeholder='Confirmer mot de passe'
+            onChangeText={(confirmPassword) => this.setState({confirmPassword})}
+            onSubmitEditing={Keyboard.dismiss}
+            />
 
 
           </View>
 
           </View>
 
-
+        </KeyboardAvoidingView>
+          
           <View style={{
         flexDirection: 'column',
         justifyContent: 'center',
-        backgroundColor: 'rgba(200,90,24,1)', 
-        alignItems: 'center',
-        height: 60,
+        alignItems: 'stretch',
          }}>
-              <SignInButton/>
+            <TouchableOpacity onPress={this._onPressSignInButton}>
+            <Text style={styles.buttonLogIn}>Créer un compte</Text>
+            </TouchableOpacity>
         </View>
 
         </View>
@@ -173,26 +253,59 @@ export default class SignIn extends React.Component {
   }
 }
 
+export default connect(null, mapDispatchToProps) (SignIn);
+
 const styles = StyleSheet.create({
+  buttonLogIn: {
+    backgroundColor: 'rgb(200,90,24)',
+    color: 'white',
+    fontSize: 18,
+    lineHeight: 30,
+    textAlign: 'center',
+    overflow:'hidden', 
+    paddingTop:15,
+    paddingBottom:15 
+  },
+  buttonFacebook: {
+    backgroundColor: 'rgb(41,72,125)',
+    color: 'white',
+    fontSize: 16,
+    width: 300,
+    lineHeight: 30,
+    marginTop: 10,
+    textAlign: 'center',
+    borderWidth:1,
+    borderColor:'white',
+    overflow:'hidden', 
+    borderRadius:5,
+    paddingTop:8,
+    paddingBottom:8  
+  },
+  input: {
+    width:300,
+    height:40, 
+    borderWidth:1, 
+    borderColor:'rgb(213,212,216)', 
+    overflow:'hidden', 
+    borderRadius:5,
+    marginTop:20, 
+  },
   title: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 15,
-    textAlign: 'center',
-    top: 8,
   },
    subtitle: {
-    color: 'white',
+    color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center',
+    fontSize: 11,
+    left: 20,
+    top:5,
+    marginBottom:10
   },
   container: {
-    backgroundColor: 'white',
-    height: 60,
-    marginRight: 0,
-    marginLeft: 0,
+    justifyContent:'center',
   },
 });

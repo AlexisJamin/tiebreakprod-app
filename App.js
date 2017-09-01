@@ -24,20 +24,29 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux'
 
 
-function userReducer(store, action) {
+function userReducer(store = {}, action) {
+  var storeCopy = Object.assign({}, store);
   if(action.type == 'user') {
-    return {user: action.value} 
-   }
+  	storeCopy.user = action.value;
+    return storeCopy;
+  } else if(action.type == 'userClub') {
+    storeCopy.userClub.unshift(action.value);
+    return storeCopy;
+  }
   else {
-      return {user: {lastName:null,
-      firstName:null,
-      style:null,
-      gender:null,
-      currentLevel:null,
-      highestLevel:null,
-      clubs:null,
-      availability:null,
-  }}
+	return {
+      		user: 
+      		{
+      			lastName:null,
+		    	firstName:null,
+		      	style:null,
+		      	gender:null,
+		      	currentLevel:null,
+		      	highestLevel:null,
+		      	availability:[],
+		  },
+		  userClub : []
+	}
   }
 }
 
@@ -63,6 +72,8 @@ import HomeHeader from './screens/Home/HomeHeader'
 
 
     render() {
+
+
        
 
     return (
@@ -70,7 +81,7 @@ import HomeHeader from './screens/Home/HomeHeader'
       <Provider store={store}>
     	<Router>
         <Scene key="root">
-          <Scene key="login" 
+          <Scene key="logIn" 
           component={Login} 
           initial={true} 
           hideNavBar={true}/>
