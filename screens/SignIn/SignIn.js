@@ -1,10 +1,11 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Facebook } from 'expo'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
+
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
@@ -32,16 +33,17 @@ class SignIn extends React.Component {
     };
   }
 
-  _onPressSignInButton() {
-    
-    var signin= this;
-    var user = new Parse.User();
-      
-    function validateEmail(email) 
+  validateEmail(email) 
       {
           var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return re.test(email);
       }
+
+  _onPressSignInButton() {
+    
+    var signin = this;
+    var user = new Parse.User();
+      
       // Verify if all inputs are completed & two passwords are equals and email is good format
 
       var emailFormatisFalse=true;
@@ -52,10 +54,9 @@ class SignIn extends React.Component {
         this.state.password.length>0 && 
         this.state.confirmPassword.length>0
         ) {
-        if (this.state.password===this.state.confirmPassword && validateEmail(this.state.username)) 
+        if (this.state.password===this.state.confirmPassword && this.validateEmail(this.state.username)) 
         { 
           emailFormatisFalse=false;
-          console.log("ok");
           user.set("username", this.state.username);
           user.set("password", this.state.password);
           user.set("firstName", this.state.firstName);
@@ -68,8 +69,12 @@ class SignIn extends React.Component {
               console.log("signUp ok");
               
               signin.props.user({
-                lastName:this.state.lastName,
-                firstName:this.state.firstName,
+                lastName:signin.state.lastName,
+                firstName:signin.state.firstName,
+                style:'à compléter',
+                gender:'à compléter',
+                currentLevel:'à compléter',
+                highestLevel:'à compléter',
               })
               
               Actions.home();
@@ -141,12 +146,13 @@ class SignIn extends React.Component {
         backgroundColor:'white'
       }}>
 
-          <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
+          <KeyboardAwareScrollView>
 
           <View style={{
            flexDirection: 'row',
            justifyContent: 'space-around',
-           top: 60,
+           marginTop: 60,
+           marginBottom: 20,
            }}>
 
 
@@ -174,6 +180,7 @@ class SignIn extends React.Component {
             returnKeyType='next'
             autoCorrect='false'
             placeholder='Prénom'
+            underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
             blurOnSubmit={false}
             onSubmitEditing={(event) => {this.refs.lastName.focus();
@@ -186,6 +193,7 @@ class SignIn extends React.Component {
             returnKeyType='next'
             autoCorrect='false'
             placeholder='Nom'
+            underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
             blurOnSubmit={false}
             onSubmitEditing={(event) => {this.refs.username.focus();
@@ -199,6 +207,7 @@ class SignIn extends React.Component {
             autoCapitalize='none'
             autoCorrect='false'
             placeholder='Email'
+            underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             blurOnSubmit={false}
             onSubmitEditing={(event) => {this.refs.password.focus();
@@ -213,6 +222,7 @@ class SignIn extends React.Component {
             autoCorrect='false'
             secureTextEntry='true'
             placeholder='Mot de passe'
+            underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(password) => this.setState({password})}
             blurOnSubmit={false}
             onSubmitEditing={(event) => {this.refs.confirmPassword.focus();
@@ -227,6 +237,7 @@ class SignIn extends React.Component {
             autoCorrect='false'
             secureTextEntry='true'
             placeholder='Confirmer mot de passe'
+            underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(confirmPassword) => this.setState({confirmPassword})}
             onSubmitEditing={Keyboard.dismiss}
             />
@@ -236,16 +247,16 @@ class SignIn extends React.Component {
 
           </View>
 
-        </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
           
           <View style={{
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
          }}>
-            <TouchableOpacity onPress={this._onPressSignInButton}>
+            <TouchableWithoutFeedback onPress={this._onPressSignInButton}>
             <Text style={styles.buttonLogIn}>Créer un compte</Text>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
         </View>
 
         </View>

@@ -1,8 +1,10 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Facebook } from 'expo'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { Parse } from 'parse/react-native'
 
 
 
@@ -17,9 +19,6 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-import Footer from '../../constants/Footer'
-
-import { Parse } from 'parse/react-native'
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
@@ -35,10 +34,6 @@ constructor(props) {
   }
     
     _onPressLogInButton(){
-
-    console.log("Submit ok");
-    console.log(this.state.username);
-    console.log(this.state.password);
 
    var user = new Parse.User();
    var login = this;
@@ -73,17 +68,14 @@ constructor(props) {
                 })
 
                 var clubs = users.get("clubs");
-                console.log(clubs);
                 var Club = Parse.Object.extend("Club");
                  
                  for (var i = 0; i < clubs.length; i++) {
                  var queryClub = new Parse.Query(Club);
-                    console.log(clubs[i].id);
                     queryClub.get(clubs[i].id, {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
-                      console.log(clubName);
                       login.props.userClub(clubName)
                     },
                     error: function(object, error) {
@@ -153,25 +145,39 @@ constructor(props) {
   }
 
 
+
   render() {
     return (
 
-    	<View style={{
-        flex: 1,
-        backgroundColor:'white'
+
+      <View style={{
+        flex:1,
+        backgroundColor:'white',
       }}>
 
-      <View style={{flex:0.1}}/>
+      <View style={{
+        position:'absolute',
+        width:'100%',
+        height:'100%',
+        flexDirection:'row', 
+        alignItems:'flex-end',
+      }}>
 
-      <View style={{flex:5, alignItems:'center'}}>
+    	<Image style={{
+        flex:1,
+        resizeMode: 'stretch'}} 
+        source={require('../../assets/icons/AppSpecific/Footer.imageset/group3.png')} /> 
 
-          <View style={{flex: 1, justifyContent:'center'}}>
+      </View>
+
+      <KeyboardAwareScrollView style={{alignItems:'center', backgroundColor:'transparent'}}>
+
+          <View style={{alignItems:'center', marginTop: 80, marginBottom: 40}}>
             <Image source={require('../../assets/icons/AppSpecific/Logo.imageset/logoBlack.png')}/>
           </View>
 
-          <View style={{flex: 3, justifyContent:'center'}}>
+          <View style={{flex: 1, alignItems:'center'}}>
 
-            <Text style={styles.title}>Email</Text>
             <TextInput 
             ref='username'
             style={styles.input} 
@@ -179,13 +185,13 @@ constructor(props) {
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect='false'
+            placeholder='Email'
+            underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             value={this.state.username}
             blurOnSubmit={false}
             onSubmitEditing={(event) => {this.refs.password.focus();
-            }}
-            />
-            <Text style={styles.title}>Mot de passe</Text>
+            }}/>
             <TextInput 
             ref='password'
             style={styles.input} 
@@ -193,6 +199,8 @@ constructor(props) {
             returnKeyType='done'
             autoCapitalize='none'
             autoCorrect='false'
+            placeholder='Mot de passe'
+            underlineColorAndroid='rgba(0,0,0,0)'
             secureTextEntry='true'
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
@@ -205,20 +213,15 @@ constructor(props) {
             <TouchableOpacity>
             <Text style={styles.buttonFacebook}>Se connecter avec Facebook</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this._onPressSignInButton}>
+            <TouchableWithoutFeedback onPress={this._onPressSignInButton}>
             <Text style={styles.buttonSignIn}>Créer un compte</Text>
-            </TouchableOpacity>
-
-
-
-          </View>
+            </TouchableWithoutFeedback>
 
           </View>
 
 
-          <View style={{height:160}}>
-            <Footer/>
-          </View>
+            </KeyboardAwareScrollView>
+
 
         </View>
 
@@ -238,7 +241,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
     borderWidth:1,
-    borderColor:'white',
+    borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
     paddingTop:8,
@@ -253,7 +256,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
     borderWidth:1,
-    borderColor:'white',
+    borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
     paddingTop:8,
@@ -270,6 +273,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     overflow:'hidden', 
     borderRadius:5,
+    borderColor:'rgb(213,212,216)', 
     paddingTop:8,
     paddingBottom:8  
   },
@@ -280,19 +284,20 @@ const styles = StyleSheet.create({
     borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
+    marginTop:20, 
   },
   title: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 15,
+    alignItems: 'flex-start',
   },
    subtitle: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 11,
-    left: 20,
     top:5,
     marginBottom:10
   },

@@ -56,7 +56,9 @@ constructor() {
 
 
   render() {
-
+    if (this.props.userClub == undefined) {
+    var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
+    } else {
     var clubList = [];
      console.log(this.props.userClub);
     for (var i = 0; i < this.props.userClub.length; i++) {
@@ -67,13 +69,17 @@ constructor() {
     for (var i = 0; i < this.props.userClub.length; i++) {
       clubListBullets.push(<ProfileContentClubsBullets/>)
     }
-
+  }
+    if (this.props.user.availability == undefined) {
+    var newUserDispo = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
+    } else {
     var dayList = [];
     for (var i = 0; i < this.props.user.availability.length; i++) {
       if (this.props.user.availability[i].hours.length > 0) {
       dayList.push(<ProfileContentDispo days = {this.props.user.availability[i].day.slice(0,3)} hours = {this.props.user.availability[i].hours}/>)
       }
     }
+  }
 
 
     return (
@@ -83,6 +89,22 @@ constructor() {
         <ScrollView>
 
         <View>
+
+          <View style={{
+            alignItems:'center',
+            marginBottom:15,
+          }}>
+          <Svg height={70} width={70}>
+                <Circle
+                  cx={35}
+                  cy={35}
+                  r={35}
+                  strokeWidth={0.5}
+                  stroke="black"
+                  fill="white"
+                />
+              </Svg> 
+              </View>
 
           <View style={{flex:1, justifyContent: 'space-around', flexDirection: 'row'}}>
             
@@ -174,6 +196,7 @@ constructor() {
 
           </View>
 
+          {newUserClub}
 
           <View style={{
           flex: 1,
@@ -181,6 +204,7 @@ constructor() {
           justifyContent: 'center',
           top: 20,
           }}>
+
 
           <View style={{
           flexDirection: 'column',
@@ -236,7 +260,7 @@ constructor() {
           justifyContent: 'space-around',
           top: 10,
           }}>
-                
+                    {newUserDispo}
                     {dayList}
 
 

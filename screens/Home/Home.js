@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
 import Svg,{
     Circle,
     Ellipse,
@@ -21,36 +21,53 @@ import Svg,{
 import HomeHeader from './HomeHeader'
 import HomeSlideSearch from './HomeSlideSearch'
 import HomeSlideAdd from './HomeSlideAdd'
-import HomeButton from './HomeButton'
-import Footer from '../../constants/Footer'
 
 export default class Home extends React.Component {
   render() {
     return (
 
-    	<View style={{flex: 1, backgroundColor:'white'}} >
+    	<View style={{
+        flex: 1, 
+        backgroundColor:'white'}} >
+
+      <View style={{
+        position:'absolute',
+        width:'100%',
+        height:'100%',
+        flexDirection:'row', 
+        alignItems:'flex-end',
+      }}>
+
+      <Image style={{
+        flex:1,
+        height:250}} 
+        source={require('../../assets/icons/AppSpecific/Footer.imageset/group3.png')} /> 
+
+      </View>
+
  
             <View style={{height:120}}>
             <HomeHeader/>
             </View>
 
-             <View style={{flex: 1}}>
-            <HomeSlideSearch/>
-            </View>
+      <View style={{flex:1, justifyContent:'space-around', marginBottom:150}}>
+
+        <View>
+        <HomeSlideSearch/>
+        </View>
 
         <View style={{
           height:30,
-          justifyContent: 'center',
           alignItems: 'center',
         }}>
           <Svg
             height="60"
-            width="300"
+            width="250"
           >
             <Line
               x1="0"
               y1="0"
-              x2="300"
+              x2="250"
               y2="0"
               stroke="rgb(210,210,210)"
               strokeWidth="2"
@@ -59,23 +76,19 @@ export default class Home extends React.Component {
         </View>
 
 
-            <View style={{flex:1}}>
+            <View>
             <HomeSlideAdd/>
             </View>
 
-            <View style={{height:160}}>
-            <Footer/>
-            </View>
 
-
+        </View>
+        
         <View style={{
-        flexDirection: 'column',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(200,90,24,1)', 
-        alignItems: 'center',
-        height: 60,
+        alignItems: 'stretch',
          }}>
-              <HomeButton/>
+            <TouchableWithoutFeedback onPress={this._onPressLogOutButton}>
+            <Text style={styles.buttonLogIn}>Trouver des amis</Text>
+            </TouchableWithoutFeedback>
         </View>
 
       </View>
@@ -83,3 +96,17 @@ export default class Home extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  buttonLogIn: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    color: 'white',
+    fontSize: 18,
+    lineHeight: 30,
+    textAlign: 'center',
+    overflow:'hidden', 
+    paddingTop:15,
+    paddingBottom:15 
+  },
+});
+

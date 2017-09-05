@@ -1,6 +1,6 @@
 import React from 'react'
 import Expo from 'expo'
-import { StyleSheet, Text, View, Image, TouchableHighlight, TouchableOpacity, TextInput, Animated , Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableHighlight, TouchableOpacity, TextInput, Animated, Dimensions } from 'react-native'
 import Svg,{
     Circle,
     Ellipse,
@@ -18,6 +18,7 @@ import Svg,{
     Stop
 } from 'react-native-svg'
 import { Router, Scene } from 'react-native-router-flux';
+import { Parse } from 'parse/react-native'
 
 
 import { Provider } from 'react-redux';
@@ -69,13 +70,10 @@ import HomeHeader from './screens/Home/HomeHeader'
 
 
   export default class App extends React.Component {
-
-
+    
     render() {
 
-
-       
-
+   
     return (
         
       <Provider store={store}>

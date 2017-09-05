@@ -1,21 +1,5 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
-import Svg,{
-    Circle,
-    Ellipse,
-    G,
-    LinearGradient,
-    RadialGradient,
-    Line,
-    Path,
-    Polygon,
-    Polyline,
-    Rect,
-    Symbol,
-    Use,
-    Defs,
-    Stop
-} from 'react-native-svg';
 
 import ProfileHeader from './ProfileHeader'
 import ProfileButton from './ProfileButton'
@@ -29,31 +13,28 @@ export default class Profile extends React.Component {
     return (
 
     	  <View style={{flex:1, backgroundColor:'white'}}>
-      <View style={{flex:1}}>
-          <View style={{flex:1, top:50}}>
-            <ProfileButton/>
-          </View>
-          <View style={{top:-70, height:110}}>
+
+         <View style={{
+        position:'absolute',
+        width:'100%',
+        height:'100%',
+        flexDirection:'row', 
+        alignItems:'flex-start',
+      }}>
+  
+          <View style={{flex:1, alignItems:'stretch'}}>
+          <ProfileButton/>
+        </View>
+
+      </View>
+
+          <View style={{height:80, marginBottom:60}}>
            <ProfileHeader/>
           </View>
 
-          <View style={{flex:0.5, alignItems:'center', top:-120}}>
-          <Svg height={70} width={70}>
-            <Circle
-              cx={35}
-              cy={35}
-              r={35}
-              strokeWidth={0.5}
-              stroke="black"
-              fill="white"
-            />
-          </Svg>
-        </View>
+          <ProfileContent/>
         
-        </View>
-          <View style={{flex:3, height:300, alignItems: 'center'}}>
-            <ProfileContent/>
-          </View>
+
         </View>
 
 
