@@ -65,6 +65,7 @@ constructor(props) {
                   currentLevel:currentLevel,
                   highestLevel:highestLevel,
                   availability:availability,
+                  userId:userId,
                 })
 
                 var clubs = users.get("clubs");

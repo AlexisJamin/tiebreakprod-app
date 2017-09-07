@@ -35,7 +35,7 @@ constructor() {
     	}}>
 
     	  <View style={{flex: 10, top: -25}}>
-          <TouchableWithoutFeedback onPress={Actions.profil}>
+          <TouchableWithoutFeedback onPress={Actions.profile}>
           <Svg height={100} width={100}>
             <Svg.Circle
               cx={50}
@@ -51,7 +51,7 @@ constructor() {
           
           <View style={{flex: 1, top: -10}}>
             {
-        this.state.fontAvenirNextLoaded ? (<Text onPress={Actions.profil} style={styles.title}> MON PROFIL </Text>) : null 
+        this.state.fontAvenirNextLoaded ? (<Text onPress={Actions.profile} style={styles.title}> MON PROFIL </Text>) : null 
           }
           </View>
 

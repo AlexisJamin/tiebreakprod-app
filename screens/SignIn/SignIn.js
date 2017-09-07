@@ -46,7 +46,7 @@ class SignIn extends React.Component {
       
       // Verify if all inputs are completed & two passwords are equals and email is good format
 
-      var emailFormatisFalse=true;
+      var emailFormatIsFalse=true;
 
       if (this.state.firstName.length>0 && 
         this.state.lastName.length>0 && 
@@ -56,7 +56,7 @@ class SignIn extends React.Component {
         ) {
         if (this.state.password===this.state.confirmPassword && this.validateEmail(this.state.username)) 
         { 
-          emailFormatisFalse=false;
+          emailFormatIsFalse=false;
           user.set("username", this.state.username);
           user.set("password", this.state.password);
           user.set("firstName", this.state.firstName);
@@ -67,6 +67,7 @@ class SignIn extends React.Component {
             success: function(user) {              
               // Hooray! Let them use the app now.
               console.log("signUp ok");
+              var userId= user.id;
               
               signin.props.user({
                 lastName:signin.state.lastName,
@@ -75,20 +76,22 @@ class SignIn extends React.Component {
                 gender:'à compléter',
                 currentLevel:'à compléter',
                 highestLevel:'à compléter',
+                availability:[],
+                userId:userId,
               })
               
               Actions.home();
             },
             error: function(user, error) {
               // Show the error message somewhere and let the user try again.
-              alert("Erreur: " + error.code + " " + error.message);
+              Alert.alert('Email déjà pris');
             }
           });
         }
          else if (this.state.password!=this.state.confirmPassword) {
            Alert.alert('Veuillez confirmer votre mot de passe');
         }
-        else if (emailFormatisFalse) {
+        else if (emailFormatIsFalse) {
           Alert.alert("Format de l'email invalide");
         }
           

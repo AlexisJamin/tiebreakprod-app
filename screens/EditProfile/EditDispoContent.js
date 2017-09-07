@@ -19,10 +19,7 @@ import Svg,{
 } from 'react-native-svg'
 
 
-import ProfileHeader from '../Profile/ProfileHeader'
-import ProfileButton from '../Profile/ProfileButton'
-
-export default class MenuContent extends React.Component {
+export default class EditDispoContent extends React.Component {
 
 constructor() {
     super();

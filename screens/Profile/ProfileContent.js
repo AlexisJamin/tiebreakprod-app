@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} from 'react-native'
 import { Font } from 'expo'
 import Svg,{
     Circle,
@@ -17,13 +17,14 @@ import Svg,{
     Defs,
     Stop
 } from 'react-native-svg'
+import { connect } from 'react-redux';
+import { Actions } from 'react-native-router-flux'
 
 
 import ProfileContentClubs from './ProfileContentClubs'
 import ProfileContentClubsBullets from './ProfileContentClubsBullets'
 import ProfileContentDispo from './ProfileContentDispo'
 
-import { connect } from 'react-redux';
 
 
 function mapStateToProps(store) {
@@ -33,8 +34,10 @@ function mapStateToProps(store) {
 
 class ProfileContent extends React.Component {
 
-constructor() {
-    super();
+constructor(props) {
+    super(props);
+    console.log('constructor Profile Content')
+    console.log(props);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -56,7 +59,7 @@ constructor() {
 
 
   render() {
-    if (this.props.userClub == undefined) {
+    if (this.props.userClub.length == 0) {
     var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
     } else {
     var clubList = [];
@@ -70,7 +73,7 @@ constructor() {
       clubListBullets.push(<ProfileContentClubsBullets/>)
     }
   }
-    if (this.props.user.availability == undefined) {
+    if (this.props.user.availability.length == 0) {
     var newUserDispo = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
     } else {
     var dayList = [];
@@ -119,7 +122,9 @@ constructor() {
              ) : null 
             }
             </View>
+            <TouchableWithoutFeedback onPress={Actions.editProfile} >
             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+            </TouchableWithoutFeedback>
           
           </View>
 

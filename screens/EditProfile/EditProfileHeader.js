@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo';
+import { Actions } from 'react-native-router-flux'
 
 
-export default class HomeHeader extends Component {
+export default class EditProfileHeader extends Component {
 
 	constructor() {
 		super();
@@ -32,11 +33,13 @@ export default class HomeHeader extends Component {
         top: 40,
         }}>
 
-       <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} /> 
+       <TouchableWithoutFeedback onPress={Actions.pop}>
+       <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
+       </TouchableWithoutFeedback> 
        {
-        this.state.fontLoaded ? (<Text style={styles.title}> Éditer les disponibilités </Text> ) : null 
+        this.state.fontLoaded ? (<Text style={styles.title}> Éditer le profil </Text> ) : null 
        }
-       <Image source={require('../../assets/icons/General/Save.imageset/icValidate.png')} />
+       <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
        
        </View>
        
