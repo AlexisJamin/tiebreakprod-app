@@ -1,11 +1,7 @@
 import { combineReducers } from 'redux';
 
-import routeReducer from './route-reducer';
-import userReducer from './user-reducer';
-import userClubReducer from './user-reducer';
+import route from './route-reducer';
+import user from './user-reducer';
+import userClub from './userClub-reducer';
 
-export default combineReducers({
-    route: routeReducer,
-    user: userReducer,
-    userClub: userClubReducer,
-});
+export default combineReducers({user, userClub, route});

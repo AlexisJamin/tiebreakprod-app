@@ -71,13 +71,15 @@ const navigator = Actions.create(
         );
  
 function mapStateToProps(store) {
-  return { state: store.route }
+  return { store: store.route }
 }
 
-const ReduxRouter = connect(mapStateToProps, null)(Router);
 // it is important to load reducers AFTER actions.create (so no import here)
 const reducers = require('./combine-reducer').default;
 
+const ReduxRouter = connect(mapStateToProps, null)(Router);
+
+var store = createStore(reducers);
 
 
   export default class App extends React.Component {
@@ -86,7 +88,7 @@ const reducers = require('./combine-reducer').default;
    
     return (
         
-      <Provider store={createStore(reducers)}>
+      <Provider store={store}>
     	<ReduxRouter navigator={navigator} />
       </Provider>
 

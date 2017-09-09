@@ -63,7 +63,6 @@ constructor(props) {
     var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
     } else {
     var clubList = [];
-     console.log(this.props.userClub);
     for (var i = 0; i < this.props.userClub.length; i++) {
       clubList.push(<ProfileContentClubs clubName = {this.props.userClub[i]} />)
     }

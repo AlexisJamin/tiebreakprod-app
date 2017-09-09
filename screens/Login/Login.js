@@ -77,6 +77,7 @@ constructor(props) {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
+                      console.log(clubName);
                       login.props.userClub(clubName)
                     },
                     error: function(object, error) {

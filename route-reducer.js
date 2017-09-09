@@ -10,6 +10,9 @@ export default (state, action) => {
           return defaultReducer(state, action);
 
       default:
-        return defaultReducer(state, action);
+        var nono = defaultReducer(state, action);
+        console.log('nono');
+        console.log(nono);
+        return nono;
   }
 }

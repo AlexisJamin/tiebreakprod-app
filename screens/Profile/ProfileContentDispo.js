@@ -37,7 +37,6 @@ constructor() {
   render() {
 
         var hoursList = [];
-        console.log(this.props.hours);
         for (var i = 0; i < this.props.hours.length; i++) {
         hoursList.push(<ProfileContentDispoHours hours = {this.props.hours[i]} />)
         }

@@ -42,9 +42,9 @@ function mapStateToProps(store) {
 class EditProfileContent extends React.Component {
 
 constructor(props) {
+    super(props);
     console.log("constructor Edit Profile");
     console.log(props);
-    super(props);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -57,6 +57,7 @@ constructor(props) {
       availability:this.props.user.availability,
       userId:this.props.user.userId,
     };
+    console.log(this.state);
   }
 
   async componentDidMount() {
@@ -75,6 +76,7 @@ constructor(props) {
     var user = new Parse.User();
     user.save(null, {
       success: function(user) {
+        console.log('save success');
         // Now let's update it with some new data. In this case, only cheatMode and score
         // will get sent to the cloud. playerName hasn't changed.
         user.set("firstName", validate.state.firstName);
@@ -84,6 +86,8 @@ constructor(props) {
         user.set("style", validate.state.style);
         user.set("gender", validate.state.gender);
         user.save();
+
+        console.log("save success 2");
 
         validate.props.user({
                 lastName:validate.state.lastName,
@@ -95,6 +99,9 @@ constructor(props) {
                 availability:validate.state.availability,
                 userId:validate.state.userId,
               })
+
+        console.log('envoie au reducer user ok');
+
       Actions.profile();
       }
     });
@@ -134,8 +141,7 @@ constructor(props) {
             keyboardType="default"
             returnKeyType='next'
             autoCorrect='false'
-            placeholder='Prénom'
-            defaultValue={this.props.user.firstName}
+            defaultValue={this.state.firstName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
             blurOnSubmit={false}
@@ -148,8 +154,7 @@ constructor(props) {
             keyboardType="default"
             returnKeyType='next'
             autoCorrect='false'
-            placeholder='Nom'
-            defaultValue={this.props.user.lastName}
+            value={this.state.lastName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
             blurOnSubmit={false}

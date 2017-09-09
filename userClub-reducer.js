@@ -1,6 +1,7 @@
-export default function userClub(store, action) {
+export default function userClub(store=[], action) {
   if(action.type == 'userClub') {
-    return store.unshift(action.value);
+  	store.unshift(action.value);
+    return store;
   } else {
     return store;
   }
