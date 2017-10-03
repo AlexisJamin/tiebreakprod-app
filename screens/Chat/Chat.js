@@ -26,7 +26,7 @@ export default class Chat extends React.Component {
       </View>
 
           <View style={{height:80}}>
-           <ChatHeader/>
+           <ChatHeader navigation={this.props.navigation}/>
           </View>
         
 

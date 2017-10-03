@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, View, Image, Text, TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Font } from 'expo'
-import { Facebook } from 'expo'
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
@@ -29,13 +28,15 @@ Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 function mapDispatchToProps(dispatch) {
   return {
-        user: function(value) { 
+        handleSubmit: function(value) { 
         dispatch( {type: 'user', value: value} ) 
     }
   }
 }
 
 function mapStateToProps(store) {
+    console.log('mapStateToProps EditProfile');
+  console.log(store.user);
   return { user: store.user, userClub: store.userClub }
 }
 
@@ -43,8 +44,6 @@ class EditProfileContent extends React.Component {
 
 constructor(props) {
     super(props);
-    console.log("constructor Edit Profile");
-    console.log(props);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -57,10 +56,11 @@ constructor(props) {
       availability:this.props.user.availability,
       userId:this.props.user.userId,
     };
-    console.log(this.state);
+    
   }
 
   async componentDidMount() {
+
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
       'Avenir': require('../../assets/fonts/Avenir.ttf'),
@@ -72,6 +72,7 @@ constructor(props) {
   }
 
   _onPressValidateButton() {
+    console.log("validate button ok");
     var validate = this;
     var user = new Parse.User();
     user.save(null, {
@@ -89,7 +90,7 @@ constructor(props) {
 
         console.log("save success 2");
 
-        validate.props.user({
+        validate.props.handleSubmit({
                 lastName:validate.state.lastName,
                 firstName:validate.state.firstName,
                 style:validate.state.style,
@@ -102,10 +103,11 @@ constructor(props) {
 
         console.log('envoie au reducer user ok');
 
-      Actions.profile();
+      this.props.navigation.goBack()
       }
     });
   }
+
 
   render() {
 
@@ -166,7 +168,8 @@ constructor(props) {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue='genre' 
+          defaultValue='genre'
+          defaultIndex= {this.state.genre}
           options={['male', 'female']}
           onSelect={(genre) => this.setState({genre})}
           />

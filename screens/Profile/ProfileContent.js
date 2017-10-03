@@ -18,7 +18,7 @@ import Svg,{
     Stop
 } from 'react-native-svg'
 import { connect } from 'react-redux';
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 
 
 import ProfileContentClubs from './ProfileContentClubs'
@@ -28,6 +28,7 @@ import ProfileContentDispo from './ProfileContentDispo'
 
 
 function mapStateToProps(store) {
+
   return { user: store.user, userClub: store.userClub }
 }
 
@@ -121,7 +122,7 @@ constructor(props) {
              ) : null 
             }
             </View>
-            <TouchableWithoutFeedback onPress={Actions.editProfile} >
+            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('EditProfile')} >
             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
             </TouchableWithoutFeedback>
           

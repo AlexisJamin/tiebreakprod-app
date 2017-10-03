@@ -31,11 +31,11 @@ export default class EditProfile extends React.Component {
       </View>
  
             <View style={{height:120}}>
-            <EditProfileHeader/>
+            <EditProfileHeader navigation={this.props.navigation}/>
             </View>
 
              <View style={{flex: 4}}>
-            <EditProfileContent/>
+            <EditProfileContent navigation={this.props.navigation}/>
             </View>
 
       </View>

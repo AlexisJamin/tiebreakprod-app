@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo'
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 
 
 export default class ChatHeader extends Component {
@@ -21,7 +20,7 @@ export default class ChatHeader extends Component {
           top: 40,
          }}>
 
-            <TouchableWithoutFeedback onPress={Actions.home}>
+            <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
              <Image source={require('../../assets/icons/Menu/Home.imageset/ic_white_ball_header.png')} />
             </TouchableWithoutFeedback>
        

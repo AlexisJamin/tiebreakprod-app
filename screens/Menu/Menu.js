@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 import { Parse } from 'parse/react-native'
 
 import MenuHeader from './MenuHeader'
@@ -11,12 +11,23 @@ Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 export default class Home extends React.Component {
 
+  constructor() {
+    super();
+    this._onPressLogOutButton = this._onPressLogOutButton.bind(this);
+  }
+
   _onPressLogOutButton() {
     console.log("déconnecté !");
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
     });
-    Actions.logIn();
+    const resetAction = NavigationActions.reset({
+      index: 0, 
+      actions: [
+      NavigationActions.navigate({ routeName: 'Login'})
+      ]
+    });
+    this.props.navigation.dispatch(resetAction);
   }
 
 
@@ -41,11 +52,11 @@ export default class Home extends React.Component {
       </View>
           
           <View style={{height:120}}>
-          <MenuHeader/>
+          <MenuHeader navigation={this.props.navigation}/>
           </View>
 
           <View style={{flex: 1, marginBottom: 70}}>
-          <MenuContent/>
+          <MenuContent navigation={this.props.navigation}/>
           </View>
 
 

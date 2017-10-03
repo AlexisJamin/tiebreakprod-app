@@ -30,7 +30,7 @@ import Calendar from './screens/Calendar/Calendar'
 import Community from './screens/Community/Community'
 import Login from './screens/Login/Login'
 import SignIn from './screens/SignIn/SignIn'
-import EditDispo from './screens/EditProfile/EditDispo'
+import EditDispo from './screens/EditDispo/EditDispo'
 import EditProfile from './screens/EditProfile/EditProfile'
 import Info from './screens/Info/Info'
 import HomeHeader from './screens/Home/HomeHeader'
@@ -63,6 +63,10 @@ const Navigator = StackNavigator({
         Login: { screen: Login },
         Home: { screen: Home },
         SignIn: { screen: SignIn },
+        Menu: { screen: Menu },
+        Chat: { screen: Chat },
+        Profile: { screen: Profile },
+        EditProfile: { screen: EditProfile },
         }, { 
         headerMode: 'none' 
         }, );

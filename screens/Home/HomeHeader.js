@@ -19,7 +19,7 @@ export default class HomeHeader extends Component {
   }
   
   render() {
-
+    const {navigate} = this.props.navigation;
     return (
 
        
@@ -32,13 +32,13 @@ export default class HomeHeader extends Component {
         top: 40,
         }}>
 
-       		<TouchableWithoutFeedback onPress={Actions.menu}>
+       		<TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Menu')}>
           <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
           </TouchableWithoutFeedback>
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }
-       <TouchableWithoutFeedback onPress={Actions.chat}>
+       <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Chat')}>
        <Image source={require('../../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
        </TouchableWithoutFeedback>
        

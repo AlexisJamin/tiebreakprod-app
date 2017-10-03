@@ -29,10 +29,10 @@ export default class Profile extends React.Component {
       </View>
 
           <View style={{height:80, marginBottom:60}}>
-           <ProfileHeader/>
+           <ProfileHeader navigation={this.props.navigation}/>
           </View>
 
-          <ProfileContent/>
+          <ProfileContent navigation={this.props.navigation}/>
         
 
         </View>

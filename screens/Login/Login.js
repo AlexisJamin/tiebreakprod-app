@@ -93,7 +93,7 @@ constructor(props) {
          }); 
            console.log('ET want to go home');
            //console.log(this.props);
-    this.props.navigation.navigate("Home");
+    login.props.navigation.navigate("Home");
    },
    error: function(user, error) {
     console.log("pas trouvé")
@@ -153,6 +153,7 @@ constructor(props) {
 
 
   render() {
+
     return (
 
 

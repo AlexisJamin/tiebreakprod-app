@@ -11,7 +11,7 @@ Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 function mapDispatchToProps(dispatch) {
   return {
-        user: function(value) { 
+        handleSubmit: function(value) { 
         dispatch( {type: 'user', value: value} ) 
     }
   }
@@ -69,7 +69,7 @@ class SignIn extends React.Component {
               console.log("signUp ok");
               var userId= user.id;
               
-              signin.props.user({
+              signin.props.handleSubmit({
                 lastName:signin.state.lastName,
                 firstName:signin.state.firstName,
                 style:'à compléter',
@@ -141,7 +141,7 @@ class SignIn extends React.Component {
 
 
   render() {
-    const { navigate } = this.props.navigation;
+
     return (
 
 

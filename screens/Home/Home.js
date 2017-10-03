@@ -47,7 +47,7 @@ export default class Home extends React.Component {
 
  
             <View style={{height:120}}>
-            <HomeHeader/>
+            <HomeHeader navigation={this.props.navigation}/>
             </View>
 
       <View style={{flex:1, justifyContent:'space-around', marginBottom:150}}>

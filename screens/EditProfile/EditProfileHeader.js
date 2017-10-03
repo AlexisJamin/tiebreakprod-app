@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo';
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 
 
 export default class EditProfileHeader extends Component {
@@ -33,7 +32,7 @@ export default class EditProfileHeader extends Component {
         top: 40,
         }}>
 
-       <TouchableWithoutFeedback onPress={Actions.pop}>
+       <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
        <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
        </TouchableWithoutFeedback> 
        {
