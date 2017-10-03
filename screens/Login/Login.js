@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Facebook } from 'expo'
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
@@ -27,6 +27,7 @@ class Login extends React.Component {
 constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
+    this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false
@@ -90,7 +91,9 @@ constructor(props) {
               // The object was not retrieved successfully.
           }
          }); 
-    Actions.home();
+           console.log('ET want to go home');
+           //console.log(this.props);
+    this.props.navigation.navigate("Home");
    },
    error: function(user, error) {
     console.log("pas trouvé")
@@ -143,7 +146,8 @@ constructor(props) {
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
     });
-    Actions.signIn();
+    //dispatch(NavigationActions.navigate({ routeName: 'SignIn' }));
+    this.props.navigation.navigate("SignIn");
   }
 
 

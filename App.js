@@ -17,7 +17,7 @@ import Svg,{
     Defs,
     Stop
 } from 'react-native-svg'
-import { Router, Scene, Actions } from 'react-native-router-flux';
+import { StackNavigator, addNavigationHelpers } from 'react-navigation';
 import { Parse } from 'parse/react-native'
 import { connect, Provider } from 'react-redux';
 import { createStore } from 'redux'
@@ -35,67 +35,49 @@ import EditProfile from './screens/EditProfile/EditProfile'
 import Info from './screens/Info/Info'
 import HomeHeader from './screens/Home/HomeHeader'
 
-
-
-const navigator = Actions.create(
-     <Scene key="root">
-        <Scene key="logIn" 
-          component={Login} 
-          initial={true}
-          hideNavBar={true}/>
-          <Scene 
-          key="signIn" 
-          component={SignIn} 
-          hideNavBar={true}/>
-          <Scene 
-          key="home" 
-          component={Home} 
-          hideNavBar={true}/>
-          <Scene
-          key="menu" 
-          component={Menu} 
-          hideNavBar={true}/>
-          <Scene
-          key="profile" 
-          component={Profile} 
-          hideNavBar={true}/>
-          <Scene 
-          key="editProfile" 
-          component={EditProfile} 
-          hideNavBar={true}/>
-          <Scene 
-          key="chat" 
-          component={Chat} 
-          hideNavBar={true}/>
-        </Scene>
-        );
  
-function mapStateToProps(store) {
-  return { store: store.route }
+
+
+/* function AppWithNavigationState(dispatch, nav) {
+  return { <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} /> }
 }
 
-// it is important to load reducers AFTER actions.create (so no import here)
-const reducers = require('./combine-reducer').default;
+AppWithNavigationState.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  nav: PropTypes.object.isRequired,
+};
 
-const ReduxRouter = connect(mapStateToProps, null)(Router);
+function mapStateToProps(store) {
+  return { nav: store.nav }
+} 
+
+
+export default connect(mapStateToProps)(AppWithNavigationState);
+*/
+
+const reducers = require('./combine-reducer').default;
 
 var store = createStore(reducers);
 
+const Navigator = StackNavigator({
+        Login: { screen: Login },
+        Home: { screen: Home },
+        SignIn: { screen: SignIn },
+        }, { 
+        headerMode: 'none' 
+        }, );
 
-  export default class App extends React.Component {
-    
-    render() {
-   
+export default class App extends React.Component {
+  render() {
     return (
-        
       <Provider store={store}>
-    	<ReduxRouter navigator={navigator} />
+        <Navigator/>
       </Provider>
-
-         
     );
   }
 }
+
+
 
 
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Facebook } from 'expo'
-import { Actions } from 'react-native-router-flux'
+import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
@@ -80,7 +80,7 @@ class SignIn extends React.Component {
                 userId:userId,
               })
               
-              Actions.home();
+              //this.props.navigation.navigate("Home");
             },
             error: function(user, error) {
               // Show the error message somewhere and let the user try again.
@@ -141,6 +141,7 @@ class SignIn extends React.Component {
 
 
   render() {
+    const { navigate } = this.props.navigation;
     return (
 
 
@@ -159,7 +160,7 @@ class SignIn extends React.Component {
            }}>
 
 
-           <TouchableWithoutFeedback onPress={Actions.logIn}>
+           <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
            <Image source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
           </TouchableWithoutFeedback> 
 
