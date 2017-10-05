@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import { Font } from 'expo'
+import { NavigationActions } from 'react-navigation'
 
 
 export default class CommunityHeader extends Component {
@@ -22,15 +22,18 @@ export default class CommunityHeader extends Component {
 
     return (
 
-       <Image style={{flex:1, width:null, height:null, resizeMode: 'cover'}} source={require('../../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
+       <Image style={{flex:1, width:null, height:null, resizeMode: 'stretch'}} source={require('../../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
        
          <View style={{
+          flex:1,
           flexDirection: 'row',
           justifyContent: 'space-around',
-          top: 70,
+          top: 40,
         }}>
 
+             <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
              <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
+             </TouchableWithoutFeedback>
        
              {
         this.state.fontLoaded ? (<Text style={styles.title}> Communauté </Text> ) : null 

@@ -1,11 +1,11 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Image } from 'react-native'
+import { NavigationActions } from 'react-navigation'
 
 import ProfileHeader from './ProfileHeader'
 import ProfileButton from './ProfileButton'
 import ProfileContent from './ProfileContent'
-
-
+import ProfilePreferences from './ProfilePreferences'
 
 
 export default class Profile extends React.Component {
@@ -23,7 +23,7 @@ export default class Profile extends React.Component {
       }}>
   
           <View style={{flex:1, alignItems:'stretch'}}>
-          <ProfileButton/>
+          <ProfileButton selectedIndex={this.props.navigation.state.params.selectedIndex}/>
         </View>
 
       </View>
@@ -32,7 +32,7 @@ export default class Profile extends React.Component {
            <ProfileHeader navigation={this.props.navigation}/>
           </View>
 
-          <ProfileContent navigation={this.props.navigation}/>
+          <ProfilePreferences navigation={this.props.navigation}/>
         
 
         </View>
@@ -42,26 +42,3 @@ export default class Profile extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  title: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'AvenirNext',
-    fontSize: 13,
-    paddingTop: 2,
-    alignItem:'center', 
-    justifyContent: 'center',
-  },
-  subtitle: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 12,
-    paddingTop: 2,
-    alignItem:'center', 
-    justifyContent: 'center',
-  },
-});
-
-

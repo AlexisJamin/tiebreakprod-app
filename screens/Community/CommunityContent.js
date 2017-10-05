@@ -1,6 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
-import { List, ListItem, ListView } from 'react-native-elements'
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native'
+import { List, ListItem } from 'react-native-elements'
 
 
 const list = [
@@ -74,54 +74,58 @@ const list = [
 
 export default class CommunityContent extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      list: list,
+    };
+  }
+
+
 
 render () {
   return (
 
-    <View style={{flex:1}}>
+    <View style={{flex:1, backgroundColor:'white'}}>
 
-        <ScrollView>
-
-    <List containerStyle={{marginBottom: 20}}>
-    {
-    list.map((l, i) => (
-      <ListItem
-        avatarStyle={{width:50, height:50, borderRadius:25, borderWidth:1, borderColor:'white'}}
-        avatarContainerStyle={{top:12, marginLeft:10}}
-        titleContainerStyle={{marginLeft:10}}
-        subtitleContainerStyle={{marginLeft:10, width:300}}
-        hideChevron='true'
-        avatar={{uri:l.avatar_url}}
-        key={i}
-        title={
-        	<View style={styles.titleView}>
-        	<Text style={styles.ratingText}>{l.name}</Text>
-        	</View>
-        }
-        subtitle={
-        	<View style={styles.subtitleView}>
-        	<Text style={styles.ratingText}>{l.dispo} disponibilités en commun</Text>
-        	<Text style={styles.ratingText}>{l.geo} km</Text>
-        	</View>
-        }
-        rightTitle={
-        	<View style={styles.imageView}>
-        	  <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} style={styles.ratingImage}/>
-        	    <View style={{alignItems:'center'}}>
-        	      <Text style={styles.ratingLevel}>{l.level}</Text>
-        	      <Text style={styles.ratingLevel}>({l.bestLevel})</Text>
-        	    </View>
-        	</View>
-        }
+    <List>
+      <FlatList
+      data={this.state.list}
+      renderItem={({ item }) => (
+        <ListItem
+          avatarStyle={{width:50, height:50, borderRadius:25, borderWidth:1, borderColor:'white'}}
+          avatarContainerStyle={{top:12, marginLeft:10}}
+          titleContainerStyle={{marginLeft:10}}
+          subtitleContainerStyle={{marginLeft:10, width:300}}
+          hideChevron='true'
+          avatar={{uri:item.avatar_url}}
+          title={
+          	<View style={styles.titleView}>
+          	<Text style={styles.ratingText}>{item.name}</Text>
+          	</View>
+          }
+          subtitle={
+          	<View style={styles.subtitleView}>
+          	<Text style={styles.ratingText}>{item.dispo} disponibilités en commun</Text>
+          	<Text style={styles.ratingText}>{item.geo} km</Text>
+          	</View>
+          }
+          rightTitle={
+          	<View style={styles.imageView}>
+          	  <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} style={styles.ratingImage}/>
+          	    <View style={{alignItems:'center'}}>
+          	      <Text style={styles.ratingLevel}>{item.level}</Text>
+          	      <Text style={styles.ratingLevel}>({item.bestLevel})</Text>
+          	    </View>
+          	</View>
+          }
+        />
+      )}
       />
-       ))
-      }
     </List>
 
-    </ScrollView>
-
            
-        </View>
+    </View>
            
 
     );
@@ -134,6 +138,14 @@ styles = StyleSheet.create({
     paddingLeft: 10,
     paddingTop: 5
   },
+  searchBar: {
+  paddingLeft: 30,
+  fontSize: 16,
+  maxHeight: 50,
+  flex: .1,
+  borderWidth: 9,
+  borderColor: '#E4E4E4',
+},
   subtitleView: {
     flexDirection: 'column',
     paddingLeft: 10,

@@ -291,7 +291,8 @@ const styles = StyleSheet.create({
     borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
-    marginTop:20, 
+    marginTop:20,
+    paddingLeft: 10, 
   },
   title: {
     color: 'black',

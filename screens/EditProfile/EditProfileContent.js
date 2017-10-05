@@ -6,22 +6,6 @@ import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
 import ModalDropdown from 'react-native-modal-dropdown';
-import Svg,{
-    Circle,
-    Ellipse,
-    G,
-    LinearGradient,
-    RadialGradient,
-    Line,
-    Path,
-    Polygon,
-    Polyline,
-    Rect,
-    Symbol,
-    Use,
-    Defs,
-    Stop
-} from 'react-native-svg'
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
@@ -35,8 +19,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(store) {
-    console.log('mapStateToProps EditProfile');
-  console.log(store.user);
   return { user: store.user, userClub: store.userClub }
 }
 
@@ -44,6 +26,9 @@ class EditProfileContent extends React.Component {
 
 constructor(props) {
     super(props);
+    this._onPressValidateButton = this._onPressValidateButton.bind(this);
+    this.handleSubmitCurrentLevel = this.handleSubmitCurrentLevel.bind(this);
+    this.handleSubmitHighestLevel = this.handleSubmitHighestLevel.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -56,7 +41,8 @@ constructor(props) {
       availability:this.props.user.availability,
       userId:this.props.user.userId,
     };
-    
+        console.log("Edit Profile Content");
+        console.log(this.state);
   }
 
   async componentDidMount() {
@@ -72,40 +58,38 @@ constructor(props) {
   }
 
   _onPressValidateButton() {
-    console.log("validate button ok");
-    var validate = this;
-    var user = new Parse.User();
-    user.save(null, {
-      success: function(user) {
-        console.log('save success');
-        // Now let's update it with some new data. In this case, only cheatMode and score
-        // will get sent to the cloud. playerName hasn't changed.
-        user.set("firstName", validate.state.firstName);
-        user.set("lastName", validate.state.lastName);
-        user.set("currentLevel", validate.state.currentLevel);
-        user.set("highestLevel", validate.state.highestLevel);
-        user.set("style", validate.state.style);
-        user.set("gender", validate.state.gender);
-        user.save();
 
-        console.log("save success 2");
+    var user = Parse.User.current();
+    user.set("firstName", this.state.firstName);
+    user.set("lastName", this.state.lastName);
+    user.set("currentLevel", this.state.currentLevel);
+    user.set("highestLevel", this.state.highestLevel);
+    user.set("style", this.state.style);
+    user.set("gender", this.state.gender);
+    user.save();
 
-        validate.props.handleSubmit({
-                lastName:validate.state.lastName,
-                firstName:validate.state.firstName,
-                style:validate.state.style,
-                gender:validate.state.gender,
-                currentLevel:validate.state.currentLevel,
-                highestLevel:validate.state.highestLevel,
-                availability:validate.state.availability,
-                userId:validate.state.userId,
+        this.props.handleSubmit({
+                lastName:this.state.lastName,
+                firstName:this.state.firstName,
+                style:this.state.style,
+                gender:this.state.gender,
+                currentLevel:this.state.currentLevel,
+                highestLevel:this.state.highestLevel,
+                availability:this.state.availability,
               })
 
-        console.log('envoie au reducer user ok');
+      this.props.navigation.goBack();
+     
+  }
 
-      this.props.navigation.goBack()
-      }
-    });
+  handleSubmitCurrentLevel(index, currentLevel) {
+    var currentLevelInt = parseInt(currentLevel);
+    this.setState(currentLevel:currentLevelInt);
+  }
+
+  handleSubmitHighestLevel(index, highestLevel) {
+    var highestLevelInt = parseInt(highestLevel);
+    this.setState(highestLevel:highestLevelInt);
   }
 
 
@@ -169,9 +153,18 @@ constructor(props) {
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
           defaultValue='genre'
-          defaultIndex= {this.state.genre}
           options={['male', 'female']}
-          onSelect={(genre) => this.setState({genre})}
+          onSelect={(index, genre) => this.setState({genre})}
+          />
+
+          <ModalDropdown 
+          style={styles.input} 
+          dropdownStyle={styles.modalDrop} 
+          textStyle={styles.text}
+          dropdownTextStyle={styles.text}
+          defaultValue='style'
+          options={['left', 'right']}
+          onSelect={(index, style) => this.setState({style})}
           />
 
            <ModalDropdown 
@@ -181,7 +174,7 @@ constructor(props) {
           dropdownTextStyle={styles.text}
           defaultValue='currentLevel' 
           options={level}
-          onSelect={(currentLevel) => this.setState({currentLevel})}
+          onSelect={this.handleSubmitCurrentLevel} 
           />
 
           <ModalDropdown 
@@ -191,7 +184,7 @@ constructor(props) {
           dropdownTextStyle={styles.text}
           defaultValue='highestLevel' 
           options={level}
-          onSelect={(highestLevel) => this.setState({highestLevel})}
+          onSelect={this.handleSubmitHighestLevel} 
           />
 
           <TouchableWithoutFeedback onPress={this._onPressValidateButton}>

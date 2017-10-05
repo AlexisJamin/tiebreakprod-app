@@ -1,20 +1,19 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
 import { ButtonGroup } from 'react-native-elements'
-
 import { Font } from 'expo';
 
-import ProfileContent from './ProfileContent'
+
 
 export default class ProfileButton extends React.Component {
 
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
+    this.updateIndex = this.updateIndex.bind(this);
     this.state = {
-      selectedIndex: 2,
+      selectedIndex: this.props.selectedIndex,
       fontLoaded: false
     }
-    this.updateIndex = this.updateIndex.bind(this)
   }  
 
   async componentDidMount() {
@@ -35,9 +34,7 @@ export default class ProfileButton extends React.Component {
 
     return (
 
-    	 
-
-     
+ 
       <ButtonGroup 
       onPress={this.updateIndex}
       selectedIndex={selectedIndex}
@@ -47,9 +44,7 @@ export default class ProfileButton extends React.Component {
       selectedTextStyle={styles.subtitle}
       containerStyle={styles.container}/>
 
-
       
-        
     );
   }
 }

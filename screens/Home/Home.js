@@ -86,7 +86,7 @@ export default class Home extends React.Component {
         <View style={{
         alignItems: 'stretch',
          }}>
-            <TouchableWithoutFeedback onPress={this._onPressLogOutButton}>
+            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Community', {selectedIndex: 0})}>
             <Text style={styles.buttonLogIn}>Trouver des amis</Text>
             </TouchableWithoutFeedback>
         </View>

@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   buttonLogIn: {
     backgroundColor: 'rgba(0,0,0,0.2)',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     lineHeight: 30,
     textAlign: 'center',
     overflow:'hidden', 

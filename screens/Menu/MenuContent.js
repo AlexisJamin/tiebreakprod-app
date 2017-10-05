@@ -34,7 +34,7 @@ constructor() {
     	}}>
 
     	  <View style={{flex: 10, top: -25}}>
-          <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Profile')} >
+          <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Profile', {selectedIndex: 0})} >
           <Svg height={100} width={100}>
             <Svg.Circle
               cx={50}
@@ -50,7 +50,7 @@ constructor() {
           
           <View style={{flex: 1, top: -10}}>
             {
-        this.state.fontAvenirNextLoaded ? (<Text onPress={() => this.props.navigation.navigate('Profile')} style={styles.title}> MON PROFIL </Text>) : null 
+        this.state.fontAvenirNextLoaded ? (<Text onPress={() => this.props.navigation.navigate('Profile', {selectedIndex: 0})} style={styles.title}> MON PROFIL </Text>) : null 
           }
           </View>
 
@@ -70,7 +70,7 @@ constructor() {
 
            <View style={{flex: 1, paddingTop: 10}}>
             {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> MES AMIS </Text>) : null 
+        this.state.fontAvenirLoaded ? (<Text onPress={() => this.props.navigation.navigate('Community', {selectedIndex: 1})} style={styles.subtitle}> MES AMIS </Text>) : null 
           }
           </View>
 
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 12,
+    fontWeight:'800',
     paddingTop: 2,
     alignItem:'center', 
     justifyContent: 'center',

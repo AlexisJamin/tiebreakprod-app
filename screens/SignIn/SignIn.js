@@ -305,6 +305,7 @@ const styles = StyleSheet.create({
     overflow:'hidden', 
     borderRadius:5,
     marginTop:20, 
+    paddingLeft: 10,
   },
   title: {
     color: 'black',

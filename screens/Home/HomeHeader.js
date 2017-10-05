@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Font } from 'expo'
-import { Actions } from 'react-native-router-flux'
 
 
 export default class HomeHeader extends Component {
@@ -19,7 +18,7 @@ export default class HomeHeader extends Component {
   }
   
   render() {
-    const {navigate} = this.props.navigation;
+
     return (
 
        

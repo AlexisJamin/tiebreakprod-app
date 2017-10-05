@@ -10,7 +10,7 @@ export default class ChatButton extends React.Component {
   constructor () {
     super()
     this.state = {
-      selectedIndex: 2,
+      selectedIndex: 0,
       fontLoaded: false
     }
     this.updateIndex = this.updateIndex.bind(this)

@@ -4,7 +4,6 @@ import { Font } from 'expo'
 import { NavigationActions } from 'react-navigation'
 
 
-
 export default class ProfileHeader extends Component {
 
   constructor() {
@@ -24,6 +23,7 @@ export default class ProfileHeader extends Component {
     return (
 
         <Image style={{flex:1, width:null, height:null, resizeMode: 'stretch'}} source={require('../../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')}>
+        
         <View style={{
           flex:1,
           flexDirection: 'row',
@@ -41,11 +41,7 @@ export default class ProfileHeader extends Component {
 
          </View>
         </Image>
-
-
-  
-
-      
+    
     );
   }
 }

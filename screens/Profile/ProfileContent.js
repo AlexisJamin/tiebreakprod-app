@@ -3,19 +3,7 @@ import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} f
 import { Font } from 'expo'
 import Svg,{
     Circle,
-    Ellipse,
-    G,
-    LinearGradient,
-    RadialGradient,
     Line,
-    Path,
-    Polygon,
-    Polyline,
-    Rect,
-    Symbol,
-    Use,
-    Defs,
-    Stop
 } from 'react-native-svg'
 import { connect } from 'react-redux';
 import { NavigationActions } from 'react-navigation'
@@ -37,8 +25,6 @@ class ProfileContent extends React.Component {
 
 constructor(props) {
     super(props);
-    console.log('constructor Profile Content')
-    console.log(props);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,

@@ -1,15 +1,16 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
 import { ButtonGroup } from 'react-native-elements'
-
 import { Font } from 'expo';
 
-export default class CommunityButton extends React.Component {
 
-  constructor () {
-    super()
+
+export default class ProfileButton extends React.Component {
+
+  constructor (props) {
+    super(props)
     this.state = {
-      selectedIndex: 2,
+      selectedIndex: this.props.selectedIndex,
       fontLoaded: false
     }
     this.updateIndex = this.updateIndex.bind(this)
@@ -28,12 +29,14 @@ export default class CommunityButton extends React.Component {
 
   render() {
 
-    const buttons = ['Communauté', 'Mes amis']
+    const buttons = ['Communauté', 'Mes Amis']
     const { selectedIndex } = this.state
 
     return (
 
-    	 
+       
+
+     
       <ButtonGroup 
       onPress={this.updateIndex}
       selectedIndex={selectedIndex}
@@ -42,6 +45,9 @@ export default class CommunityButton extends React.Component {
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
       containerStyle={styles.container}/>
+
+
+      
         
     );
   }
@@ -54,7 +60,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 15,
     textAlign: 'center',
-    top: 8,
+    top: 40,
   },
    subtitle: {
     color: 'white',
@@ -65,8 +71,9 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    height: 60,
+    height: 120,
     marginRight: 0,
     marginLeft: 0,
+    marginBottom: 0,
   },
 });

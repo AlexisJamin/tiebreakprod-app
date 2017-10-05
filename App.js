@@ -35,25 +35,6 @@ import EditProfile from './screens/EditProfile/EditProfile'
 import Info from './screens/Info/Info'
 import HomeHeader from './screens/Home/HomeHeader'
 
- 
-
-
-/* function AppWithNavigationState(dispatch, nav) {
-  return { <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} /> }
-}
-
-AppWithNavigationState.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired,
-};
-
-function mapStateToProps(store) {
-  return { nav: store.nav }
-} 
-
-
-export default connect(mapStateToProps)(AppWithNavigationState);
-*/
 
 const reducers = require('./combine-reducer').default;
 
@@ -66,6 +47,7 @@ const Navigator = StackNavigator({
         Menu: { screen: Menu },
         Chat: { screen: Chat },
         Profile: { screen: Profile },
+        Community: { screen: Community },
         EditProfile: { screen: EditProfile },
         }, { 
         headerMode: 'none' 
