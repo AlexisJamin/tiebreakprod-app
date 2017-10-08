@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from '
 import { List, ListItem } from 'react-native-elements'
 
 
-const list = [
+const data = [
   {
     name: 'Amy Farha',
     avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
@@ -76,54 +76,91 @@ export default class CommunityContent extends React.Component {
 
   constructor(props) {
     super(props);
+    this.renderSeparator = this.renderSeparator.bind(this);
+    this.renderFooter = this.renderFooter.bind(this);
     this.state = {
-      list: list,
+      data: data,
     };
   }
+
+  renderSeparator() {
+      return (<View
+        style={{
+          height: 1,
+          width: "100%",
+          backgroundColor: "#CED0CE",
+        }}
+      /> 
+      );
+  }
+
+  renderFooter() {
+    if (!this.state.loading) return null;
+
+    return (
+      <View
+        style={{
+          paddingVertical: 20,
+          borderTopWidth: 1,
+          borderColor: "#CED0CE"
+        }}
+      >
+        <ActivityIndicator animating size="large" />
+      </View>
+    );
+  };
 
 
 
 render () {
   return (
 
-    <View style={{flex:1, backgroundColor:'white'}}>
+    <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
 
-    <List>
+   <List
+   containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
+   >
       <FlatList
-      data={this.state.list}
-      renderItem={({ item }) => (
-        <ListItem
+        data={this.state.data}
+        keyExtractor={item => item.name}
+        ItemSeparatorComponent={this.renderSeparator}
+        ListFooterComponent={this.renderFooter}
+        renderItem={({ item }) => (
+          <ListItem
           avatarStyle={{width:50, height:50, borderRadius:25, borderWidth:1, borderColor:'white'}}
           avatarContainerStyle={{top:12, marginLeft:10}}
-          titleContainerStyle={{marginLeft:10}}
-          subtitleContainerStyle={{marginLeft:10, width:300}}
+          titleContainerStyle={{marginLeft:20}}
+          containerStyle={{ borderBottomWidth: 0, height:90, justifyContent: 'center' }}
+          subtitleContainerStyle={{marginLeft:20, width:300}}
+          rightTitleNumberOfLines={3}
           hideChevron='true'
           avatar={{uri:item.avatar_url}}
           title={
-          	<View style={styles.titleView}>
-          	<Text style={styles.ratingText}>{item.name}</Text>
-          	</View>
+            <View style={styles.titleView}>
+            <Text style={styles.ratingText}>{item.name}</Text>
+            </View>
           }
           subtitle={
-          	<View style={styles.subtitleView}>
-          	<Text style={styles.ratingText}>{item.dispo} disponibilités en commun</Text>
-          	<Text style={styles.ratingText}>{item.geo} km</Text>
-          	</View>
+            <View style={styles.subtitleView}>
+            <Text style={styles.ratingText}>{item.dispo} disponibilités en commun</Text>
+            <Text style={styles.ratingText}>{item.geo} km</Text>
+            </View>
           }
           rightTitle={
-          	<View style={styles.imageView}>
-          	  <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} style={styles.ratingImage}/>
-          	    <View style={{alignItems:'center'}}>
-          	      <Text style={styles.ratingLevel}>{item.level}</Text>
-          	      <Text style={styles.ratingLevel}>({item.bestLevel})</Text>
-          	    </View>
-          	</View>
+            <View style={{
+              alignItems:'center',
+              top:12,
+              width:85,
+              height:40}}>
+              <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} style={styles.ratingImage}/>
+                <Text style={styles.ratingLevel}>{item.level}</Text>
+                <Text style={styles.ratingLevel}>({item.bestLevel})</Text>
+            </View>
           }
-        />
-      )}
+          />
+        )}
       />
     </List>
-
            
     </View>
            
@@ -151,17 +188,12 @@ styles = StyleSheet.create({
     paddingLeft: 10,
   },
   imageView: {
-    flexDirection: 'column',
-    alignItems:'center',
-    top:12,
-    right:5,
     width:65,
     height:40,
   },
   ratingImage: {
     height: 15,
     width: 15,
-    marginBottom:5,
   },
   titleText: {
     paddingLeft: 10,

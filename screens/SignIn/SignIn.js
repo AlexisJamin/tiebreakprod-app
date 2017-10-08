@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
-import { Facebook } from 'expo'
+import { Facebook, Constants, ImagePicker, registerRootComponent } from 'expo'
+import Modal from 'react-native-modalbox'
 import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -25,11 +26,14 @@ class SignIn extends React.Component {
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
+      image: null,
+      uploading: false,
       firstName:'',
       lastName:'',
       username:'',
       password:'',
-      confirmPassword:''
+      confirmPassword:'',
+      picture:''
     };
   }
 
@@ -38,6 +42,8 @@ class SignIn extends React.Component {
           var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return re.test(email);
       }
+
+// Checks Form and push data to Redux
 
   _onPressSignInButton() {
     
@@ -57,6 +63,7 @@ class SignIn extends React.Component {
         if (this.state.password===this.state.confirmPassword && this.validateEmail(this.state.username)) 
         { 
           emailFormatIsFalse=false;
+
           user.set("username", this.state.username);
           user.set("password", this.state.password);
           user.set("firstName", this.state.firstName);
@@ -68,8 +75,20 @@ class SignIn extends React.Component {
               // Hooray! Let them use the app now.
               console.log("signUp ok");
               var userId= user.id;
-              
-              signin.props.handleSubmit({
+
+// Checks if the picture has been taken before uploading it
+
+              if (this.state.picture.length>0) {
+
+                var picture = new Parse.File("picture", { base64: this.state.picture });
+                var user = Parse.User.current();
+
+                picture.save().then(function() {
+                // The file has been saved to Parse.
+                user.set("picture", file);
+                user.save();
+
+                signin.props.handleSubmit({
                 lastName:signin.state.lastName,
                 firstName:signin.state.firstName,
                 style:'à compléter',
@@ -78,9 +97,26 @@ class SignIn extends React.Component {
                 highestLevel:'à compléter',
                 availability:[],
                 userId:userId,
+                picture: picture
               })
-              
-              //this.props.navigation.navigate("Home");
+
+                signin.props.navigation.navigate("Home");
+
+                }, function(error) {
+                // The file either could not be read, or could not be saved to Parse.
+                console.log('Photo non uploadée');
+                });
+              } else {
+                Alert.alert(
+                  "Vous n'avez pas ajouté de photo. Voulez-vous confirmer votre inscription ?",
+                  [
+                  {text: 'Cancel', style: 'cancel'},
+                  {text: 'OK', onPress: () => signin.signInWithoutPicture()},
+                  ],
+                  { cancelable: false }
+                  );
+                }
+
             },
             error: function(user, error) {
               // Show the error message somewhere and let the user try again.
@@ -99,6 +135,28 @@ class SignIn extends React.Component {
         Alert.alert('Veuillez compléter tous les champs');
         }
       }
+
+signInWithoutPicture() {
+
+  var signin = this;
+
+  signin.props.handleSubmit({
+    lastName:signin.state.lastName,
+    firstName:signin.state.firstName,
+    style:'à compléter',
+    gender:'à compléter',
+    currentLevel:'à compléter',
+    highestLevel:'à compléter',
+    availability:[],
+    userId:userId,
+    picture: ''
+  })
+
+  signin.props.navigation.navigate("Home");
+    
+}
+
+// FaceBook Login
 
   _handleFacebookLogin = async () => {
     try {
@@ -140,7 +198,10 @@ class SignIn extends React.Component {
   };
 
 
+
   render() {
+
+    let { image } = this.state;
 
     return (
 
@@ -162,9 +223,12 @@ class SignIn extends React.Component {
 
            <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
            <Image source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
-          </TouchableWithoutFeedback> 
+           </TouchableWithoutFeedback> 
 
+           <TouchableWithoutFeedback onPress={() => this.refs.modal.open()}>
            <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
+           </TouchableWithoutFeedback>
+
            <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
        
            </View>
@@ -263,10 +327,154 @@ class SignIn extends React.Component {
             </TouchableWithoutFeedback>
         </View>
 
+        <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
+          
+          <TouchableWithoutFeedback>
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 10}}>
+          <Text style={styles.modalTitle}>Choisir la source</Text>
+          </View>
+          </TouchableWithoutFeedback>
+
+          <TouchableWithoutFeedback onPress={this._pickImage}>
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
+          <Text style={styles.text}>Bibliothèque</Text>
+          </View>
+          </TouchableWithoutFeedback>
+
+          <TouchableWithoutFeedback onPress={this._takePhoto}>
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
+          <Text style={styles.text}>Caméra</Text>
+          </View>
+          </TouchableWithoutFeedback>
+
+          {this._maybeRenderImage()}
+          {this._maybeRenderUploadingOverlay()}
+
+          <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
+          <Text style={styles.text}>Annuler</Text>
+          </TouchableWithoutFeedback>
+        </Modal>
+
+
         </View>
 
     );
   }
+
+_maybeRenderUploadingOverlay = () => {
+    if (this.state.uploading) {
+      return (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+          ]}>
+          <ActivityIndicator color="#fff" animating size="large" />
+        </View>
+      );
+    }
+  };
+
+  _maybeRenderImage = () => {
+    let { image } = this.state;
+    if (!image) {
+      return;
+    }
+
+    return (
+      <View
+        style={{
+          marginTop: 30,
+          width: 250,
+          borderRadius: 3,
+          elevation: 2,
+          shadowColor: 'rgba(0,0,0,1)',
+          shadowOpacity: 0.2,
+          shadowOffset: { width: 4, height: 4 },
+          shadowRadius: 5,
+        }}>
+        <View
+          style={{
+            borderTopRightRadius: 3,
+            borderTopLeftRadius: 3,
+            overflow: 'hidden',
+          }}>
+          <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
+        </View>
+
+        <Text
+          onPress={this._copyToClipboard}
+          onLongPress={this._share}
+          style={{ paddingVertical: 10, paddingHorizontal: 10 }}>
+          {image}
+        </Text>
+      </View>
+    );
+  };
+
+  _share = () => {
+    Share.share({
+      message: this.state.image,
+      title: 'Check out this photo',
+      url: this.state.image,
+    });
+  };
+
+  _copyToClipboard = () => {
+    Clipboard.setString(this.state.image);
+    alert('Copied image URL to clipboard');
+  };
+
+  _takePhoto = async () => {
+    let pickerResult = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      base64: 'true'
+    });
+
+    this._handleImagePicked(pickerResult);
+  };
+
+  _pickImage = async () => {
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      base64: 'true'
+    });
+
+    this._handleImagePicked(pickerResult);
+  };
+
+  _handleImagePicked = async pickerResult => {
+    let uploadResponse, uploadResult;
+
+    try {
+      this.setState({ uploading: true });
+
+      if (!pickerResult.cancelled) {
+        uploadResponse = await uploadImageAsync(pickerResult.base64);
+        uploadResult = await uploadResponse.json();
+        this.setState({ image: uploadResult.location });
+      }
+    } catch (e) {
+      console.log({ uploadResponse });
+      console.log({ uploadResult });
+      console.log({ e });
+      alert('Action annulée');
+    } finally {
+      this.setState({ uploading: false });
+    }
+  };
+}
+
+async function uploadImageAsync(uri) {
+
+  this.setState({ picture: uri });
+
 }
 
 export default connect(null, mapDispatchToProps) (SignIn);
@@ -325,4 +533,34 @@ const styles = StyleSheet.create({
   container: {
     justifyContent:'center',
   },
+  modal: {
+    flexDirection:'column',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 250,
+    borderWidth:1, 
+    borderRadius:15,
+    width: "95%",
+    borderColor:'rgb(213,212,216)',
+    bottom:12
+  },
+  btn: {
+    margin: 10,
+    backgroundColor: "#3B5998",
+    color: "white",
+    padding: 10
+  },
+  text: {
+    color: "black",
+    fontSize: 20,
+    width:"100%",
+    textAlign:'center'
+  },
+  modalTitle: {
+    color: "grey",
+    fontStyle:"italic",
+    fontSize: 14,
+    width:"100%",
+    textAlign:'center'
+  }
 });

@@ -32,7 +32,7 @@ export default class Profile extends React.Component {
            <ProfileHeader navigation={this.props.navigation}/>
           </View>
 
-          <ProfilePreferences navigation={this.props.navigation}/>
+          <ProfileContent navigation={this.props.navigation}/>
         
 
         </View>

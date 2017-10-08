@@ -29,11 +29,11 @@ export default class Community extends React.Component {
 
         </View>
 
-          <View style={{height:80, marginBottom:120}}>
+          <View style={{height:80, marginBottom:90}}>
            <CommunityHeader navigation={this.props.navigation}/>
           </View>
 
-          <ProfilePreferences navigation={this.props.navigation}/>
+          <CommunityContent navigation={this.props.navigation}/>
         
 
       </View>

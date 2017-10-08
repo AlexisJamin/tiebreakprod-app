@@ -27,8 +27,6 @@ class EditProfileContent extends React.Component {
 constructor(props) {
     super(props);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
-    this.handleSubmitCurrentLevel = this.handleSubmitCurrentLevel.bind(this);
-    this.handleSubmitHighestLevel = this.handleSubmitHighestLevel.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -62,8 +60,8 @@ constructor(props) {
     var user = Parse.User.current();
     user.set("firstName", this.state.firstName);
     user.set("lastName", this.state.lastName);
-    user.set("currentLevel", this.state.currentLevel);
-    user.set("highestLevel", this.state.highestLevel);
+    user.set("currentLevel", parseInt(this.state.currentLevel));
+    user.set("highestLevel", parseInt(this.state.highestLevel));
     user.set("style", this.state.style);
     user.set("gender", this.state.gender);
     user.save();
@@ -82,20 +80,27 @@ constructor(props) {
      
   }
 
-  handleSubmitCurrentLevel(index, currentLevel) {
-    var currentLevelInt = parseInt(currentLevel);
-    this.setState(currentLevel:currentLevelInt);
-  }
-
-  handleSubmitHighestLevel(index, highestLevel) {
-    var highestLevelInt = parseInt(highestLevel);
-    this.setState(highestLevel:highestLevelInt);
-  }
 
 
   render() {
 
     var level = [1,2,3,4,5,6,7,8,9,10];
+    var defaultValueGender= this.state.gender;
+    if (this.state.gender === "à compléter") {
+      defaultValueGender = "gender";
+    } 
+    var defaultValueStyle= this.state.style;
+    if (this.state.style === "à compléter") {
+      defaultValueStyle = "style";
+    } 
+    var defaultValueCurrentLevel= this.state.currentLevel;
+    if (this.state.currentLevel === "à compléter") {
+      defaultValueCurrentLevel = "currentLevel";
+    } 
+    var defaultValueHighestLevel= this.state.highestLevel;
+    if (this.state.highestLevel === "à compléter") {
+      defaultValueHighestLevel = "highestLevel";
+    } 
 
 
     return (
@@ -152,9 +157,9 @@ constructor(props) {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue='genre'
+          defaultValue={defaultValueGender}
           options={['male', 'female']}
-          onSelect={(index, genre) => this.setState({genre})}
+          onSelect={(index, gender) => this.setState({gender})}
           />
 
           <ModalDropdown 
@@ -162,7 +167,7 @@ constructor(props) {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue='style'
+          defaultValue={defaultValueStyle}
           options={['left', 'right']}
           onSelect={(index, style) => this.setState({style})}
           />
@@ -172,9 +177,9 @@ constructor(props) {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue='currentLevel' 
+          defaultValue={defaultValueCurrentLevel}
           options={level}
-          onSelect={this.handleSubmitCurrentLevel} 
+          onSelect={(index, currentLevel) => this.setState({currentLevel})}
           />
 
           <ModalDropdown 
@@ -182,9 +187,9 @@ constructor(props) {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue='highestLevel' 
+          defaultValue={defaultValueHighestLevel}
           options={level}
-          onSelect={this.handleSubmitHighestLevel} 
+          onSelect={(index, highestLevel) => this.setState({highestLevel})}
           />
 
           <TouchableWithoutFeedback onPress={this._onPressValidateButton}>

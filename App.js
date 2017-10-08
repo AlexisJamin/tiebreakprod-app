@@ -42,8 +42,8 @@ var store = createStore(reducers);
 
 const Navigator = StackNavigator({
         Login: { screen: Login },
-        Home: { screen: Home },
         SignIn: { screen: SignIn },
+        Home: { screen: Home },
         Menu: { screen: Menu },
         Chat: { screen: Chat },
         Profile: { screen: Profile },

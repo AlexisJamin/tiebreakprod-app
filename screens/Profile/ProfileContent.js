@@ -5,9 +5,12 @@ import Svg,{
     Circle,
     Line,
 } from 'react-native-svg'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
+import { Parse } from 'parse/react-native'
 import { NavigationActions } from 'react-navigation'
 
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 import ProfileContentClubs from './ProfileContentClubs'
 import ProfileContentClubsBullets from './ProfileContentClubsBullets'
@@ -69,7 +72,10 @@ constructor(props) {
       }
     }
   }
-
+  
+  var user = Parse.User.current();
+  var profilePhoto = user.get("picture").url();
+  console.log(profilePhoto);
 
     return (
 
@@ -83,16 +89,11 @@ constructor(props) {
             alignItems:'center',
             marginBottom:15,
           }}>
-          <Svg height={70} width={70}>
-                <Circle
-                  cx={35}
-                  cy={35}
-                  r={35}
-                  strokeWidth={0.5}
-                  stroke="black"
-                  fill="white"
+          
+                  <Image style={{width: 60, height: 60, borderRadius: '50%'}}
+                  source={{uri: profilePhoto}}
                 />
-              </Svg> 
+
               </View>
 
           <View style={{flex:1, justifyContent: 'space-around', flexDirection: 'row'}}>
