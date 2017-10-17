@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
 import { Facebook, Constants, ImagePicker, registerRootComponent } from 'expo'
 import Modal from 'react-native-modalbox'
 import { NavigationActions } from 'react-navigation'
@@ -78,14 +78,15 @@ class SignIn extends React.Component {
 
 // Checks if the picture has been taken before uploading it
 
-              if (this.state.picture.length>0) {
+              if (signin.state.picture.length>0) {
 
-                var picture = new Parse.File("picture", { base64: this.state.picture });
+                var picture = new Parse.File("picture.bin", { base64: signin.state.picture });
+
                 var user = Parse.User.current();
 
                 picture.save().then(function() {
                 // The file has been saved to Parse.
-                user.set("picture", file);
+                user.set("picture", picture);
                 user.save();
 
                 signin.props.handleSubmit({
@@ -97,10 +98,11 @@ class SignIn extends React.Component {
                 highestLevel:'à compléter',
                 availability:[],
                 userId:userId,
-                picture: picture
+                picture: picture.url()
               })
 
-                signin.props.navigation.navigate("Home");
+                signin.props.navigation.navigate("Home")
+              
 
                 }, function(error) {
                 // The file either could not be read, or could not be saved to Parse.
@@ -153,7 +155,7 @@ signInWithoutPicture() {
   })
 
   signin.props.navigation.navigate("Home");
-    
+
 }
 
 // FaceBook Login
@@ -197,14 +199,20 @@ signInWithoutPicture() {
     }
   };
 
-
-
   render() {
 
     let { image } = this.state;
+    let { picture } = this.state;
+    var profileImage;
+
+     if (this.state.picture!='')
+           {
+           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+picture}}/>
+           } else {
+             profileImage = <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
+             }
 
     return (
-
 
       <View style={{
         flex: 1,
@@ -226,7 +234,7 @@ signInWithoutPicture() {
            </TouchableWithoutFeedback> 
 
            <TouchableWithoutFeedback onPress={() => this.refs.modal.open()}>
-           <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
+           {profileImage}
            </TouchableWithoutFeedback>
 
            <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
@@ -450,32 +458,25 @@ _maybeRenderUploadingOverlay = () => {
   };
 
   _handleImagePicked = async pickerResult => {
-    let uploadResponse, uploadResult;
 
     try {
       this.setState({ uploading: true });
 
       if (!pickerResult.cancelled) {
-        uploadResponse = await uploadImageAsync(pickerResult.base64);
-        uploadResult = await uploadResponse.json();
-        this.setState({ image: uploadResult.location });
+        this.setState({ picture: pickerResult.base64 });
+        console.log(this.state.picture);
+
       }
     } catch (e) {
-      console.log({ uploadResponse });
-      console.log({ uploadResult });
       console.log({ e });
       alert('Action annulée');
     } finally {
       this.setState({ uploading: false });
+      this.refs.modal.close();
     }
   };
 }
 
-async function uploadImageAsync(uri) {
-
-  this.setState({ picture: uri });
-
-}
 
 export default connect(null, mapDispatchToProps) (SignIn);
 

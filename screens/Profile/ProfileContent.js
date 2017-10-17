@@ -2,15 +2,10 @@ import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} from 'react-native'
 import { Font } from 'expo'
 import Svg,{
-    Circle,
     Line,
 } from 'react-native-svg'
 import { connect } from 'react-redux'
-import { Parse } from 'parse/react-native'
 import { NavigationActions } from 'react-navigation'
-
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 import ProfileContentClubs from './ProfileContentClubs'
 import ProfileContentClubsBullets from './ProfileContentClubsBullets'
@@ -30,7 +25,7 @@ constructor(props) {
     super(props);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
+      fontAvenirLoaded: false
     };
   }
 
@@ -73,9 +68,12 @@ constructor(props) {
     }
   }
   
-  var user = Parse.User.current();
-  var profilePhoto = user.get("picture").url();
-  console.log(profilePhoto);
+  if (this.props.user.picture!='')
+           {
+           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
+           } else {
+             profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
+             }
 
     return (
 
@@ -90,9 +88,7 @@ constructor(props) {
             marginBottom:15,
           }}>
           
-                  <Image style={{width: 60, height: 60, borderRadius: '50%'}}
-                  source={{uri: profilePhoto}}
-                />
+                  {profileImage}
 
               </View>
 

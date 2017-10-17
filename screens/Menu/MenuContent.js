@@ -1,12 +1,18 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Font, Svg } from 'expo'
+import { Font } from 'expo'
+import { connect } from 'react-redux'
 import { NavigationActions } from 'react-navigation'
 
-export default class MenuContent extends React.Component {
+function mapStateToProps(store) {
 
-constructor() {
-		super();
+  return { user: store.user, userClub: store.userClub }
+}
+
+class MenuContent extends React.Component {
+
+constructor(props) {
+		super(props);
 		this.state = {
 			fontAvenirNextLoaded: false,
 			fontAvenirLoaded: false  
@@ -25,6 +31,16 @@ constructor() {
   }
 
   render() {
+
+    console.log(this.props.user.picture);
+
+    if (this.props.user.picture!='')
+           {
+           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
+           } else {
+             profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
+             }
+
     return (
 
     	<View style={{
@@ -35,16 +51,7 @@ constructor() {
 
     	  <View style={{flex: 10, top: -25}}>
           <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Profile', {selectedIndex: 0})} >
-          <Svg height={100} width={100}>
-            <Svg.Circle
-              cx={50}
-              cy={50}
-              r={45}
-              strokeWidth={0.5}
-              stroke="black"
-              fill="white"
-            />
-          </Svg>
+          {profileImage}
           </TouchableWithoutFeedback>
         </View>
           
@@ -109,6 +116,8 @@ constructor() {
     );
   }
 }
+
+export default connect(mapStateToProps, null) (MenuContent);
 
 const styles = StyleSheet.create({
   title: {

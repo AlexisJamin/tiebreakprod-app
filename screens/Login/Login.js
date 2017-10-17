@@ -10,7 +10,7 @@ import { Parse } from 'parse/react-native'
 
 function mapDispatchToProps(dispatch) {
   return {
-        user: function(value) { 
+        handleSubmit: function(value) { 
         dispatch( {type: 'user', value: value} ) 
     },
     userClub: function(value) { 
@@ -57,8 +57,10 @@ constructor(props) {
                 var currentLevel = users.get("currentLevel");
                 var highestLevel = users.get("highestLevel");
                 var availability = users.get("availability");
+                var picture = users.get("picture").url();
+                console.log(picture);
                 
-                login.props.user({
+                login.props.handleSubmit({
                   lastName:lastName,
                   firstName:firstName,
                   style:style,
@@ -67,6 +69,7 @@ constructor(props) {
                   highestLevel:highestLevel,
                   availability:availability,
                   userId:userId,
+                  picture: picture
                 })
 
                 var clubs = users.get("clubs");
