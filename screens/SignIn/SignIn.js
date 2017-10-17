@@ -364,13 +364,13 @@ class SignIn extends React.Component {
 
           <TouchableWithoutFeedback onPress={this._pickImage}>
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.text}>Bibliothèque</Text>
+          <Text style={styles.modalText}>Bibliothèque</Text>
           </View>
           </TouchableWithoutFeedback>
 
           <TouchableWithoutFeedback onPress={this._takePhoto}>
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.text}>Caméra</Text>
+          <Text style={styles.modalText}>Caméra</Text>
           </View>
           </TouchableWithoutFeedback>
 
@@ -378,7 +378,7 @@ class SignIn extends React.Component {
           {this._maybeRenderUploadingOverlay()}
 
           <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
-          <Text style={styles.text}>Annuler</Text>
+          <Text style={styles.modalText}>Annuler</Text>
           </TouchableWithoutFeedback>
         </Modal>
 
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 10
   },
-  text: {
+  modalText: {
     color: "black",
     fontSize: 20,
     width:"100%",
