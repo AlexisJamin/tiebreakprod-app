@@ -38,6 +38,7 @@ constructor(props) {
       gender:this.props.user.gender,
       availability:this.props.user.availability,
       userId:this.props.user.userId,
+      picture:this.props.user.picture
     };
         console.log("Edit Profile Content");
         console.log(this.state);

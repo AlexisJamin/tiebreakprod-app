@@ -23,6 +23,7 @@ class SignIn extends React.Component {
   constructor(props) {
     super(props);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
+    this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -43,6 +44,44 @@ class SignIn extends React.Component {
           return re.test(email);
       }
 
+  signInWithoutPicture() {
+
+  var signin = this;
+  var user = new Parse.User();
+
+  user.set("username", this.state.username);
+  user.set("password", this.state.password);
+  user.set("firstName", this.state.firstName);
+  user.set("lastName", this.state.lastName);
+  user.set("email", this.state.username);
+  
+  user.signUp(null, {
+  success: function(user) {              
+    // Hooray! Let them use the app now.
+    console.log("signUp without picture ok");
+    var userId= user.id;
+
+      signin.props.handleSubmit({
+      lastName:signin.state.lastName,
+      firstName:signin.state.firstName,
+      style:'à compléter',
+      gender:'à compléter',
+      currentLevel:'à compléter',
+      highestLevel:'à compléter',
+      availability:[],
+      userId:userId,
+      picture: ''
+    })
+
+      signin.props.navigation.navigate("Home")
+  },
+  error: function(user, error) {
+    // Show the error message somewhere and let the user try again.
+    Alert.alert('Email déjà pris'); 
+  }
+});
+}
+
 // Checks Form and push data to Redux
 
   _onPressSignInButton() {
@@ -59,26 +98,26 @@ class SignIn extends React.Component {
         this.state.username.length>0 && 
         this.state.password.length>0 && 
         this.state.confirmPassword.length>0
-        ) {
+        ) 
+        {
         if (this.state.password===this.state.confirmPassword && this.validateEmail(this.state.username)) 
-        { 
-          emailFormatIsFalse=false;
+          { 
+            emailFormatIsFalse=false;
+            
+            if (signin.state.picture.length>0) {
 
-          user.set("username", this.state.username);
-          user.set("password", this.state.password);
-          user.set("firstName", this.state.firstName);
-          user.set("lastName", this.state.lastName);
-          user.set("email", this.state.username);
-          
-          user.signUp(null, {
+            user.set("username", this.state.username);
+            user.set("password", this.state.password);
+            user.set("firstName", this.state.firstName);
+            user.set("lastName", this.state.lastName);
+            user.set("email", this.state.username);
+            
+            user.signUp(null, {
             success: function(user) {              
               // Hooray! Let them use the app now.
               console.log("signUp ok");
               var userId= user.id;
 
-// Checks if the picture has been taken before uploading it
-
-              if (signin.state.picture.length>0) {
 
                 var picture = new Parse.File("picture.bin", { base64: signin.state.picture });
 
@@ -100,31 +139,29 @@ class SignIn extends React.Component {
                 userId:userId,
                 picture: picture.url()
               })
-
                 signin.props.navigation.navigate("Home")
-              
-
                 }, function(error) {
                 // The file either could not be read, or could not be saved to Parse.
-                console.log('Photo non uploadée');
+                console.log(error);
                 });
-              } else {
-                Alert.alert(
-                  "Vous n'avez pas ajouté de photo. Voulez-vous confirmer votre inscription ?",
-                  [
-                  {text: 'Cancel', style: 'cancel'},
-                  {text: 'OK', onPress: () => signin.signInWithoutPicture()},
-                  ],
-                  { cancelable: false }
-                  );
-                }
-
             },
             error: function(user, error) {
               // Show the error message somewhere and let the user try again.
               Alert.alert('Email déjà pris');
             }
           });
+          }
+            else {
+                Alert.alert(
+                'Souhaitez-vous ajouter une photo de profil ?',
+                'Une photo de profil augmente vos chances de trouver des partenaires !',
+                [
+                  {text: 'Ajouter une photo', onPress : () => this.refs.modal.open(), style:'cancel'},
+                  {text: 'Passer', onPress : () => this.signInWithoutPicture(), style:'destructive'},
+                ],
+                { cancelable: false }
+              )
+                }
         }
          else if (this.state.password!=this.state.confirmPassword) {
            Alert.alert('Veuillez confirmer votre mot de passe');
@@ -138,25 +175,7 @@ class SignIn extends React.Component {
         }
       }
 
-signInWithoutPicture() {
 
-  var signin = this;
-
-  signin.props.handleSubmit({
-    lastName:signin.state.lastName,
-    firstName:signin.state.firstName,
-    style:'à compléter',
-    gender:'à compléter',
-    currentLevel:'à compléter',
-    highestLevel:'à compléter',
-    availability:[],
-    userId:userId,
-    picture: ''
-  })
-
-  signin.props.navigation.navigate("Home");
-
-}
 
 // FaceBook Login
 
@@ -464,8 +483,6 @@ _maybeRenderUploadingOverlay = () => {
 
       if (!pickerResult.cancelled) {
         this.setState({ picture: pickerResult.base64 });
-        console.log(this.state.picture);
-
       }
     } catch (e) {
       console.log({ e });
