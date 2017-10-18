@@ -236,8 +236,9 @@ constructor(props) {
                {
               this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES DISPONIBILITÉS</Text>) : null 
               }   
-       
-             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('EditDispo')} >
+            <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+            </TouchableWithoutFeedback>
 
           </View>
 

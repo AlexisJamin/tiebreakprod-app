@@ -14,11 +14,11 @@ export default class Home extends React.Component {
     	<View style={{flex: 1, backgroundColor:'white'}} >
  
             <View style={{height:120}}>
-            <EditDispoHeader/>
+            <EditDispoHeader navigation={this.props.navigation}/>
             </View>
 
              <View style={{flex: 4}}>
-            <EditDispoContent/>
+            <EditDispoContent navigation={this.props.navigation}/>
             </View>
 
       </View>

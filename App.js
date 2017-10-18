@@ -49,6 +49,7 @@ const Navigator = StackNavigator({
         Profile: { screen: Profile },
         Community: { screen: Community },
         EditProfile: { screen: EditProfile },
+        EditDispo: { screen: EditDispo },
         }, { 
         headerMode: 'none' 
         }, );
