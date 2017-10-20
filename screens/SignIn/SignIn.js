@@ -260,9 +260,7 @@ class SignIn extends React.Component {
        
            </View>
 
-          <View style={{flex:1, alignItems:'center'}}>
-
-          <View style={{flex: 1, justifyContent:'center'}}>
+          <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
             
             <TouchableOpacity>
             <Text style={styles.buttonFacebook}>Remplir avec Facebook</Text>
@@ -336,9 +334,6 @@ class SignIn extends React.Component {
             onChangeText={(confirmPassword) => this.setState({confirmPassword})}
             onSubmitEditing={Keyboard.dismiss}
             />
-
-
-          </View>
 
           </View>
 

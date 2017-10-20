@@ -22,6 +22,10 @@ import { Parse } from 'parse/react-native'
 import { connect, Provider } from 'react-redux';
 import { createStore } from 'redux'
 
+import moment from 'moment'
+import 'moment/locale/pt-br'
+moment.locale('pt-BR')
+
 import Home from './screens/Home/Home'
 import Chat from './screens/Chat/Chat'
 import Profile from './screens/Profile/Profile'
@@ -32,8 +36,8 @@ import Login from './screens/Login/Login'
 import SignIn from './screens/SignIn/SignIn'
 import EditDispo from './screens/EditDispo/EditDispo'
 import EditProfile from './screens/EditProfile/EditProfile'
-import Info from './screens/Info/Info'
-import HomeHeader from './screens/Home/HomeHeader'
+import CreateGame from './screens/CreateGame/CreateGame'
+
 
 
 const reducers = require('./combine-reducer').default;
@@ -41,8 +45,8 @@ const reducers = require('./combine-reducer').default;
 var store = createStore(reducers);
 
 const Navigator = StackNavigator({
-        Login: { screen: Login },
-        SignIn: { screen: SignIn },
+        //Login: { screen: Login },
+        //SignIn: { screen: SignIn },
         Home: { screen: Home },
         Menu: { screen: Menu },
         Chat: { screen: Chat },
@@ -50,6 +54,7 @@ const Navigator = StackNavigator({
         Community: { screen: Community },
         EditProfile: { screen: EditProfile },
         EditDispo: { screen: EditDispo },
+        CreateGame: { screen: CreateGame },
         }, { 
         headerMode: 'none' 
         }, );

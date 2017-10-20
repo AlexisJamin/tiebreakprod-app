@@ -1,27 +1,12 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { Font } from 'expo'
-import Svg,{
-    Circle,
-    Ellipse,
-    G,
-    LinearGradient,
-    RadialGradient,
-    Line,
-    Path,
-    Polygon,
-    Polyline,
-    Rect,
-    Symbol,
-    Use,
-    Defs,
-    Stop
-} from 'react-native-svg'
 import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
 import Modal from 'react-native-modalbox'
+
 
 import EditDispoContentDays from './EditDispoContentDays'
 
@@ -45,9 +30,12 @@ class EditDispoContent extends React.Component {
 
 constructor(props) {
     super(props);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false  
+      fontAvenirLoaded: false,
+      modal:0,
+      availability: this.props.user.availability  
     };
   }
 
@@ -62,14 +50,25 @@ constructor(props) {
     });
   }
 
+  handleClick(modal) {
+    console.log("coucou");
+    console.log(modal);
+    this.setState({modal:modal})
+    this.refs.modal.open();
+  }
+
   render() {
 
     var dayList = [];
-    for (var i = 0; i < this.props.user.availability.length; i++) {
-      if (this.props.user.availability[i].hours.length > 0) {
-      dayList.push(<EditDispoContentDays days = {this.props.user.availability[i].day.slice(0,3)} hours = {this.props.user.availability[i].hours}/>)
+    for (var i = 0; i < this.state.availability.length; i++) {
+      if (this.state.availability[i].hours.length > 0) {
+      dayList.push(
+        <EditDispoContentDays days = {this.state.availability[i].day.slice(0,3)} hours = {this.state.availability[i].hours} modal={i} handleClick={this.handleClick}/>
+       )
       } else {
-      dayList.push(<EditDispoContentDays days = {this.props.user.availability[i].day.slice(0,3)} hours = {[]}/>)
+      dayList.push(
+        <EditDispoContentDays days = {this.state.availability[i].day.slice(0,3)} hours = {[]} modal={i} handleClick={this.handleClick}/>
+       )
       }
     }
 
@@ -96,10 +95,30 @@ constructor(props) {
         </KeyboardAwareScrollView>
 
 
-          <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
+          <TouchableWithoutFeedback onPress={this._onPressValidateDispo}>
           <Text style={styles.buttonValidate}>Valider</Text>
           </TouchableWithoutFeedback>
-           
+
+          <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
+          <View style={{
+          flex:1, 
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          marginTop:20
+          }}>
+         <Text style={{fontSize:14}}> {this.props.user.availability[this.state.modal].day} </Text> 
+         <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
+         <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
+         <Image source={require('../../assets/icons/General/Close.imageset/icCloseGrey.png')} />
+         </TouchableWithoutFeedback>
+         </View>
+
+          <TouchableWithoutFeedback onPress={this._onPressValidateModal}>
+          <Text style={styles.buttonModal}>Valider</Text>
+          </TouchableWithoutFeedback>
+          </Modal>
+
+
 
           </View>
 
@@ -122,6 +141,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingTop:15,
     paddingBottom:15 
+  },
+  buttonModal: {
+    backgroundColor: 'rgb(200,90,24)',
+    color: 'white',
+    fontSize: 18,
+    lineHeight: 30,
+    textAlign: 'center',
+    paddingTop:10,
+    paddingBottom:10 
+  },
+  modal: {
+    height: 280
   },
 });
 

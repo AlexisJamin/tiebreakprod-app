@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Font } from 'expo'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
+import Modal from 'react-native-modalbox'
 
 import EditDispoContentHours from './EditDispoContentHours'
 
@@ -12,8 +13,9 @@ function mapStateToProps(store) {
 
 class EditDispoContentDays extends React.Component {
 
-constructor() {
-    super();
+constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -33,6 +35,10 @@ constructor() {
     });
   }
 
+  handleClick() {
+   this.props.handleClick(this.props.modal);
+  }
+
 
   render() {
         var day;
@@ -46,14 +52,11 @@ constructor() {
         }
       } else {
         day= <Text style={styles.days}>{this.props.days}</Text>
-        hoursList.push(<EditDispoContentHours hours = {[]} />)
       }
-
-
-
 
     return (
 
+              <TouchableWithoutFeedback onPress={this.handleClick}>
               <View style={{
               paddingTop:10, 
               paddingBottom: 10, 
@@ -72,6 +75,7 @@ constructor() {
               </View>
               
                 </View>
+              </TouchableWithoutFeedback>
 
         );
   }

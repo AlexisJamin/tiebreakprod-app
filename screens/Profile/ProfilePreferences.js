@@ -28,7 +28,7 @@ constructor(props) {
     this.multiSliderValueLevelChange = this.multiSliderValueLevelChange.bind(this);
     this.multiSliderValueAgeChange = this.multiSliderValueAgeChange.bind(this);
     this.updateIndexCourt = this.updateIndexCourt.bind(this);
-     this.updateIndexGenre = this.updateIndexGenre.bind(this);
+    this.updateIndexGenre = this.updateIndexGenre.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -38,7 +38,6 @@ constructor(props) {
       selectedIndexCourt: 2,
       selectedIndexGenre: 2,
     };
-    console.log(this.state.selectedIndexCourt);
   }
 
   async componentDidMount() {

@@ -19,8 +19,8 @@ import Svg,{
 
 
 import HomeHeader from './HomeHeader'
-import HomeSlideSearch from './HomeSlideSearch'
-import HomeSlideAdd from './HomeSlideAdd'
+import HomeContent from './HomeContent'
+
 
 export default class Home extends React.Component {
   render() {
@@ -50,38 +50,9 @@ export default class Home extends React.Component {
             <HomeHeader navigation={this.props.navigation}/>
             </View>
 
-      <View style={{flex:1, justifyContent:'space-around', marginBottom:150}}>
-
-        <View>
-        <HomeSlideSearch/>
-        </View>
-
-        <View style={{
-          height:30,
-          alignItems: 'center',
-        }}>
-          <Svg
-            height="60"
-            width="250"
-          >
-            <Line
-              x1="0"
-              y1="0"
-              x2="250"
-              y2="0"
-              stroke="rgb(210,210,210)"
-              strokeWidth="2"
-             />
-          </Svg>
-        </View>
-
-
-            <View>
-            <HomeSlideAdd/>
-            </View>
-
-
-        </View>
+      <View style={{flex: 1, marginBottom: 70}}>
+      <HomeContent navigation={this.props.navigation}/>
+      </View>
         
         <View style={{
         alignItems: 'stretch',

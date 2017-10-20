@@ -3,22 +3,22 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 
 
 
-import EditDispoHeader from './EditDispoHeader'
-import EditDispoContent from './EditDispoContent'
+import CreateGameHeader from './CreateGameHeader'
+import CreateGameContent from './CreateGameContent'
 
 
-export default class EditDispo extends React.Component {
+export default class CreateGame extends React.Component {
   render() {
     return (
 
     	<View style={{flex: 1, backgroundColor:'white'}} >
  
             <View style={{height:120}}>
-            <EditDispoHeader navigation={this.props.navigation}/>
+            <CreateGameHeader navigation={this.props.navigation}/>
             </View>
 
              <View style={{flex: 4}}>
-            <EditDispoContent navigation={this.props.navigation}/>
+            <CreateGameContent navigation={this.props.navigation}/>
             </View>
 
       </View>

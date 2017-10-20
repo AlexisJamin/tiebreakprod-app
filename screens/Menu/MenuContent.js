@@ -32,8 +32,6 @@ constructor(props) {
 
   render() {
 
-    console.log(this.props.user.picture);
-
     if (this.props.user.picture!='')
            {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
