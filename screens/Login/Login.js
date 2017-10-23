@@ -96,7 +96,7 @@ constructor(props) {
          }); 
            console.log('ET want to go home');
            //console.log(this.props);
-    login.props.navigation.navigate("Home");
+    login.props.navigation.navigate("Swiper");
    },
    error: function(user, error) {
     console.log("pas trouvé")
@@ -149,7 +149,6 @@ constructor(props) {
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
     });
-    //dispatch(NavigationActions.navigate({ routeName: 'SignIn' }));
     this.props.navigation.navigate("SignIn");
   }
 

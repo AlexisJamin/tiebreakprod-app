@@ -31,13 +31,13 @@ export default class HomeHeader extends Component {
         top: 40,
         }}>
 
-       		<TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Menu')}>
+       		<TouchableWithoutFeedback >
           <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
           </TouchableWithoutFeedback>
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }
-       <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Chat')}>
+       <TouchableWithoutFeedback >
        <Image source={require('../../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
        </TouchableWithoutFeedback>
        

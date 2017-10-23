@@ -37,6 +37,7 @@ import SignIn from './screens/SignIn/SignIn'
 import EditDispo from './screens/EditDispo/EditDispo'
 import EditProfile from './screens/EditProfile/EditProfile'
 import CreateGame from './screens/CreateGame/CreateGame'
+import Swiper from './screens/SwiperApp'
 
 
 
@@ -47,9 +48,10 @@ var store = createStore(reducers);
 const Navigator = StackNavigator({
         //Login: { screen: Login },
         //SignIn: { screen: SignIn },
-        Home: { screen: Home },
-        Menu: { screen: Menu },
-        Chat: { screen: Chat },
+        Swiper: { screen: Swiper },
+        //Home: { screen: Home },
+        //Menu: { screen: Menu },
+        //Chat: { screen: Chat },
         Profile: { screen: Profile },
         Community: { screen: Community },
         EditProfile: { screen: EditProfile },

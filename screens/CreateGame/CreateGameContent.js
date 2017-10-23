@@ -27,11 +27,14 @@ class CreateGameContent extends React.Component {
     super(props);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
     this.updateIndexCourt = this.updateIndexCourt.bind(this);
+    this.selectClub = this.selectClub.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
       selectedIndexCourt: '',
+      selectedClub:'',
       surface: '',
+      condition: '',
       date:"20-10-2017",
       price:''
     };
@@ -53,6 +56,10 @@ class CreateGameContent extends React.Component {
 updateIndexCourt (selectedIndex) {
     this.setState({selectedIndexCourt:selectedIndex})
   }
+
+  selectClub (selectedClub) {
+    this.setState({selectedClub:selectedClub})
+  }
   
 
   _onPressValidateButton() {
@@ -65,7 +72,9 @@ updateIndexCourt (selectedIndex) {
   render() {
 
     const buttonsCourt = ['Intérieur', 'Extérieur']
+    const clubs = ['Tennis du Luxembourg', 'Tennis Atlantique', 'Tennis Elisabeth', 'Tennis 16', 'Autre']
     const { selectedIndexCourt } = this.state;
+    const { selectedClub } = this.state;
 
     return (
 
@@ -78,12 +87,16 @@ updateIndexCourt (selectedIndex) {
         
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:30, fontFamily: 'AvenirNext', paddingLeft:10}}> DATE </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> DATE </Text>
           ) : null 
          }
 
          <DatePicker
-        style={{width: 200, paddingLeft:10}}
+        style={{
+          paddingLeft:10, 
+          width:200,
+          marginBottom:20
+        }}
         date={this.state.date}
         mode="date"
         placeholder="Date"
@@ -92,6 +105,7 @@ updateIndexCourt (selectedIndex) {
         maxDate="25-10-2017"
         confirmBtnText="Valider"
         cancelBtnText="Annuler"
+        showIcon='false'
         customStyles={{
           dateIcon: {
             position: 'absolute',
@@ -100,6 +114,8 @@ updateIndexCourt (selectedIndex) {
             marginLeft: 0
           },
           dateInput: {
+            borderColor:'rgb(213,212,216)', 
+            borderRadius:5,
             marginLeft: 36
           }
           // ... You can check the source to find the other keys.
@@ -108,7 +124,27 @@ updateIndexCourt (selectedIndex) {
       />
         
         {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:30, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
+          ) : null 
+         }
+
+         {
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Lieu </Text>
+          ) : null 
+         }
+
+          <ButtonGroup 
+          onPress={this.selectClub}
+          selectedIndex={selectedClub}
+          buttons={clubs}
+          textStyle={styles.title}
+          selectedBackgroundColor={'rgb(42,127,83)'}
+          selectedTextStyle={styles.subtitle}
+          containerStyle={styles.clubs}
+          />
+
+          {
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Conditions </Text>
           ) : null 
          }
 
@@ -119,9 +155,14 @@ updateIndexCourt (selectedIndex) {
           textStyle={styles.title}
           selectedBackgroundColor={'rgb(42,127,83)'}
           selectedTextStyle={styles.subtitle}
-          containerStyle={styles.container}
+          containerStyle={styles.courts}
           />
           
+          {
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Type de surface </Text>
+          ) : null 
+         }
+
           <View style={{alignItems:'center', justifyContent:'center'}}>
 
           <ModalDropdown 
@@ -133,6 +174,15 @@ updateIndexCourt (selectedIndex) {
           options={['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique']}
           onSelect={(index, surface) => this.setState({surface})}
           />
+
+          </View>
+
+          {
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Prix </Text>
+          ) : null 
+         }
+
+          <View style={{alignItems:'center', justifyContent:'center'}}>
 
           <TextInput 
             ref='price'
@@ -226,10 +276,17 @@ const styles = StyleSheet.create({
     borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
-    marginTop:20, 
-    paddingLeft: 10
+    marginBottom:20, 
+    paddingLeft: 10,
+    backgroundColor:'white'
   },
-  container: {
+  clubs: {
+   backgroundColor: 'white',
+    height: 60,
+    marginBottom:30,
+    width:350
+  },
+  courts: {
     backgroundColor: 'white',
     height: 40,
     marginBottom:30,

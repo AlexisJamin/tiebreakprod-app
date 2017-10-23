@@ -35,9 +35,7 @@ export default class MenuHeader extends Component {
 
        		 <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
          
-          <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
           <Image source={require('../../assets/icons/Menu/Home.imageset/ic_white_ball_header.png')} />
-          </TouchableWithoutFeedback>
        
        </View>
        
