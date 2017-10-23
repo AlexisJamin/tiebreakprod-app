@@ -248,7 +248,7 @@ class SignIn extends React.Component {
            }}>
 
 
-           <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
+           <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
            <Image source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
            </TouchableWithoutFeedback> 
 

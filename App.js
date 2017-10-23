@@ -46,12 +46,9 @@ const reducers = require('./combine-reducer').default;
 var store = createStore(reducers);
 
 const Navigator = StackNavigator({
-        //Login: { screen: Login },
-        //SignIn: { screen: SignIn },
+        Login: { screen: Login },
+        SignIn: { screen: SignIn },
         Swiper: { screen: Swiper },
-        //Home: { screen: Home },
-        //Menu: { screen: Menu },
-        //Chat: { screen: Chat },
         Profile: { screen: Profile },
         Community: { screen: Community },
         EditProfile: { screen: EditProfile },

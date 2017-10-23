@@ -32,7 +32,7 @@ export default class EditProfileHeader extends Component {
         top: 40,
         }}>
 
-       <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
+       <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
        <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
        </TouchableWithoutFeedback> 
        {
