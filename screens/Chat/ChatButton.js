@@ -1,7 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
 import { ButtonGroup } from 'react-native-elements'
-
 import { Font } from 'expo';
 
 
@@ -9,11 +8,11 @@ export default class ChatButton extends React.Component {
 
   constructor () {
     super()
+    this.updateIndex = this.updateIndex.bind(this)
     this.state = {
       selectedIndex: 0,
       fontLoaded: false
     }
-    this.updateIndex = this.updateIndex.bind(this)
   }  
 
   async componentDidMount() {
@@ -25,6 +24,13 @@ export default class ChatButton extends React.Component {
 
   updateIndex (selectedIndex) {
     this.setState({selectedIndex})
+    if (selectedIndex==0) {
+      this.props.navigation.navigate("Notifications");
+      console.log("clic sur bouton notifs");
+    } else {
+      this.props.navigation.navigate("ChatContent");
+      console.log("clic sur bouton chat");
+    }
   }
 
   render() {

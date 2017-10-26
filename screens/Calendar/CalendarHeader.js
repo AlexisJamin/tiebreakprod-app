@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import { Col, Row, Grid } from "react-native-easy-grid"
 import { Font } from 'expo';
 
 

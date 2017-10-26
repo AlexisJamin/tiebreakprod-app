@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-n
 import { NavigationActions } from 'react-navigation'
 import { Parse } from 'parse/react-native'
 
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
+
 import MenuHeader from './MenuHeader'
 import MenuContent from './MenuContent'
-
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 export default class Home extends React.Component {
 

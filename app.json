@@ -4,13 +4,13 @@
     "description": "An empty new project",
     "slug": "tiebreaktest",
     "privacy": "public",
-    "sdkVersion": "19.0.0",
+    "sdkVersion": "22.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
-    "icon": "./assets/icons/AppIcon.appiconset/Icon-App-60x60.png",
+    "icon": "",
     "loading": {
-      "icon": "./assets/icons/loading-icon.png",
+      "icon": "",
       "hideExponentText": false
     },
     "packagerOpts": {

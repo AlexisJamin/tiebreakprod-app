@@ -4,7 +4,6 @@ import { ButtonGroup } from 'react-native-elements'
 import { Font } from 'expo';
 
 
-
 export default class ProfileButton extends React.Component {
 
   constructor (props) {
@@ -25,6 +24,13 @@ export default class ProfileButton extends React.Component {
 
   updateIndex (selectedIndex) {
     this.setState({selectedIndex})
+    if (selectedIndex==0) {
+      this.props.navigation.navigate("ProfileContent");
+      console.log("clic sur bouton Mon Profil");
+    } else {
+      this.props.navigation.navigate("ProfilePreferences");
+      console.log("clic sur bouton Mes Preferences");
+    }
   }
 
   render() {

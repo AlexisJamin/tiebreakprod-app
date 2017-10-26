@@ -1,10 +1,11 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, DatePickerIOS } from 'react-native'
 import { Facebook, Constants, ImagePicker, registerRootComponent, Font } from 'expo'
 import Modal from 'react-native-modalbox'
 import ModalDropdown from 'react-native-modal-dropdown'
 import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
+import DateTimePicker from 'react-native-modal-datetime-picker';
 import DatePicker from 'react-native-datepicker'
 import { ButtonGroup } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -12,6 +13,9 @@ import { Parse } from 'parse/react-native'
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+
+import moment from 'moment'
+var dateFormat = moment().format();
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -31,11 +35,12 @@ class CreateGameContent extends React.Component {
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
+      isDateTimePickerVisible: false,
       selectedIndexCourt: '',
       selectedClub:'',
       surface: '',
       condition: '',
-      date:"20-10-2017",
+      date:'',
       price:''
     };
   }
@@ -64,10 +69,17 @@ updateIndexCourt (selectedIndex) {
 
   _onPressValidateButton() {
     
-    
       }
 
+  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
+  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+  _handleDatePicked = (date) => {
+    console.log('A date has been picked: ', date);
+    this.setState({ date: date });
+    this._hideDateTimePicker();
+  };
 
   render() {
 
@@ -91,6 +103,23 @@ updateIndexCourt (selectedIndex) {
           ) : null 
          }
 
+         <View style={styles.container}>
+        <TouchableWithoutFeedback onPress={this._showDateTimePicker}>
+          <View style={styles.button}>
+            <Text></Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <DateTimePicker
+          isVisible={this.state.isDateTimePickerVisible}
+          onConfirm={this._handleDatePicked}
+          onCancel={this._hideDateTimePicker}
+          mode="datetime"
+          cancelTextIOS="Annuler"
+          confirmTextIOS="Valider"
+          titleIOS="Choisir une date"
+        />
+        </View>
+
          <DatePicker
         style={{
           paddingLeft:10, 
@@ -98,11 +127,11 @@ updateIndexCourt (selectedIndex) {
           marginBottom:20
         }}
         date={this.state.date}
-        mode="date"
+        mode="datetime"
         placeholder="Date"
         format="DD-MM-YYYY"
-        minDate="20-10-2017"
-        maxDate="25-10-2017"
+        minDate="24-10-2017"
+        maxDate="28-10-2017"
         confirmBtnText="Valider"
         cancelBtnText="Annuler"
         showIcon='false'
@@ -291,5 +320,19 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom:30,
     width:350
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    backgroundColor: 'lightblue',
+    padding: 12,
+    margin: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
   }
 });

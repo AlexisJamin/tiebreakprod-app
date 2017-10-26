@@ -72,8 +72,7 @@ class SignIn extends React.Component {
       userId:userId,
       picture: ''
     })
-
-      signin.props.navigation.navigate("Home")
+      signin.props.navigation.navigate("Swiper")
   },
   error: function(user, error) {
     // Show the error message somewhere and let the user try again.
@@ -139,7 +138,7 @@ class SignIn extends React.Component {
                 userId:userId,
                 picture: picture.url()
               })
-                signin.props.navigation.navigate("Home")
+                signin.props.navigation.navigate("Swiper")
                 }, function(error) {
                 // The file either could not be read, or could not be saved to Parse.
                 console.log(error);

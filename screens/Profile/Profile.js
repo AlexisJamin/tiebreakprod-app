@@ -1,15 +1,27 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
-import { NavigationActions } from 'react-navigation'
+import { TabNavigator } from 'react-navigation'
 
 import ProfileHeader from './ProfileHeader'
 import ProfileButton from './ProfileButton'
 import ProfileContent from './ProfileContent'
 import ProfilePreferences from './ProfilePreferences'
 
+const ProfileNavigator = TabNavigator(
+{
+  ProfileContent: {screen: ProfileContent, navigationOptions: {tabBarVisible: false}},
+  ProfilePreferences: {screen: ProfilePreferences, navigationOptions: {tabBarVisible: false}},
+},
+{
+  initialRouteName:'ProfileContent',
+  },
+);
 
 export default class Profile extends React.Component {
   render() {
+
+    console.log(this.props.navigation);
+
     return (
 
     	  <View style={{flex:1, backgroundColor:'white'}}>
@@ -23,7 +35,7 @@ export default class Profile extends React.Component {
       }}>
   
           <View style={{flex:1, alignItems:'stretch'}}>
-          <ProfileButton selectedIndex={this.props.navigation.state.params.selectedIndex}/>
+          <ProfileButton selectedIndex={this.props.navigation.state.params.selectedIndex} navigation={this.props.navigation}/>
         </View>
 
       </View>
@@ -32,13 +44,13 @@ export default class Profile extends React.Component {
            <ProfileHeader navigation={this.props.navigation}/>
           </View>
 
-          <ProfileContent navigation={this.props.navigation}/>
+          <ProfileNavigator navigation={this.props.navigation}/>
         
-
         </View>
-
-
-
     );
   }
 }
+
+Profile.router = ProfileNavigator.router;
+
+

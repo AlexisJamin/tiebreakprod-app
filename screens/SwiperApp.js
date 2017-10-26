@@ -1,49 +1,41 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
-import Swiper from 'react-native-swiper'
+import { TabNavigator } from 'react-navigation';
 
 import Menu from './Menu/Menu'
 import Home from './Home/Home'
 import Chat from './Chat/Chat'
 
-export default class SwiperApp extends React.Component {
+const HomeNavigator = TabNavigator(
+{
+  Menu: {screen: Menu, navigationOptions: {tabBarVisible: false}},
+  Home: {screen: Home, navigationOptions: {tabBarVisible: false}},
+  Chat: {screen: Chat, navigationOptions: {tabBarVisible: false}},
+},
+  {
+  swipeEnabled: true,
+  initialRouteName:'Home',
+  },
+);
 
-viewStyle() {
-    return {
-      flex: 1,
-    }
-  }
+export default class Swiper extends React.Component {
+
 
   render() {
     return (
-        <Swiper
-        loop={false}
-        showsPagination={false}
-        showsButtons={true}
-        buttonWrapperStyle={{alignItems: "flex-start"}}
-        prevButton={<Text style={styles.buttonText}>‹</Text>}
-        nextButton={<Text style={styles.buttonText}>‹</Text>}
-        index={1}>
-        <View style={this.viewStyle()}>
-          <Menu navigation={this.props.navigation}/>
-        </View>    
-        <View style={this.viewStyle()}>
-          <Home navigation={this.props.navigation}/>
-        </View>
-        <View style={this.viewStyle()}>
-          <Chat navigation={this.props.navigation}/>
-        </View>
-      </Swiper>
+        <HomeNavigator navigation={this.props.navigation}/>
 
     );
   }
 }
 
+Swiper.router = HomeNavigator.router;
+
 const styles = StyleSheet.create({
   buttonText: {
     color: 'transparent',
     top: 10,
-    padding:30,
+    padding:40,
     width:20,
     height:20
   },

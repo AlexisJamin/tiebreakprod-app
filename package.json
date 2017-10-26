@@ -7,24 +7,35 @@
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
     "@ptomasroos/react-native-multi-slider": "0.0.11",
-    "expo": "^19.0.0",
+    "expo": "^22.0.0",
     "moment": "^2.19.1",
-    "native-base": "^2.3.0",
-    "react": "16.0.0-alpha.12",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-19.0.0.tar.gz",
+    "parse": "^1.10.1",
+    "react": "16.0.0-beta.5",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-22.0.1.tar.gz",
     "react-native-datepicker": "^1.6.0",
     "react-native-elements": "^0.15.0",
-    "react-native-image-picker": "^0.26.7",
     "react-native-keyboard-aware-scroll-view": "^0.3.0",
+    "react-native-modal-datetime-picker": "^4.13.0",
     "react-native-modal-dropdown": "^0.5.0",
-    "react-native-modal-picker": "0.0.16",
     "react-native-modalbox": "^1.4.2",
-    "react-native-selectbox": "^0.1.2",
     "react-native-svg": "^5.3.2",
     "react-native-swiper": "^1.5.4",
     "react-navigation": "^1.0.0-beta.11",
     "react-redux": "^5.0.5",
-    "redux": "^3.7.2",
-    "redux-form": "^7.0.3"
-  }
+    "redux": "^3.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexisJamin/tiebreaktest.git"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexisJamin/tiebreaktest/issues"
+  },
+  "homepage": "https://github.com/AlexisJamin/tiebreaktest#readme"
 }
