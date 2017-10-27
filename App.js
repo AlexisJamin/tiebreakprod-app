@@ -1,22 +1,6 @@
 import React from 'react'
 import Expo from 'expo'
-import { StyleSheet, Text, View, Image, TouchableHighlight, TouchableOpacity, TextInput, Animated, Dimensions } from 'react-native'
-import Svg,{
-    Circle,
-    Ellipse,
-    G,
-    LinearGradient,
-    RadialGradient,
-    Line,
-    Path,
-    Polygon,
-    Polyline,
-    Rect,
-    Symbol,
-    Use,
-    Defs,
-    Stop
-} from 'react-native-svg'
+import { StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native'
 import { StackNavigator, TabNavigator } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { createStore } from 'redux'
@@ -60,40 +44,6 @@ const Navigator = StackNavigator({
         gesturesEnabled: false
         }
         }, );
-
-
-const HomeNavigator = TabNavigator(
-{
-  Menu: {screen: Menu, navigationOptions: {tabBarVisible: false}},
-  Home: {screen: Home, navigationOptions: {tabBarVisible: false}},
-  Chat: {screen: Chat, navigationOptions: {tabBarVisible: false}},
-},
-  {
-  swipeEnabled: true,
-  initialRouteName:'Home',
-  },
-);
-
-const ChatNavigator = TabNavigator(
-{
-  Notifications: {screen: Notifications, navigationOptions: {tabBarVisible: false}},
-  ChatContent: {screen: ChatContent, navigationOptions: {tabBarVisible: false}},
-},
-{
-  initialRouteName:'Notifications',
-  },
-);
-
-const ProfileNavigator = TabNavigator(
-{
-  ProfileContent: {screen: ProfileContent, navigationOptions: {tabBarVisible: false}},
-  ProfilePreferences: {screen: ProfilePreferences, navigationOptions: {tabBarVisible: false}},
-},
-{
-  initialRouteName:'ProfileContent',
-  },
-);
-
 
 export default class App extends React.Component {
   render() {

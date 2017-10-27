@@ -150,7 +150,7 @@ constructor(props) {
        if (this.state.newPicture) {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+picture}}/>
           }
-          else if (this.props.picture!='')
+          else if (picture!='')
            {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: picture}}/>
            } 

@@ -6,8 +6,7 @@ import ModalDropdown from 'react-native-modal-dropdown'
 import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import DatePicker from 'react-native-datepicker'
-import { ButtonGroup } from 'react-native-elements'
+import { ButtonGroup, CheckBox } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Parse } from 'parse/react-native'
 
@@ -36,12 +35,14 @@ class CreateGameContent extends React.Component {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
       isDateTimePickerVisible: false,
+      clubs:["Tennis du Luxembourg","Tennis Atlantique"],
       selectedIndexCourt: '',
       selectedClub:'',
       surface: '',
       condition: '',
       date:'',
-      price:''
+      price:'',
+      checked: false
     };
   }
 
@@ -119,38 +120,6 @@ updateIndexCourt (selectedIndex) {
           titleIOS="Choisir une date"
         />
         </View>
-
-         <DatePicker
-        style={{
-          paddingLeft:10, 
-          width:200,
-          marginBottom:20
-        }}
-        date={this.state.date}
-        mode="datetime"
-        placeholder="Date"
-        format="DD-MM-YYYY"
-        minDate="24-10-2017"
-        maxDate="28-10-2017"
-        confirmBtnText="Valider"
-        cancelBtnText="Annuler"
-        showIcon='false'
-        customStyles={{
-          dateIcon: {
-            position: 'absolute',
-            left: 0,
-            top: 4,
-            marginLeft: 0
-          },
-          dateInput: {
-            borderColor:'rgb(213,212,216)', 
-            borderRadius:5,
-            marginLeft: 36
-          }
-          // ... You can check the source to find the other keys.
-        }}
-        onDateChange={(date) => {this.setState({date: date})}}
-      />
         
         {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
@@ -162,15 +131,27 @@ updateIndexCourt (selectedIndex) {
           ) : null 
          }
 
-          <ButtonGroup 
-          onPress={this.selectClub}
-          selectedIndex={selectedClub}
-          buttons={clubs}
-          textStyle={styles.title}
-          selectedBackgroundColor={'rgb(42,127,83)'}
-          selectedTextStyle={styles.subtitle}
-          containerStyle={styles.clubs}
-          />
+            <ButtonGroup 
+            onPress={() => this.selectClub()}
+            selectedIndex={selectedClub}
+            buttons={[this.state.clubs[0]]}
+            textStyle={styles.title}
+            selectedBackgroundColor={'rgb(42,127,83)'}
+            selectedTextStyle={styles.subtitle}
+            containerStyle={styles.clubs}
+            />
+
+            <ButtonGroup 
+            onPress={this.selectClub}
+            selectedIndex={selectedClub}
+            buttons={[this.state.clubs[1]]}
+            textStyle={styles.title}
+            selectedBackgroundColor={'rgb(42,127,83)'}
+            selectedTextStyle={styles.subtitle}
+            containerStyle={styles.clubs}
+            />
+
+
 
           {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Conditions </Text>
@@ -191,6 +172,13 @@ updateIndexCourt (selectedIndex) {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Type de surface </Text>
           ) : null 
          }
+
+         <CheckBox
+          center
+          title='8h'
+          onPress={() => this.setState({checked:true})}
+          checked={this.state.checked}
+        />
 
           <View style={{alignItems:'center', justifyContent:'center'}}>
 
