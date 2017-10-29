@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Font } from 'expo'
 import { connect } from 'react-redux'
-import { NavigationActions } from 'react-navigation'
 
 function mapStateToProps(store) {
 
-  return { user: store.user, userClub: store.userClub }
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences }
 }
 
 class MenuContent extends React.Component {

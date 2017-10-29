@@ -1,23 +1,22 @@
 import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback, Switch, Slider} from 'react-native'
+import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, Switch, Slider} from 'react-native'
 import { Font } from 'expo'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 import { ButtonGroup } from 'react-native-elements'
 import { connect } from 'react-redux'
-import { NavigationActions } from 'react-navigation'
 
 
 function mapDispatchToProps(dispatch) {
   return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
     }
   }
 }
 
 function mapStateToProps(store) {
 
-  return { user: store.user, userClub: store.userClub }
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences }
 }
 
 
@@ -25,17 +24,24 @@ class ProfilePreferences extends React.Component {
 
 constructor(props) {
     super(props);
-    this.multiSliderValueLevelChange = this.multiSliderValueLevelChange.bind(this);
-    this.multiSliderValueAgeChange = this.multiSliderValueAgeChange.bind(this);
     this.updateIndexCourt = this.updateIndexCourt.bind(this);
     this.updateIndexGenre = this.updateIndexGenre.bind(this);
+    var filterCondition;
+      if (this.props.userPreferences.filterCondition==="indifferent") {
+      filterCondition=2;
+    } else if (this.props.userPreferences.filterCondition==="inside") {
+      filterCondition=0;
+    } else if (this.props.userPreferences.filterCondition==="outside") {
+      filterCondition=1;
+    }
+
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
-      multiSliderValueLevel: [0, 15],
-      multiSliderValueAge: [15, 70],
-      range:30,
-      selectedIndexCourt: 2,
+      multiSliderValueLevel: [this.props.userPreferences.filterLevel.from, this.props.userPreferences.filterLevel.to],
+      multiSliderValueAge: [this.props.userPreferences.filterAge.from, this.props.userPreferences.filterAge.to],
+      range:this.props.userPreferences.filterFieldType.range,
+      filterCondition: filterCondition,
       selectedIndexGenre: 2,
     };
   }
@@ -53,20 +59,8 @@ constructor(props) {
     });
   }
 
-  multiSliderValueLevelChange(values) {
-    this.setState({
-      multiSliderValueLevel: values,
-    });
-  }
-
-  multiSliderValueAgeChange(values) {
-    this.setState({
-      multiSliderValueAge: values,
-    });
-  }
-
-  updateIndexCourt (selectedIndex) {
-    this.setState({selectedIndexCourt:selectedIndex})
+  updateIndexCourt (filterCondition) {
+    this.setState({filterCondition:filterCondition})
   }
 
   updateIndexGenre (selectedIndex) {
@@ -78,7 +72,8 @@ constructor(props) {
 
     const buttonsCourt = ['Intérieur', 'Extérieur', 'Indifférent']
     const buttonsGenre = ['Hommes', 'Femmes', 'Indifférent']
-    const { selectedIndexCourt } = this.state;
+    var { filterCondition } = this.state;
+    var { range } = this.state;
 
     return (
 
@@ -114,7 +109,7 @@ constructor(props) {
           style={{width: 350}}
           maximumValue={30}
           step={1}
-          value={30}
+          value={range}
           minimumTrackTintColor='rgb(42,129,82)'
           onValueChange={(range) => this.setState({range})}
         />
@@ -122,7 +117,7 @@ constructor(props) {
 
          <ButtonGroup 
           onPress={this.updateIndexCourt}
-          selectedIndex={selectedIndexCourt}
+          selectedIndex={filterCondition}
           buttons={buttonsCourt}
           textStyle={styles.title}
           selectedBackgroundColor={'rgb(42,127,83)'}
@@ -154,9 +149,9 @@ constructor(props) {
         <MultiSlider
             values={[this.state.multiSliderValueLevel[0], this.state.multiSliderValueLevel[1]]}
             sliderLength={320}
-            onValuesChange={this.multiSliderValueLevelChange}
+            onValuesChange={(values) => this.setState({multiSliderValueLevel:values})}
             min={0}
-            max={15}
+            max={24}
             step={1}
             selectedStyle={{
             backgroundColor: 'rgb(42,129,82)',
@@ -195,7 +190,7 @@ constructor(props) {
          <MultiSlider
             values={[this.state.multiSliderValueAge[0], this.state.multiSliderValueAge[1]]}
             sliderLength={320}
-            onValuesChange={this.multiSliderValueAgeChange}
+            onValuesChange={(values) => this.setState({multiSliderValueAge:values})}
             min={15}
             max={70}
             step={1}
@@ -215,6 +210,23 @@ constructor(props) {
          <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
         {
           this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', width:200}}>Synchroniser le calendrier du téléphone avec Tie Break </Text> 
+          ) : null 
+         }
+
+         <Switch
+         onTintColor='rgb(42,129,82)'
+         value='true'
+         />
+         </View>
+
+         {
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', marginBottom:30, paddingLeft:10}}> GEOLOCALISATION </Text>
+          ) : null 
+         }
+
+         <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
+        {
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', width:200}}>Autoriser Tie Break (nécessaire pour trouver des amis / parties / terrains ) </Text> 
           ) : null 
          }
 

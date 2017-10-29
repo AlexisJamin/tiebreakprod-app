@@ -14,6 +14,12 @@ function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
         dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
     }
   }
 }
@@ -54,6 +60,13 @@ class SignIn extends React.Component {
   user.set("firstName", this.state.firstName);
   user.set("lastName", this.state.lastName);
   user.set("email", this.state.username);
+
+  user.set("filterCondition", "indifferent");
+  user.set("filterAge", {"to":70,"from":15});
+  user.set("filterLevel", {"to":24,"from":0});
+  user.set("filterGender", "indifferent");
+  user.set("filterStyle", "indifferent");
+  user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
   
   user.signUp(null, {
   success: function(user) {              
@@ -72,6 +85,16 @@ class SignIn extends React.Component {
       userId:userId,
       picture: ''
     })
+
+      signin.props.handleSubmitPreferences({
+      filterCondition:"indifferent",
+      filterAge:{"to":70,"from":15},
+      filterLevel:{"to":24,"from":0},
+      filterGender:"indifferent",
+      filterStyle:"indifferent",
+      filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+    })
+
       signin.props.navigation.navigate("Swiper")
   },
   error: function(user, error) {
@@ -110,6 +133,13 @@ class SignIn extends React.Component {
             user.set("firstName", this.state.firstName);
             user.set("lastName", this.state.lastName);
             user.set("email", this.state.username);
+
+            user.set("filterCondition", "indifferent");
+            user.set("filterAge", {"to":70,"from":15});
+            user.set("filterLevel", {"to":24,"from":0});
+            user.set("filterGender", "indifferent");
+            user.set("filterStyle", "indifferent");
+            user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
             
             user.signUp(null, {
             success: function(user) {              
@@ -138,6 +168,16 @@ class SignIn extends React.Component {
                 userId:userId,
                 picture: picture.url()
               })
+
+                signin.props.handleSubmitPreferences({
+                  filterCondition:"indifferent",
+                  filterAge:{"to":70,"from":15},
+                  filterLevel:{"to":24,"from":0},
+                  filterGender:"indifferent",
+                  filterStyle:"indifferent",
+                  filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+                })
+
                 signin.props.navigation.navigate("Swiper")
                 }, function(error) {
                 // The file either could not be read, or could not be saved to Parse.

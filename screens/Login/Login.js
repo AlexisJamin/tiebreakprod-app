@@ -13,8 +13,11 @@ function mapDispatchToProps(dispatch) {
         handleSubmit: function(value) { 
         dispatch( {type: 'user', value: value} ) 
     },
-    userClub: function(value) { 
+        handleSubmitClub: function(value) { 
         dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
     }
   }
 }
@@ -57,9 +60,14 @@ constructor(props) {
                 var currentLevel = users.get("currentLevel");
                 var highestLevel = users.get("highestLevel");
                 var availability = users.get("availability");
+                var filterCondition = users.get("filterCondition");
+                var filterAge = users.get("filterAge");
+                var filterLevel = users.get("filterLevel");
+                var filterGender = users.get("filterGender");
+                var filterStyle = users.get("filterStyle");
+                var filterFieldType = users.get("filterFieldType");
                 var picture = users.get("picture").url();
-                console.log(picture);
-                
+
                 login.props.handleSubmit({
                   lastName:lastName,
                   firstName:firstName,
@@ -72,6 +80,15 @@ constructor(props) {
                   picture: picture
                 })
 
+                login.props.handleSubmitPreferences({
+                  filterCondition:filterCondition,
+                  filterAge:filterAge,
+                  filterLevel:filterLevel,
+                  filterGender:filterGender,
+                  filterStyle:filterStyle,
+                  filterFieldType:filterFieldType
+                })
+
                 var clubs = users.get("clubs");
                 var Club = Parse.Object.extend("Club");
                  
@@ -81,8 +98,7 @@ constructor(props) {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
-                      console.log(clubName);
-                      login.props.userClub(clubName)
+                      login.props.handleSubmitClub(clubName)
                     },
                     error: function(object, error) {
                       // The object was not retrieved successfully.
@@ -94,8 +110,8 @@ constructor(props) {
               // The object was not retrieved successfully.
           }
          }); 
-           console.log('ET want to go home');
-           //console.log(this.props);
+           console.log('ET wants to go home');
+
     login.props.navigation.navigate("Swiper");
    },
    error: function(user, error) {
