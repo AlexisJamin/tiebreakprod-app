@@ -1,5 +1,5 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native';
 import Svg,{
     Circle,
     Ellipse,
@@ -16,13 +16,50 @@ import Svg,{
     Defs,
     Stop
 } from 'react-native-svg';
+import { connect } from 'react-redux';
 
+import HomeHeader from './HomeHeader';
+import HomeContent from './HomeContent';
 
-import HomeHeader from './HomeHeader'
-import HomeContent from './HomeContent'
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
 
+function mapStateToProps(store) {
 
-export default class Home extends React.Component {
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
+
+class Home extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.navigationRoute = this.navigationRoute.bind(this);
+  }
+
+navigationRoute() {
+  this.props.handleSubmitButton({
+    ChatButtonIndex:this.props.button.ChatButtonIndex,
+    CommunityButtonIndex:0,
+    CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+    ProfileButtonIndex:this.props.button.ProfileButtonIndex
+  })
+  this.props.navigation.navigate('Community');
+};
+
   render() {
     return (
 
@@ -57,7 +94,7 @@ export default class Home extends React.Component {
         <View style={{
         alignItems: 'stretch',
          }}>
-            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Community', {selectedIndex: 0})}>
+            <TouchableWithoutFeedback onPress={this.navigationRoute}>
             <Text style={styles.buttonLogIn}>Trouver des amis</Text>
             </TouchableWithoutFeedback>
         </View>
@@ -67,6 +104,8 @@ export default class Home extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps) (Home);
 
 const styles = StyleSheet.create({
   buttonLogIn: {

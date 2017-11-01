@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
-import { Facebook, Constants, ImagePicker, registerRootComponent } from 'expo'
+import { Facebook, Constants, ImagePicker, registerRootComponent, Location, Permissions } from 'expo'
 import Modal from 'react-native-modalbox'
 import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
@@ -20,6 +20,9 @@ function mapDispatchToProps(dispatch) {
     },
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
     }
   }
 }
@@ -30,6 +33,7 @@ class SignIn extends React.Component {
     super(props);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
+    this._getLocationAsync = this._getLocationAsync.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -40,7 +44,8 @@ class SignIn extends React.Component {
       username:'',
       password:'',
       confirmPassword:'',
-      picture:''
+      picture:'',
+      location:null
     };
   }
 
@@ -68,10 +73,12 @@ class SignIn extends React.Component {
   user.set("filterStyle", "indifferent");
   user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
   
+  signin._getLocationAsync();
+  
   user.signUp(null, {
   success: function(user) {              
     // Hooray! Let them use the app now.
-    console.log("signUp without picture ok");
+
     var userId= user.id;
 
       signin.props.handleSubmit({
@@ -83,7 +90,9 @@ class SignIn extends React.Component {
       highestLevel:'à compléter',
       availability:[],
       userId:userId,
-      picture: ''
+      picture: '',
+      latitude:signin.state.location.coords.latitude,
+      longitude:signin.state.location.coords.longitude
     })
 
       signin.props.handleSubmitPreferences({
@@ -93,6 +102,13 @@ class SignIn extends React.Component {
       filterGender:"indifferent",
       filterStyle:"indifferent",
       filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+    })
+
+      signin.props.handleSubmitButton({
+      ChatButtonIndex:null,
+      CommunityButtonIndex:null,
+      CalendarButtonIndex:null,
+      ProfileButtonIndex:null
     })
 
       signin.props.navigation.navigate("Swiper")
@@ -126,6 +142,7 @@ class SignIn extends React.Component {
           { 
             emailFormatIsFalse=false;
             
+
             if (signin.state.picture.length>0) {
 
             user.set("username", this.state.username);
@@ -141,6 +158,8 @@ class SignIn extends React.Component {
             user.set("filterStyle", "indifferent");
             user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
             
+            signin._getLocationAsync();
+
             user.signUp(null, {
             success: function(user) {              
               // Hooray! Let them use the app now.
@@ -166,7 +185,9 @@ class SignIn extends React.Component {
                 highestLevel:'à compléter',
                 availability:[],
                 userId:userId,
-                picture: picture.url()
+                picture: picture.url(),
+                latitude:signin.state.location.coords.latitude,
+                longitude:signin.state.location.coords.longitude
               })
 
                 signin.props.handleSubmitPreferences({
@@ -176,6 +197,13 @@ class SignIn extends React.Component {
                   filterGender:"indifferent",
                   filterStyle:"indifferent",
                   filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+                })
+
+                signin.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
                 })
 
                 signin.props.navigation.navigate("Swiper")
@@ -256,6 +284,18 @@ class SignIn extends React.Component {
       );
     }
   };
+
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+     console.log('Permission to access location was denied');
+    }
+
+    let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+    console.log(location);
+    this.setState({ location });
+  };
+
 
   render() {
 
@@ -511,7 +551,6 @@ _maybeRenderUploadingOverlay = () => {
   };
 
   _handleImagePicked = async pickerResult => {
-
     try {
       this.setState({ uploading: true });
 

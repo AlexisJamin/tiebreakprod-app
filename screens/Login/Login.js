@@ -1,11 +1,10 @@
-import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
-import { Facebook } from 'expo'
-import { NavigationActions } from 'react-navigation'
-import { connect } from 'react-redux'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Parse } from 'parse/react-native'
-
+import React from 'react';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Facebook, Location, Permissions } from 'expo';
+import { NavigationActions } from 'react-navigation';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Parse } from 'parse/react-native';
 
 
 function mapDispatchToProps(dispatch) {
@@ -18,6 +17,9 @@ function mapDispatchToProps(dispatch) {
     },
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
     }
   }
 }
@@ -31,13 +33,15 @@ constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
+    this._getLocationAsync = this._getLocationAsync.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false
+      fontAvenirLoaded: false, 
+      location:null
     };
   }
     
-    _onPressLogInButton(){
+    _onPressLogInButton() {
 
    var user = new Parse.User();
    var login = this;
@@ -45,6 +49,9 @@ constructor(props) {
    Parse.User.logIn(this.state.username, this.state.password, {
    success: function(user) {
     console.log("Trouvé !");
+
+    login._getLocationAsync();
+
     var userId = user.id;
     // Do stuff after successful login.
            var User = Parse.Object.extend("User");
@@ -77,7 +84,9 @@ constructor(props) {
                   highestLevel:highestLevel,
                   availability:availability,
                   userId:userId,
-                  picture: picture
+                  picture: picture,
+                  latitude:login.state.location.coords.latitude,
+                  longitude:login.state.location.coords.longitude
                 })
 
                 login.props.handleSubmitPreferences({
@@ -87,6 +96,13 @@ constructor(props) {
                   filterGender:filterGender,
                   filterStyle:filterStyle,
                   filterFieldType:filterFieldType
+                })
+
+                login.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
                 })
 
                 var clubs = users.get("clubs");
@@ -120,7 +136,7 @@ constructor(props) {
     // The login failed. Check error to see why.
    }
    });
-  } 
+  };
   
   _handleFacebookLogin = async () => {
     try {
@@ -166,7 +182,18 @@ constructor(props) {
     var currentUser = Parse.User.current();  // this will now be null
     });
     this.props.navigation.navigate("SignIn");
-  }
+  };
+
+    _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+     console.log('Permission to access location was denied');
+    }
+
+    let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+    console.log(location);
+    this.setState({ location });
+  };
 
 
 
@@ -252,7 +279,9 @@ constructor(props) {
 
     );
   }
+
 }
+
 
 export default connect(null, mapDispatchToProps) (Login);
 

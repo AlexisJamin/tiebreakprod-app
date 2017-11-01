@@ -1,11 +1,11 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 
-import ChatHeader from './ChatHeader'
-import ChatButton from './ChatButton'
-import ChatContent from './ChatContent'
-import Notifications from './Notifications'
+import ChatHeader from './ChatHeader';
+import ChatButton from './ChatButton';
+import ChatContent from './ChatContent';
+import Notifications from './Notifications';
 
 
 const ChatNavigator = TabNavigator(

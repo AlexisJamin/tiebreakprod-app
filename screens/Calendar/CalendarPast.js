@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
-import { List, ListItem } from 'react-native-elements';
+import React from 'react'
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native'
+import { List, ListItem } from 'react-native-elements'
 
 
 const data = [
@@ -72,7 +72,7 @@ const data = [
 
 
 
-export default class CommunityContent extends React.Component {
+export default class CalendarPast extends React.Component {
 
   constructor(props) {
     super(props);

@@ -2,15 +2,20 @@ import React from 'react'
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
 import { ButtonGroup } from 'react-native-elements'
 import { Font } from 'expo';
+import { connect } from 'react-redux';
 
+function mapStateToProps(store) {
 
-export default class ProfileButton extends React.Component {
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
+
+class ProfileButton extends React.Component {
 
   constructor (props) {
     super(props)
     this.updateIndex = this.updateIndex.bind(this);
     this.state = {
-      selectedIndex: this.props.selectedIndex,
+      selectedIndex: this.props.button.ProfileButtonIndex,
       fontLoaded: false
     }
   }  
@@ -54,6 +59,8 @@ export default class ProfileButton extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps, null) (ProfileButton);
 
 const styles = StyleSheet.create({
   title: {

@@ -1,16 +1,20 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
-import { ButtonGroup } from 'react-native-elements'
+import React from 'react';
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { ButtonGroup } from 'react-native-elements';
 import { Font } from 'expo';
+import { connect } from 'react-redux';
 
+function mapStateToProps(store) {
 
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
 
-export default class ProfileButton extends React.Component {
+class CommunityButton extends React.Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      selectedIndex: this.props.selectedIndex,
+      selectedIndex: this.props.button.CommunityButtonIndex,
       fontLoaded: false
     }
     this.updateIndex = this.updateIndex.bind(this)
@@ -24,7 +28,14 @@ export default class ProfileButton extends React.Component {
   }
 
   updateIndex (selectedIndex) {
-    this.setState({selectedIndex})
+    this.setState({selectedIndex});
+    if (selectedIndex==0) {
+      this.props.navigation.navigate("CommunityContent");
+      console.log("clic sur bouton Communauté");
+    } else {
+      this.props.navigation.navigate("CommunityFriends");
+      console.log("clic sur bouton Amis");
+    }
   }
 
   render() {
@@ -34,9 +45,6 @@ export default class ProfileButton extends React.Component {
 
     return (
 
-       
-
-     
       <ButtonGroup 
       onPress={this.updateIndex}
       selectedIndex={selectedIndex}
@@ -44,14 +52,13 @@ export default class ProfileButton extends React.Component {
       textStyle={styles.title}
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
-      containerStyle={styles.container}/>
-
-
-      
+      containerStyle={styles.container}/> 
         
     );
   }
 }
+
+export default connect(mapStateToProps, null) (CommunityButton);
 
 const styles = StyleSheet.create({
   title: {

@@ -1,12 +1,29 @@
-import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Font } from 'expo'
-import { connect } from 'react-redux'
+import React, { Component } from 'react';
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Font } from 'expo';
+import { connect } from 'react-redux';
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
 
 function mapStateToProps(store) {
 
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences }
-}
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
 
 class MenuContent extends React.Component {
 
@@ -29,6 +46,16 @@ constructor(props) {
     });
   }
 
+navigationRoute(route, index) {
+  this.props.handleSubmitButton({
+    ChatButtonIndex:this.props.button.ChatButtonIndex,
+    CommunityButtonIndex:this.props.button.CommunityButtonIndex,
+    CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+    ProfileButtonIndex:index
+  })
+  this.props.navigation.navigate(route);
+};
+
   render() {
 
     if (this.props.user.picture!='')
@@ -47,14 +74,17 @@ constructor(props) {
     	}}>
 
     	  <View style={{flex: 10, top: -25}}>
-          <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Profile', {selectedIndex: 0})} >
+          <TouchableWithoutFeedback onPress={()=> this.navigationRoute('Profile',0)} >
           {profileImage}
           </TouchableWithoutFeedback>
         </View>
           
           <View style={{flex: 1, top: -10}}>
             {
-        this.state.fontAvenirNextLoaded ? (<Text onPress={() => this.props.navigation.navigate('Profile', {selectedIndex: 0})} style={styles.title}> MON PROFIL </Text>) : null 
+        this.state.fontAvenirNextLoaded ? (
+          <TouchableWithoutFeedback onPress={()=> this.navigationRoute('Profile',0)}>
+          <Text style={styles.title}> MON PROFIL </Text>
+          </TouchableWithoutFeedback>) : null 
           }
           </View>
 
@@ -64,7 +94,11 @@ constructor(props) {
 
            <View style={{flex: 1, paddingTop: 10}}>
             {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> MON CALENDRIER </Text>) : null 
+        this.state.fontAvenirLoaded ? (
+          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationRoute('Calendar',0)} >
+          <Text onPress={() => this.props.navigation.navigate('Calendar')} style={styles.subtitle}> MON CALENDRIER </Text>
+          </TouchableWithoutFeedback>
+          ) : null 
           }
           </View>
 
@@ -74,7 +108,10 @@ constructor(props) {
 
            <View style={{flex: 1, paddingTop: 10}}>
             {
-        this.state.fontAvenirLoaded ? (<Text onPress={() => this.props.navigation.navigate('Community', {selectedIndex: 1})} style={styles.subtitle}> MES AMIS </Text>) : null 
+        this.state.fontAvenirLoaded ? (
+          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationRoute('Community',1)}>
+          <Text style={styles.subtitle}> MES AMIS </Text>
+          </TouchableWithoutFeedback>) : null 
           }
           </View>
 
@@ -114,7 +151,7 @@ constructor(props) {
   }
 }
 
-export default connect(mapStateToProps, null) (MenuContent);
+export default connect(mapStateToProps, mapDispatchToProps) (MenuContent);
 
 const styles = StyleSheet.create({
   title: {

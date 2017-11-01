@@ -1,12 +1,19 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, TextInput } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
+import { TabNavigator } from 'react-navigation';
 
-import ProfileHeader from '../Profile/ProfileHeader'
-import ProfileButton from '../Profile/ProfileButton'
-import ProfilePreferences from '../Profile/ProfilePreferences'
-import CommunityHeader from './CommunityHeader'
-import CommunityButton from './CommunityButton'
-import CommunityContent from './CommunityContent'
+import CommunityHeader from './CommunityHeader';
+import CommunityButton from './CommunityButton';
+import CommunityContent from './CommunityContent';
+import CommunityFriends from './CommunityFriends';
+
+
+const CommunityNavigator = TabNavigator(
+{
+  CommunityContent: {screen: CommunityContent, navigationOptions: {tabBarVisible: false}},
+  CommunityFriends: {screen: CommunityFriends, navigationOptions: {tabBarVisible: false}},
+}
+);
 
 export default class Community extends React.Component {
   render() {
@@ -23,7 +30,7 @@ export default class Community extends React.Component {
       }}>
   
           <View style={{flex:1, alignItems:'stretch'}}>
-          <CommunityButton selectedIndex={this.props.navigation.state.params.selectedIndex}/>
+          <CommunityButton navigation={this.props.navigation}/>
           <TextInput style={styles.searchBar}/>
           </View>
 
@@ -33,7 +40,7 @@ export default class Community extends React.Component {
            <CommunityHeader navigation={this.props.navigation}/>
           </View>
 
-          <CommunityContent navigation={this.props.navigation}/>
+          <CommunityNavigator navigation={this.props.navigation}/>
         
 
       </View>
@@ -41,6 +48,8 @@ export default class Community extends React.Component {
     );
   }
 }
+
+Community.router = CommunityNavigator.router;
 
 styles = StyleSheet.create({
   searchBar: {

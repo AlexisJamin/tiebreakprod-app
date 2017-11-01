@@ -1,23 +1,23 @@
-import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native'
-import { Font } from 'expo'
-import { NavigationActions } from 'react-navigation'
-import { connect } from 'react-redux'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Parse } from 'parse/react-native'
-import Modal from 'react-native-modalbox'
-import { ButtonGroup, CheckBox } from 'react-native-elements'
+import React, { Component } from 'react';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { Font } from 'expo';
+import { NavigationActions } from 'react-navigation';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Parse } from 'parse/react-native';
+import Modal from 'react-native-modalbox';
+import { ButtonGroup, CheckBox } from 'react-native-elements';
 
 
-import EditDispoContentDays from './EditDispoContentDays'
+import EditDispoContentDays from './EditDispoContentDays';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapDispatchToProps(dispatch) {
   return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
+        handleSubmit: function(day, hours) { 
+        dispatch( {type: 'updateAvailability', day, hours} ) 
     }
   }
 }
@@ -26,20 +26,55 @@ function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub }
 }
 
+function compareNombres(a, b) {
+  return parseInt(a) - parseInt(b);
+}
+
+class CheckBoxCustom extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.handleClickHours = this.handleClickHours.bind(this);
+    this.state = {
+      checked: this.props.checked,
+      day: this.props.day,
+      hour: this.props.hour
+    };
+  }
+
+  handleClickHours () {
+    var checked = !this.state.checked
+    this.setState({checked: checked});
+    this.props.handleClickHours(this.props.hour, checked);
+  }
+
+  render(){
+    return(
+       <CheckBox
+        center
+        containerStyle={styles.checkHours}
+        title={this.props.hour+'h'}
+        onPress={this.handleClickHours}
+        checked={this.state.checked}
+        />
+   );
+  }
+}
 
 class EditDispoContent extends React.Component {
 
 constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.handleClickHours = this.handleClickHours.bind(this);
+    this._onPressValidateModal = this._onPressValidateModal.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
       modal:0,
       availability: this.props.user.availability,
       checked:false,
-      backgroundColorBox:'white',
-      textColorBox:'black'  
+      hoursSelected:[]
     };
   }
 
@@ -55,12 +90,31 @@ constructor(props) {
   }
 
   handleClick(modal) {
-    console.log("coucou");
-    console.log(modal);
-    this.setState({modal:modal})
+    this.setState({
+      modal:modal,
+      hoursSelected:this.props.user.availability[modal].hours
+    })
     this.refs.modal.open();
   }
-    
+
+  handleClickHours(hour, isChecked) {
+    // hourSelected gets all the hours before feeding Redux's store
+    var hoursSelected = this.state.hoursSelected.concat();
+    var indexDel;
+    if (this.state.hoursSelected.indexOf(hour+'h')==-1 && isChecked==true) {
+      hoursSelected.push(hour+"h");
+    } else if((indexDel=this.state.hoursSelected.indexOf(hour+'h'))!=-1 && isChecked==false) {
+      hoursSelected.splice(indexDel, 1);
+    }
+    hoursSelected.sort(compareNombres);
+    this.setState({hoursSelected});
+    console.log(hoursSelected);
+  }    
+
+  _onPressValidateModal () {
+    this.props.handleSubmit(this.state.modal, this.state.hoursSelected);
+    this.refs.modal.close();
+  }
 
   render() {
 
@@ -90,6 +144,15 @@ constructor(props) {
           }
         }
     }
+
+    var checkboxList=[];
+    for (var i = 8; i <= 20; i++) {
+      var isChecked=false;
+      if (this.state.availability[this.state.modal].hours.indexOf(i+'h')!=-1) {
+        isChecked = true;
+      }
+      checkboxList.push(<CheckBoxCustom hour={i} day={days[this.state.modal]} checked={isChecked} handleClickHours={this.handleClickHours}/>);
+       }
 
     return (
 
@@ -128,129 +191,14 @@ constructor(props) {
           }}>
          <Text style={{fontSize:14}}> {days[this.state.modal]} </Text> 
          <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-         <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
+         <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.refs.modal.close()}>
          <Image source={require('../../assets/icons/General/Close.imageset/icCloseGrey.png')} />
          </TouchableWithoutFeedback>
          </View>
 
          <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:5, alignItems:'center'}}>
 
-          <CheckBox
-          center
-          checkedColor='white'
-          containerStyle={{
-            width:72,
-            height: 35, 
-            borderWidth:1, 
-            borderRadius:'3', 
-            overflow:'hidden',
-            borderColor:'rgb(213,212,216)', 
-            backgroundColor:this.state.backgroundColorBox,
-          }}
-          textStyle={{
-            color:this.state.textColorBox,
-            fontFamily:'Avenir'
-          }}
-          title='8h'
-          onPress={() => this.setState({checked:true, backgroundColorBox:'rgb(42,129,82)', textColorBox:'white' })}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='9h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='10h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='8h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='9h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='10h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='8h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='9h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='10h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='8h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='9h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='10h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
-
-          <CheckBox
-          center
-          containerStyle={styles.checkHours}
-          title='10h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-          />
+         {checkboxList}
 
           </View>
 
@@ -259,13 +207,7 @@ constructor(props) {
           </TouchableWithoutFeedback>
           </Modal>
 
-
-
           </View>
-
-         
-      
-
 
     );
   }

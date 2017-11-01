@@ -18,9 +18,8 @@ const ProfileNavigator = TabNavigator(
 );
 
 export default class Profile extends React.Component {
-  render() {
 
-    console.log(this.props.navigation);
+  render() {
 
     return (
 
@@ -35,7 +34,7 @@ export default class Profile extends React.Component {
       }}>
   
           <View style={{flex:1, alignItems:'stretch'}}>
-          <ProfileButton selectedIndex={this.props.navigation.state.params.selectedIndex} navigation={this.props.navigation}/>
+          <ProfileButton navigation={this.props.navigation}/>
         </View>
 
       </View>

@@ -4,7 +4,10 @@ import { Font } from 'expo'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 import { ButtonGroup } from 'react-native-elements'
 import { connect } from 'react-redux'
+import { Parse } from 'parse/react-native'
 
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -24,8 +27,9 @@ class ProfilePreferences extends React.Component {
 
 constructor(props) {
     super(props);
-    this.updateIndexCourt = this.updateIndexCourt.bind(this);
-    this.updateIndexGenre = this.updateIndexGenre.bind(this);
+    //this.handleClick = this.handleClick.bind(this);
+    this._onPressValidateButton = this._onPressValidateButton.bind(this);
+
     var filterCondition;
       if (this.props.userPreferences.filterCondition==="indifferent") {
       filterCondition=2;
@@ -35,14 +39,33 @@ constructor(props) {
       filterCondition=1;
     }
 
+    var filterGender;
+      if (this.props.userPreferences.filterGender==="indifferent") {
+      filterGender=2;
+    } else if (this.props.userPreferences.filterGender==="man") {
+      filterGender=0;
+    } else if (this.props.userPreferences.filterGender==="woman") {
+      filterGender=1;
+    }
+
+    var filterStyle;
+      if (this.props.userPreferences.filterStyle==="indifferent") {
+      filterStyle=2;
+    } else if (this.props.userPreferences.filterStyle==="right") {
+      filterStyle=0;
+    } else if (this.props.userPreferences.filterStyle==="left") {
+      filterStyle=1;
+    }
+
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
-      multiSliderValueLevel: [this.props.userPreferences.filterLevel.from, this.props.userPreferences.filterLevel.to],
-      multiSliderValueAge: [this.props.userPreferences.filterAge.from, this.props.userPreferences.filterAge.to],
+      filterLevel: [this.props.userPreferences.filterLevel.from, this.props.userPreferences.filterLevel.to],
+      filterAge: [this.props.userPreferences.filterAge.from, this.props.userPreferences.filterAge.to],
       range:this.props.userPreferences.filterFieldType.range,
       filterCondition: filterCondition,
-      selectedIndexGenre: 2,
+      filterGender: filterGender,
+      filterStyle: filterStyle
     };
   }
 
@@ -54,25 +77,44 @@ constructor(props) {
     });
     this.setState({ 
       fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true,
-
+      fontAvenirLoaded: true
     });
   }
 
-  updateIndexCourt (filterCondition) {
-    this.setState({filterCondition:filterCondition})
-  }
+  _onPressValidateButton() {
 
-  updateIndexGenre (selectedIndex) {
-    this.setState({selectedIndexGenre: selectedIndex})
-  }
+    var edit = this;
 
+     var user = Parse.User.current();
+
+     user.set("filterStyle", this.state.filterStyle);
+     user.set("filterGender", this.state.filterGender);
+     user.set("filterCondition", this.state.filterCondition);
+     user.set("filterLevel", this.state.filterLevel);
+     user.set("filterAge", this.state.filterAge);
+     user.set("filterFieldType", {"range":this.state.range,"key":"aroundMe","latitude":null,"longitude":null});
+     user.save();
+
+     edit.props.handleSubmitPreferences({
+        filterCondition:this.state.filterCondition,
+        filterAge:this.state.filterAge,
+        filterLevel:this.state.filterLevel,
+        filterGender:this.state.filterGender,
+        filterStyle:this.state.filterStyle,
+        filterFieldType:{"range":this.state.range,"key":"aroundMe","latitude":null,"longitude":null}
+      })
+     //edit.props.handleClick(0);
+     edit.props.navigation.navigate("ProfileContent");
+  }
 
   render() {
 
-    const buttonsCourt = ['Intérieur', 'Extérieur', 'Indifférent']
-    const buttonsGenre = ['Hommes', 'Femmes', 'Indifférent']
+    const buttonsCourt = ['Intérieur', 'Extérieur', 'Indifférent'];
+    const buttonsGenre = ['Homme', 'Femme', 'Indifférent'];
+    const buttonsStyle = ['Droitier', 'Gaucher', 'Indifférent'];
     var { filterCondition } = this.state;
+    var { filterGender } = this.state;
+    var { filterStyle } = this.state;
     var { range } = this.state;
 
     return (
@@ -116,7 +158,7 @@ constructor(props) {
         </View>
 
          <ButtonGroup 
-          onPress={this.updateIndexCourt}
+          onPress={(filterCondition) => this.setState({filterCondition})}
           selectedIndex={filterCondition}
           buttons={buttonsCourt}
           textStyle={styles.title}
@@ -132,7 +174,7 @@ constructor(props) {
 
         <View style={{flexDirection:'row', justifyContent: 'center', marginBottom:30, marginTop:30}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau min : {this.state.multiSliderValueLevel[0]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau min : {this.state.filterLevel[0]} </Text> 
             ) : null 
          }
         {
@@ -140,16 +182,16 @@ constructor(props) {
             ) : null 
          }
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau max : {this.state.multiSliderValueLevel[1]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau max : {this.state.filterLevel[1]} </Text> 
             ) : null 
          }
         </View>
 
         <View style={{alignItems:'center'}}>
         <MultiSlider
-            values={[this.state.multiSliderValueLevel[0], this.state.multiSliderValueLevel[1]]}
+            values={[this.state.filterLevel[0], this.state.filterLevel[1]]}
             sliderLength={320}
-            onValuesChange={(values) => this.setState({multiSliderValueLevel:values})}
+            onValuesChange={(values) => this.setState({filterLevel:values})}
             min={0}
             max={24}
             step={1}
@@ -162,8 +204,8 @@ constructor(props) {
           </View>
 
           <ButtonGroup 
-          onPress={this.updateIndexGenre}
-          selectedIndex={this.state.selectedIndexGenre}
+          onPress={(filterGender) => this.setState({filterGender})}
+          selectedIndex={filterGender}
           buttons={buttonsGenre}
           textStyle={styles.title}
           selectedBackgroundColor={'rgb(42,127,83)'}
@@ -173,7 +215,7 @@ constructor(props) {
 
         <View style={{flexDirection:'row', justifyContent: 'center', marginBottom:30}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Âge min : {this.state.multiSliderValueAge[0]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Âge min : {this.state.filterAge[0]} </Text> 
             ) : null 
          }
         {
@@ -181,16 +223,16 @@ constructor(props) {
             ) : null 
          }
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Âge max : {this.state.multiSliderValueAge[1]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Âge max : {this.state.filterAge[1]} </Text> 
             ) : null 
          }
         </View>
 
          <View style={{alignItems:'center'}}>
          <MultiSlider
-            values={[this.state.multiSliderValueAge[0], this.state.multiSliderValueAge[1]]}
+            values={[this.state.filterAge[0], this.state.filterAge[1]]}
             sliderLength={320}
-            onValuesChange={(values) => this.setState({multiSliderValueAge:values})}
+            onValuesChange={(values) => this.setState({filterAge:values})}
             min={15}
             max={70}
             step={1}
@@ -201,6 +243,16 @@ constructor(props) {
             snapped
           />
           </View>
+
+          <ButtonGroup 
+          onPress={(filterStyle) => this.setState({filterStyle})}
+          selectedIndex={filterStyle}
+          buttons={buttonsStyle}
+          textStyle={styles.title}
+          selectedBackgroundColor={'rgb(42,127,83)'}
+          selectedTextStyle={styles.subtitle}
+          containerStyle={styles.container}
+          />
 
           {
           this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', marginBottom:30, paddingLeft:10}}> CALENDRIER </Text>

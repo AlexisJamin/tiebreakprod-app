@@ -34,6 +34,7 @@ const Navigator = StackNavigator({
         Swiper: { screen: Swiper },
         Profile: { screen: Profile },
         Community: { screen: Community },
+        Calendar: { screen: Calendar },
         EditProfile: { screen: EditProfile },
         EditDispo: { screen: EditDispo },
         CreateGame: { screen: CreateGame },

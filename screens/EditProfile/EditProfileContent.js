@@ -1,15 +1,14 @@
-import React, { Component } from 'react'
-import { Alert, StyleSheet, View, Image, Text, TextInput, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
-import { Font, Constants, ImagePicker, registerRootComponent } from 'expo'
-import { NavigationActions } from 'react-navigation'
-import { connect } from 'react-redux'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Parse } from 'parse/react-native'
-import ModalDropdown from 'react-native-modal-dropdown'
-import Modal from 'react-native-modalbox'
+import React, { Component } from 'react';
+import { Alert, StyleSheet, View, Image, Text, TextInput, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { Font, Constants, ImagePicker, registerRootComponent } from 'expo';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Parse } from 'parse/react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
+import Modal from 'react-native-modalbox';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapDispatchToProps(dispatch) {
   return {

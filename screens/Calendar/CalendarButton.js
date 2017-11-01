@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 15,
     textAlign: 'center',
-    top: 8,
+    top: 40,
   },
    subtitle: {
     color: 'white',
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    height: 60,
+    height: 120,
     marginRight: 0,
     marginLeft: 0,
   },
