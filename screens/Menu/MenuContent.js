@@ -46,12 +46,32 @@ constructor(props) {
     });
   }
 
-navigationRoute(route, index) {
+navigationProfile(route, index) {
   this.props.handleSubmitButton({
     ChatButtonIndex:this.props.button.ChatButtonIndex,
     CommunityButtonIndex:this.props.button.CommunityButtonIndex,
     CalendarButtonIndex:this.props.button.CalendarButtonIndex,
     ProfileButtonIndex:index
+  })
+  this.props.navigation.navigate(route);
+};
+
+navigationCalendar(route, index) {
+  this.props.handleSubmitButton({
+    ChatButtonIndex:this.props.button.ChatButtonIndex,
+    CommunityButtonIndex:this.props.button.CommunityButtonIndex,
+    CalendarButtonIndex:index,
+    ProfileButtonIndex:this.props.button.ProfileButtonIndex
+  })
+  this.props.navigation.navigate(route);
+};
+
+navigationCommunity(route, index) {
+  this.props.handleSubmitButton({
+    ChatButtonIndex:this.props.button.ChatButtonIndex,
+    CommunityButtonIndex:index,
+    CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+    ProfileButtonIndex:this.props.button.ProfileButtonIndex
   })
   this.props.navigation.navigate(route);
 };
@@ -74,7 +94,7 @@ navigationRoute(route, index) {
     	}}>
 
     	  <View style={{flex: 10, top: -25}}>
-          <TouchableWithoutFeedback onPress={()=> this.navigationRoute('Profile',0)} >
+          <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)} >
           {profileImage}
           </TouchableWithoutFeedback>
         </View>
@@ -82,7 +102,7 @@ navigationRoute(route, index) {
           <View style={{flex: 1, top: -10}}>
             {
         this.state.fontAvenirNextLoaded ? (
-          <TouchableWithoutFeedback onPress={()=> this.navigationRoute('Profile',0)}>
+          <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)}>
           <Text style={styles.title}> MON PROFIL </Text>
           </TouchableWithoutFeedback>) : null 
           }
@@ -95,8 +115,8 @@ navigationRoute(route, index) {
            <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationRoute('Calendar',0)} >
-          <Text onPress={() => this.props.navigation.navigate('Calendar')} style={styles.subtitle}> MON CALENDRIER </Text>
+          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationCalendar('Calendar',0)} >
+          <Text style={styles.subtitle}> MON CALENDRIER </Text>
           </TouchableWithoutFeedback>
           ) : null 
           }
@@ -109,7 +129,7 @@ navigationRoute(route, index) {
            <View style={{flex: 1, paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationRoute('Community',1)}>
+          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationCommunity('Community',1)}>
           <Text style={styles.subtitle}> MES AMIS </Text>
           </TouchableWithoutFeedback>) : null 
           }

@@ -1,6 +1,6 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
-import { ButtonGroup } from 'react-native-elements'
+import React from 'react';
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { ButtonGroup } from 'react-native-elements';
 import { Font } from 'expo';
 import { connect } from 'react-redux';
 
@@ -9,13 +9,29 @@ function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };
 
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
+
 class ProfileButton extends React.Component {
 
   constructor (props) {
-    super(props)
+    super(props);
     this.updateIndex = this.updateIndex.bind(this);
     this.state = {
-      selectedIndex: this.props.button.ProfileButtonIndex,
       fontLoaded: false
     }
   }  
@@ -28,7 +44,12 @@ class ProfileButton extends React.Component {
   }
 
   updateIndex (selectedIndex) {
-    this.setState({selectedIndex})
+      this.props.handleSubmitButton({
+        ChatButtonIndex:this.props.button.ChatButtonIndex,
+        CommunityButtonIndex:this.props.button.CommunityButtonIndex,
+        CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+        ProfileButtonIndex:selectedIndex
+      })
     if (selectedIndex==0) {
       this.props.navigation.navigate("ProfileContent");
       console.log("clic sur bouton Mon Profil");
@@ -40,11 +61,10 @@ class ProfileButton extends React.Component {
 
   render() {
 
-    const buttons = ['Mon profil', 'Mes préférences']
-    const { selectedIndex } = this.state
+    const buttons = ['Mon profil', 'Mes préférences'];
+    const selectedIndex = this.props.button.ProfileButtonIndex;
 
     return (
-
  
       <ButtonGroup 
       onPress={this.updateIndex}
@@ -54,13 +74,11 @@ class ProfileButton extends React.Component {
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
       containerStyle={styles.container}/>
-
-      
     );
   }
 }
 
-export default connect(mapStateToProps, null) (ProfileButton);
+export default connect(mapStateToProps, mapDispatchToProps) (ProfileButton);
 
 const styles = StyleSheet.create({
   title: {

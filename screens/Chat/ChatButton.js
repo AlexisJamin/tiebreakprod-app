@@ -1,16 +1,37 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
-import { ButtonGroup } from 'react-native-elements'
+import React from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import { ButtonGroup } from 'react-native-elements';
 import { Font } from 'expo';
+import { connect } from 'react-redux';
 
+function mapStateToProps(store) {
 
-export default class ChatButton extends React.Component {
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
+
+class ChatButton extends React.Component {
 
   constructor () {
-    super()
+    super();
     this.updateIndex = this.updateIndex.bind(this)
     this.state = {
-      selectedIndex: 0,
       fontLoaded: false
     }
   }  
@@ -23,7 +44,12 @@ export default class ChatButton extends React.Component {
   }
 
   updateIndex (selectedIndex) {
-    this.setState({selectedIndex})
+     this.props.handleSubmitButton({
+        ChatButtonIndex:selectedIndex,
+        CommunityButtonIndex:this.props.button.CommunityButtonIndex,
+        CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+        ProfileButtonIndex:this.props.button.ProfileButtonIndex
+      })
     if (selectedIndex==0) {
       this.props.navigation.navigate("Notifications");
       console.log("clic sur bouton notifs");
@@ -36,7 +62,7 @@ export default class ChatButton extends React.Component {
   render() {
 
     const buttons = ['Notifications', 'Chat']
-    const { selectedIndex } = this.state
+    const selectedIndex = this.props.button.ChatButtonIndex;
 
     return (
 
@@ -53,6 +79,8 @@ export default class ChatButton extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps) (ChatButton);
 
 const styles = StyleSheet.create({
   title: {

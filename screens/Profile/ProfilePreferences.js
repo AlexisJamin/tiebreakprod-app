@@ -9,19 +9,27 @@ import { Parse } from 'parse/react-native'
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
-function mapDispatchToProps(dispatch) {
-  return {
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    }
-  }
-}
-
 function mapStateToProps(store) {
 
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences }
-}
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
 
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
 
 class ProfilePreferences extends React.Component {
 
@@ -103,7 +111,14 @@ constructor(props) {
         filterStyle:this.state.filterStyle,
         filterFieldType:{"range":this.state.range,"key":"aroundMe","latitude":null,"longitude":null}
       })
-     //edit.props.handleClick(0);
+
+     edit.props.handleSubmitButton({
+        ChatButtonIndex:edit.props.button.ChatButtonIndex,
+        CommunityButtonIndex:edit.props.button.CommunityButtonIndex,
+        CalendarButtonIndex:edit.props.button.CalendarButtonIndex,
+        ProfileButtonIndex:0
+      })
+
      edit.props.navigation.navigate("ProfileContent");
   }
 

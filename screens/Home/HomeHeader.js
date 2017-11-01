@@ -1,13 +1,37 @@
-import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Font } from 'expo'
+import React, { Component } from 'react';
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Font } from 'expo';
+import { connect } from 'react-redux';
 
+function mapStateToProps(store) {
 
-export default class HomeHeader extends Component {
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'user', value: value} ) 
+    },
+        handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitPreferences: function(value) { 
+        dispatch( {type: 'userPreferences', value: value} ) 
+    },
+    handleSubmitButton: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
+
+class HomeHeader extends Component {
 
 	constructor() {
 		super();
-		this.state = {fontLoaded: false};
+		this.state = {
+      fontLoaded: false
+    };
 	}
 
 	async componentDidMount() {
@@ -16,6 +40,16 @@ export default class HomeHeader extends Component {
     });
     this.setState({ fontLoaded: true });
   }
+
+  navigationRoute(route, index) {
+  this.props.handleSubmitButton({
+    ChatButtonIndex:index,
+    CommunityButtonIndex:this.props.button.CommunityButtonIndex,
+    CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+    ProfileButtonIndex:this.props.button.ProfileButtonIndex
+  })
+  this.props.navigation.navigate(route);
+};
   
   render() {
 
@@ -37,7 +71,7 @@ export default class HomeHeader extends Component {
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }
-       <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('Chat')}>
+       <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationRoute('Chat',0)}>
        <Image source={require('../../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
        </TouchableWithoutFeedback>
        
@@ -48,6 +82,8 @@ export default class HomeHeader extends Component {
     );
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps) (HomeHeader);
 
 const styles = StyleSheet.create({
   title: {
