@@ -114,7 +114,7 @@ constructor(props) {
              ) : null 
             }
             </View>
-            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('EditProfile')} >
+            <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditProfile')} >
             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
             </TouchableWithoutFeedback>
           
@@ -188,8 +188,9 @@ constructor(props) {
                {
               this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES CLUBS</Text>) : null 
               }   
-       
+            <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditClub')} >
              <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+             </TouchableWithoutFeedback>
 
           </View>
 
@@ -245,7 +246,7 @@ constructor(props) {
                {
               this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES DISPONIBILITÉS</Text>) : null 
               }   
-            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('EditDispo')} >
+            <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditDispo')} >
             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
             </TouchableWithoutFeedback>
 

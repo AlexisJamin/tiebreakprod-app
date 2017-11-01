@@ -103,7 +103,7 @@ navigationCommunity(route, index) {
             {
         this.state.fontAvenirNextLoaded ? (
           <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)}>
-          <Text style={styles.title}> MON PROFIL </Text>
+          <Text style={{padding:30}} style={styles.title}> MON PROFIL </Text>
           </TouchableWithoutFeedback>) : null 
           }
           </View>

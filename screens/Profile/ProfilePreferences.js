@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, Switch, Slider} from 'react-native'
-import { Font } from 'expo'
-import MultiSlider from '@ptomasroos/react-native-multi-slider'
-import { ButtonGroup } from 'react-native-elements'
-import { connect } from 'react-redux'
-import { Parse } from 'parse/react-native'
+import React, { Component } from 'react';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, Switch, Slider} from 'react-native';
+import { Font } from 'expo';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { ButtonGroup } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { Parse } from 'parse/react-native';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
 
@@ -38,7 +38,7 @@ constructor(props) {
     //this.handleClick = this.handleClick.bind(this);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
 
-    var filterCondition;
+    let filterCondition;
       if (this.props.userPreferences.filterCondition==="indifferent") {
       filterCondition=2;
     } else if (this.props.userPreferences.filterCondition==="inside") {
@@ -47,7 +47,7 @@ constructor(props) {
       filterCondition=1;
     }
 
-    var filterGender;
+    let filterGender;
       if (this.props.userPreferences.filterGender==="indifferent") {
       filterGender=2;
     } else if (this.props.userPreferences.filterGender==="man") {
@@ -56,7 +56,7 @@ constructor(props) {
       filterGender=1;
     }
 
-    var filterStyle;
+    let filterStyle;
       if (this.props.userPreferences.filterStyle==="indifferent") {
       filterStyle=2;
     } else if (this.props.userPreferences.filterStyle==="right") {
@@ -93,23 +93,48 @@ constructor(props) {
 
     var edit = this;
 
-     var user = Parse.User.current();
+     let filterCondition;
+      if (edit.state.filterCondition===2) {
+      filterCondition="indifferent";
+    } else if (edit.state.filterCondition===0) {
+      filterCondition="inside";
+    } else if (edit.state.filterCondition===1) {
+      filterCondition="outside";
+    }
 
-     user.set("filterStyle", this.state.filterStyle);
-     user.set("filterGender", this.state.filterGender);
-     user.set("filterCondition", this.state.filterCondition);
-     user.set("filterLevel", this.state.filterLevel);
-     user.set("filterAge", this.state.filterAge);
-     user.set("filterFieldType", {"range":this.state.range,"key":"aroundMe","latitude":null,"longitude":null});
+    let filterGender;
+      if (edit.state.filterGender===2) {
+      filterGender="indifferent";
+    } else if (edit.state.filterGender===0) {
+      filterGender="man";
+    } else if (edit.state.filterGender===1) {
+      filterGender="woman";
+    }
+
+    let filterStyle;
+      if (edit.state.filterStyle===2) {
+      filterStyle="indifferent";
+    } else if (edit.state.filterStyle===0) {
+      filterStyle="right";
+    } else if (edit.state.filterStyle===1) {
+      filterStyle="left";
+    }
+     var user = Parse.User.current();
+     user.set("filterStyle", filterStyle);
+     user.set("filterGender", filterGender);
+     user.set("filterCondition", filterCondition);
+     user.set("filterLevel", {"to":edit.state.filterLevel[1], "from":edit.state.filterLevel[0]});
+     user.set("filterAge", {"to":edit.state.filterAge[1], "from":edit.state.filterAge[0]});
+     user.set("filterFieldType", {"range":edit.state.range,"key":"aroundMe","latitude":edit.props.user.latitude,"longitude":edit.props.user.longitude});
      user.save();
 
      edit.props.handleSubmitPreferences({
-        filterCondition:this.state.filterCondition,
-        filterAge:this.state.filterAge,
-        filterLevel:this.state.filterLevel,
-        filterGender:this.state.filterGender,
-        filterStyle:this.state.filterStyle,
-        filterFieldType:{"range":this.state.range,"key":"aroundMe","latitude":null,"longitude":null}
+        filterCondition:filterCondition,
+        filterAge:{"to":edit.state.filterAge[1], "from":edit.state.filterAge[0]},
+        filterLevel:{"to":edit.state.filterLevel[1], "from":edit.state.filterLevel[0]},
+        filterGender:filterGender,
+        filterStyle:filterStyle,
+        filterFieldType:{"range":edit.state.range,"key":"aroundMe","latitude":edit.props.user.latitude,"longitude":edit.props.user.longitude}
       })
 
      edit.props.handleSubmitButton({
@@ -127,10 +152,10 @@ constructor(props) {
     const buttonsCourt = ['Intérieur', 'Extérieur', 'Indifférent'];
     const buttonsGenre = ['Homme', 'Femme', 'Indifférent'];
     const buttonsStyle = ['Droitier', 'Gaucher', 'Indifférent'];
-    var { filterCondition } = this.state;
-    var { filterGender } = this.state;
-    var { filterStyle } = this.state;
-    var { range } = this.state;
+    let { filterCondition } = this.state;
+    let { filterGender } = this.state;
+    let { filterStyle } = this.state;
+    let { range } = this.state;
 
     return (
 

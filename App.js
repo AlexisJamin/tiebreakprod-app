@@ -22,6 +22,7 @@ import ProfileContent from './screens/Profile/ProfileContent'
 import CreateGameContent from './screens/CreateGame/CreateGameContent'
 import ChatContent from './screens/Chat/ChatContent'
 import Notifications from './screens/Chat/Notifications'
+import EditClub from './screens/EditClub/EditClub'
 
 
 const reducers = require('./combine-reducer').default;
@@ -37,6 +38,7 @@ const Navigator = StackNavigator({
         Calendar: { screen: Calendar },
         EditProfile: { screen: EditProfile },
         EditDispo: { screen: EditDispo },
+        EditClub: { screen: EditClub },
         CreateGame: { screen: CreateGame },
         }, { 
         initialRouteName:'Login', 
