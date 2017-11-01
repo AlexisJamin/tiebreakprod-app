@@ -31,6 +31,7 @@ class SignIn extends React.Component {
 
   constructor(props) {
     super(props);
+    this._getLocationAsync();
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
     this._getLocationAsync = this._getLocationAsync.bind(this);
@@ -58,14 +59,18 @@ class SignIn extends React.Component {
   signInWithoutPicture() {
 
   var signin = this;
+
   var user = new Parse.User();
+  var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
 
   user.set("username", this.state.username);
   user.set("password", this.state.password);
   user.set("firstName", this.state.firstName);
   user.set("lastName", this.state.lastName);
   user.set("email", this.state.username);
+  user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
+  user.set("geolocation", point);
   user.set("filterCondition", "indifferent");
   user.set("filterAge", {"to":70,"from":15});
   user.set("filterLevel", {"to":24,"from":0});
@@ -73,7 +78,6 @@ class SignIn extends React.Component {
   user.set("filterStyle", "indifferent");
   user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
   
-  signin._getLocationAsync();
   
   user.signUp(null, {
   success: function(user) {              
@@ -88,7 +92,7 @@ class SignIn extends React.Component {
       gender:'à compléter',
       currentLevel:'à compléter',
       highestLevel:'à compléter',
-      availability:[],
+      availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
       userId:userId,
       picture: '',
       latitude:signin.state.location.coords.latitude,
@@ -145,12 +149,16 @@ class SignIn extends React.Component {
 
             if (signin.state.picture.length>0) {
 
+            var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
+
             user.set("username", this.state.username);
             user.set("password", this.state.password);
             user.set("firstName", this.state.firstName);
             user.set("lastName", this.state.lastName);
             user.set("email", this.state.username);
+            user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
+            user.set("geolocation", point);
             user.set("filterCondition", "indifferent");
             user.set("filterAge", {"to":70,"from":15});
             user.set("filterLevel", {"to":24,"from":0});
@@ -158,7 +166,7 @@ class SignIn extends React.Component {
             user.set("filterStyle", "indifferent");
             user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
             
-            signin._getLocationAsync();
+            //signin._getLocationAsync();
 
             user.signUp(null, {
             success: function(user) {              
@@ -183,7 +191,7 @@ class SignIn extends React.Component {
                 gender:'à compléter',
                 currentLevel:'à compléter',
                 highestLevel:'à compléter',
-                availability:[],
+                availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
                 userId:userId,
                 picture: picture.url(),
                 latitude:signin.state.location.coords.latitude,

@@ -57,8 +57,17 @@ constructor(props) {
       clubListBullets.push(<ProfileContentClubsBullets/>)
     }
   }
-    if (this.props.user.availability.length == 0) {
-    var newUserDispo = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
+    if (this.props.user.availability[0].hours.length == 0 &&
+        this.props.user.availability[1].hours.length == 0 &&
+        this.props.user.availability[2].hours.length == 0 &&
+        this.props.user.availability[3].hours.length == 0 &&
+        this.props.user.availability[4].hours.length == 0 &&
+        this.props.user.availability[5].hours.length == 0 &&
+        this.props.user.availability[6].hours.length == 0) {
+    var newUserDispo = (<View style={{alignItems:'center', top: 20, marginBottom:10}}>
+                        <Text style={{marginBottom:10}}> À COMPLÉTER</Text>
+                        <Text> (nécessaire pour trouver des ami(e)s / parties) </Text>
+                        </View>);
     } else {
     var dayList = [];
     for (var i = 0; i < this.props.user.availability.length; i++) {
