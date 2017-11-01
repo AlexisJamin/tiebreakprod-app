@@ -26,6 +26,7 @@ function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub }
 }
 
+// Necessary for array.sort who takes only first number into account
 function compareNombres(a, b) {
   return parseInt(a) - parseInt(b);
 }
@@ -68,6 +69,7 @@ constructor(props) {
     this.handleClick = this.handleClick.bind(this);
     this.handleClickHours = this.handleClickHours.bind(this);
     this._onPressValidateModal = this._onPressValidateModal.bind(this);
+    this._onPressValidateDispo = this._onPressValidateDispo.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -108,12 +110,18 @@ constructor(props) {
     }
     hoursSelected.sort(compareNombres);
     this.setState({hoursSelected});
-    console.log(hoursSelected);
   }    
 
   _onPressValidateModal () {
     this.props.handleSubmit(this.state.modal, this.state.hoursSelected);
     this.refs.modal.close();
+  }
+
+  _onPressValidateDispo () {
+      var user = Parse.User.current();
+      user.set("availability", this.state.availability);
+      user.save();
+      this.props.navigation.goBack();
   }
 
   render() {
