@@ -401,16 +401,6 @@ constructor(props) {
 export default connect(mapStateToProps, mapDispatchToProps) (EditProfileContent);
 
 const styles = StyleSheet.create({
-  buttonLogIn: {
-    backgroundColor: 'rgb(200,90,24)',
-    color: 'white',
-    fontSize: 18,
-    lineHeight: 30,
-    textAlign: 'center',
-    overflow:'hidden', 
-    paddingTop:15,
-    paddingBottom:15 
-  },
   buttonValidate: {
     backgroundColor: 'rgb(200,90,24)',
     color: 'white',

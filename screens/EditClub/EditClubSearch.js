@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { Font } from 'expo';
 import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -35,7 +35,7 @@ function mapDispatchToProps(dispatch) {
   }
 };
 
-class EditClubContent extends React.Component {
+class EditClubSearch extends React.Component {
 
 constructor(props) {
     super(props);
@@ -81,86 +81,37 @@ constructor(props) {
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
-      {
-        this.state.fontAvenirLoaded ? (
-          <Text style={{marginBottom:30, fontFamily: 'AvenirNext', left:10}}> MES CLUBS FAVORIS </Text>
-        ) : null 
-       }
+
+      <View style={{flexDirection:'row', justifyContent:"space-around", top:30}}>
+      <TouchableWithoutFeedback style={{padding:40}} onPress={() => this.props.navigation.goBack()}>
+      <Image style={{marginTop:15}} source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
+      </TouchableWithoutFeedback>
+      <TextInput style={styles.searchBar}/>
+      </View>
 
        <KeyboardAwareScrollView>
 
-       <View style={{
-        flexDirection:'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20
-      }}>
-      {clubList}
-      </View>
-
-      <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditClubSearch')} >
-      <View style={{flexDirection:'row', justifyContent:"center"}}>
-       <Image style={{marginRight:10}} source={require('../../assets/icons/Search/Search.imageset/icSearch.png')} /> 
-       {
-       this.state.fontAvenirLoaded ? (<Text style={styles.clubs}> Ajouter un club favori </Text>) : null 
-       } 
-       </View>
-      </TouchableWithoutFeedback>   
+    
+     
 
       </KeyboardAwareScrollView>
 
-      <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
-      <Text style={styles.buttonValidate}>Valider</Text>
-      </TouchableWithoutFeedback>
       </View>
 
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (EditClubContent);
+export default connect(mapStateToProps, mapDispatchToProps) (EditClubSearch);
 
 const styles = StyleSheet.create({
-  buttonValidate: {
-    backgroundColor: 'rgb(200,90,24)',
-    color: 'white',
-    fontSize: 18,
-    lineHeight: 30,
-    textAlign: 'center',
-    paddingTop:15,
-    paddingBottom:15 
-  },
-  page: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  title: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center',
-  },
-   subtitle: {
-    color: 'white',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center',
-  },
-  container: {
-    backgroundColor: 'white',
-    height: 40,
-    marginBottom:30,
-  },
-  clubs: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 14,
-    left:5,
-    marginBottom: 12,
-    alignItem:'center', 
-    justifyContent: 'center',
+  searchBar: {
+    paddingLeft:20,
+    marginLeft:20,
+    fontSize:13,
+    height:40,
+    width:250,
+    borderWidth: 6,
+    borderColor: '#E4E4E4'
   }
 });

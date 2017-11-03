@@ -1,22 +1,7 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
-import Svg,{
-    Circle,
-    Ellipse,
-    G,
-    LinearGradient,
-    RadialGradient,
-    Line,
-    Path,
-    Polygon,
-    Polyline,
-    Rect,
-    Symbol,
-    Use,
-    Defs,
-    Stop
-} from 'react-native-svg'
-import { Font } from 'expo'
+import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native';
+import Svg, { Line } from 'react-native-svg';
+import { Font } from 'expo';
 
 export default class HomeContent extends React.Component {
 
