@@ -62,7 +62,7 @@ class HomeHeader extends Component {
         flex:1,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        top: 40,
+        top: 40
         }}>
 
        		<TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('Menu')}>
@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
     fontFamily: 'SevenOneEightUltra',
     fontSize: 15,
     top: 3,
-    textAlign: 'center',
-  },
+    textAlign:'center'
+  }
 });

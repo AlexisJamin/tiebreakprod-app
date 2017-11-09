@@ -11,10 +11,10 @@ import Notifications from './Notifications';
 const ChatNavigator = TabNavigator(
 {
   Notifications: {screen: Notifications, navigationOptions: {tabBarVisible: false}},
-  ChatContent: {screen: ChatContent, navigationOptions: {tabBarVisible: false}},
+  ChatContent: {screen: ChatContent, navigationOptions: {tabBarVisible: false}}
 },
 {
-  initialRouteName:'Notifications',
+  initialRouteName:'Notifications'
   },
 );
 
@@ -29,7 +29,7 @@ export default class Chat extends React.Component {
         width:'100%',
         height:'100%',
         flexDirection:'row', 
-        alignItems:'flex-start',
+        alignItems:'flex-start'
       }}>
 
         <View style={{flex:1, alignItems:'stretch'}}>

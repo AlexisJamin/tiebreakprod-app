@@ -1,14 +1,14 @@
-import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
-import { Facebook, Constants, ImagePicker, registerRootComponent, Location, Permissions } from 'expo'
-import Modal from 'react-native-modalbox'
-import { NavigationActions } from 'react-navigation'
-import { connect } from 'react-redux'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Parse } from 'parse/react-native'
+import React from 'react';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { Facebook, Font, Constants, ImagePicker, registerRootComponent, Location, Permissions } from 'expo';
+import Modal from 'react-native-modalbox';
+import { NavigationActions } from 'react-navigation';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Parse } from 'parse/react-native';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -31,10 +31,8 @@ class SignIn extends React.Component {
 
   constructor(props) {
     super(props);
-    this._getLocationAsync();
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
-    this._getLocationAsync = this._getLocationAsync.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -48,6 +46,17 @@ class SignIn extends React.Component {
       picture:'',
       location:null
     };
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
+      'Avenir': require('../../assets/fonts/Avenir.ttf'),
+    });
+    this.setState({ 
+      fontAvenirNextLoaded: true,
+      fontAvenirLoaded: true 
+    });
   }
 
   validateEmail(email) 
@@ -307,13 +316,13 @@ class SignIn extends React.Component {
 
   render() {
 
-    let { image } = this.state;
-    let { picture } = this.state;
+    //let { image } = this.state;
+    //let { picture } = this.state;
     var profileImage;
 
      if (this.state.picture!='')
            {
-           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+picture}}/>
+           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+this.state.picture}}/>
            } else {
              profileImage = <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
              }
@@ -354,44 +363,40 @@ class SignIn extends React.Component {
             </TouchableOpacity>
 
           <TextInput 
-            ref='firsName'
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
-            autoCorrect='false'
+            autoCorrect={false}
             placeholder='Prénom'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.lastName.focus();
-            }}
+            onSubmitEditing={(event) => {this.refs.lastName.focus()}}
             />
           <TextInput 
             ref='lastName'
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
-            autoCorrect='false'
+            autoCorrect={false}
             placeholder='Nom'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.username.focus();
-            }}
+            onSubmitEditing={(event) => {this.refs.username.focus()}}
             />
-          <TextInput 
-            ref='username'
+          <TextInput
+            ref='username' 
             style={styles.input} 
             keyboardType="email-address"
             returnKeyType='next'
             autoCapitalize='none'
-            autoCorrect='false'
+            autoCorrect={false}
             placeholder='Email'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.password.focus();
-            }}
+            onSubmitEditing={(event) => {this.refs.password.focus()}}
             />
           <TextInput 
             ref='password'
@@ -399,14 +404,13 @@ class SignIn extends React.Component {
             keyboardType="default"
             returnKeyType='next'
             autoCapitalize='none'
-            autoCorrect='false'
-            secureTextEntry='true'
+            autoCorrect={false}
+            secureTextEntry={true}
             placeholder='Mot de passe'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(password) => this.setState({password})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.confirmPassword.focus();
-            }}
+            onSubmitEditing={(event) => {this.refs.confirmPassword.focus()}}
             />
           <TextInput 
             ref='confirmPassword'
@@ -414,8 +418,8 @@ class SignIn extends React.Component {
             keyboardType="default"
             returnKeyType='done'
             autoCapitalize='none'
-            autoCorrect='false'
-            secureTextEntry='true'
+            autoCorrect={false}
+            secureTextEntry={true}
             placeholder='Confirmer mot de passe'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(confirmPassword) => this.setState({confirmPassword})}
@@ -490,7 +494,7 @@ _maybeRenderUploadingOverlay = () => {
 
   _maybeRenderImage = () => {
     let { image } = this.state;
-    if (!image) {
+    if (!this.state.image) {
       return;
     }
 
@@ -504,22 +508,22 @@ _maybeRenderUploadingOverlay = () => {
           shadowColor: 'rgba(0,0,0,1)',
           shadowOpacity: 0.2,
           shadowOffset: { width: 4, height: 4 },
-          shadowRadius: 5,
+          shadowRadius: 5
         }}>
         <View
           style={{
             borderTopRightRadius: 3,
             borderTopLeftRadius: 3,
-            overflow: 'hidden',
+            overflow: 'hidden'
           }}>
-          <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
+          <Image source={{ uri: this.state.image }} style={{ width: 250, height: 250 }} />
         </View>
 
         <Text
           onPress={this._copyToClipboard}
           onLongPress={this._share}
           style={{ paddingVertical: 10, paddingHorizontal: 10 }}>
-          {image}
+          {this.state.image}
         </Text>
       </View>
     );
@@ -542,7 +546,7 @@ _maybeRenderUploadingOverlay = () => {
     let pickerResult = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      base64: 'true'
+      base64: true
     });
 
     this._handleImagePicked(pickerResult);
@@ -552,7 +556,7 @@ _maybeRenderUploadingOverlay = () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      base64: 'true'
+      base64: true
     });
 
     this._handleImagePicked(pickerResult);
@@ -612,13 +616,13 @@ const styles = StyleSheet.create({
     overflow:'hidden', 
     borderRadius:5,
     marginTop:20, 
-    paddingLeft: 10,
+    paddingLeft: 10
   },
   title: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
-    fontSize: 15,
+    fontSize: 15
   },
    subtitle: {
     color: 'black',
@@ -630,7 +634,7 @@ const styles = StyleSheet.create({
     marginBottom:10
   },
   container: {
-    justifyContent:'center',
+    justifyContent:'center'
   },
   modal: {
     flexDirection:'column',

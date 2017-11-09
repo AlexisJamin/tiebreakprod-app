@@ -30,14 +30,14 @@ export default class HomeContent extends React.Component {
       <View style={{flex:1, justifyContent:'space-around', marginBottom:150}}>
 
         <TouchableWithoutFeedback>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+        <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
         <View>
           <Image source={require('../../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
           style={{
-        justifyContent: 'center',
-        alignItems: 'center'
+            justifyContent: 'center',
+            alignItems:'center'
            }}>
-            <Image source={require('../../assets/icons/Search/SearchWhite.imageset/fill56.png')} />
+            <Image source={require('../../assets/icons/Search/SearchWhite.imageset/fill56.png')}/>
           </Image>
         </View>
 
@@ -58,7 +58,7 @@ export default class HomeContent extends React.Component {
 
         <View style={{
           height:30,
-          alignItems: 'center',
+          alignItems:'center'
         }}>
           <Svg
             height="60"
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
     fontSize: 14,
-    textAlign: 'left',
+    textAlign: 'left'
   },
   subtitle: {
     color: 'black',
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 12,
     textAlign: 'left',
-    paddingTop: 10,
-  },
+    paddingTop: 10
+  }
 });
 

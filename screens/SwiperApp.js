@@ -1,10 +1,10 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 
-import Menu from './Menu/Menu'
-import Home from './Home/Home'
-import Chat from './Chat/Chat'
+import Menu from './Menu/Menu';
+import Home from './Home/Home';
+import Chat from './Chat/Chat';
 
 const HomeNavigator = TabNavigator(
 {
@@ -24,7 +24,6 @@ export default class Swiper extends React.Component {
   render() {
     return (
         <HomeNavigator navigation={this.props.navigation}/>
-
     );
   }
 }

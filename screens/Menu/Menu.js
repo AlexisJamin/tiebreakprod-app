@@ -55,14 +55,10 @@ export default class Home extends React.Component {
           <MenuHeader navigation={this.props.navigation}/>
           </View>
 
-          <View style={{flex: 1, marginBottom: 70}}>
           <MenuContent navigation={this.props.navigation}/>
-          </View>
 
 
-          <View style={{
-        alignItems: 'stretch',
-         }}>
+          <View style={{alignItems:'stretch'}}>
             <TouchableWithoutFeedback onPress={this._onPressLogOutButton}>
             <Text style={styles.buttonLogIn}>Se déconnecter</Text>
             </TouchableWithoutFeedback>

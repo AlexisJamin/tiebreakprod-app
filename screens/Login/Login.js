@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Facebook, Location, Permissions } from 'expo';
-import { NavigationActions } from 'react-navigation';
+import { Facebook, Location, Permissions, Font } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
@@ -25,7 +24,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 class Login extends React.Component {
 
@@ -33,12 +32,22 @@ constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
-    this._getLocationAsync = this._getLocationAsync.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false, 
       location:null
     };
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
+      'Avenir': require('../../assets/fonts/Avenir.ttf'),
+    });
+    this.setState({ 
+      fontAvenirNextLoaded: true,
+      fontAvenirLoaded: true 
+    });
   }
     
     _onPressLogInButton() {
@@ -50,7 +59,7 @@ constructor(props) {
    success: function(user) {
     console.log("Trouvé !");
 
-    login._getLocationAsync();
+    //login._getLocationAsync();
 
     var userId = user.id;
     // Do stuff after successful login.
@@ -85,8 +94,8 @@ constructor(props) {
                   availability:availability,
                   userId:userId,
                   picture: picture,
-                  latitude:login.state.location.coords.latitude,
-                  longitude:login.state.location.coords.longitude
+                  //latitude:login.state.location.coords.latitude,
+                  //longitude:login.state.location.coords.longitude
                 })
 
                 login.props.handleSubmitPreferences({
@@ -184,6 +193,7 @@ constructor(props) {
     this.props.navigation.navigate("SignIn");
   };
 
+/*
     _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -193,14 +203,11 @@ constructor(props) {
     let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
     console.log(location);
     this.setState({ location });
-  };
-
-
+  }; */
 
   render() {
 
     return (
-
 
       <View style={{
         flex:1,
@@ -230,30 +237,29 @@ constructor(props) {
 
           <View style={{flex: 1, alignItems:'center'}}>
 
-            <TextInput 
-            ref='username'
+            <TextInput
             style={styles.input} 
             keyboardType="email-address"
             returnKeyType='next'
             autoCapitalize='none'
-            autoCorrect='false'
+            autoCorrect={false}
             placeholder='Email'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             value={this.state.username}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.password.focus();
-            }}/>
+            onSubmitEditing={(event) => {this.refs.password.focus()}}
+            />
             <TextInput 
             ref='password'
             style={styles.input} 
             keyboardType="default"
             returnKeyType='done'
             autoCapitalize='none'
-            autoCorrect='false'
+            autoCorrect={false}
             placeholder='Mot de passe'
             underlineColorAndroid='rgba(0,0,0,0)'
-            secureTextEntry='true'
+            secureTextEntry={true}
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
             onSubmitEditing={Keyboard.dismiss}
@@ -271,9 +277,7 @@ constructor(props) {
 
           </View>
 
-
             </KeyboardAwareScrollView>
-
 
         </View>
 
@@ -339,14 +343,7 @@ const styles = StyleSheet.create({
     overflow:'hidden', 
     borderRadius:5,
     marginTop:20,
-    paddingLeft: 10, 
-  },
-  title: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 15,
-    alignItems: 'flex-start',
+    paddingLeft: 10
   },
    subtitle: {
     color: 'black',
@@ -357,6 +354,6 @@ const styles = StyleSheet.create({
     marginBottom:10
   },
   container: {
-    justifyContent:'center',
+    justifyContent:'center'
   },
 });

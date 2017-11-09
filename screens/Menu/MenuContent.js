@@ -91,15 +91,16 @@ navigationCommunity(route, index) {
     		    flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
+            marginTop:-30
     	}}>
 
-    	  <View style={{flex: 10, top: -25}}>
+    	  <View>
           <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)} >
           {profileImage}
           </TouchableWithoutFeedback>
         </View>
           
-          <View style={{flex: 1, top: -10}}>
+          <View style={{paddingTop: 20}}>
             {
         this.state.fontAvenirNextLoaded ? (
           <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)}>
@@ -108,11 +109,11 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 20}}>
+          <View style={{paddingTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1, paddingTop: 10}}>
+           <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
           <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationCalendar('Calendar',0)} >
@@ -122,11 +123,11 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 20}}>
+          <View style={{paddingTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1, paddingTop: 10}}>
+           <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
           <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationCommunity('Community',1)}>
@@ -135,31 +136,31 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 20}}>
+          <View style={{paddingTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1, paddingTop: 10}}>
+           <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> INVITER DES AMIS </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 20}}>
+          <View style={{paddingTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1, paddingTop: 10}}>
+           <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> À PROPOS </Text>) : null 
           }
           </View>
 
-          <View style={{flex: 1, paddingTop: 20}}>
+          <View style={{paddingTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{flex: 1, paddingTop: 10}}>
+           <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> CONTACT </Text>) : null 
           }
