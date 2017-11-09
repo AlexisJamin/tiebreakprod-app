@@ -13,8 +13,8 @@ const HomeNavigator = TabNavigator(
   Chat: {screen: Chat, navigationOptions: {tabBarVisible: false}},
 },
   {
-  swipeEnabled: true,
   initialRouteName:'Home',
+  swipeEnabled: true
   },
 );
 

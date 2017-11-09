@@ -14,7 +14,10 @@ const ChatNavigator = TabNavigator(
   ChatContent: {screen: ChatContent, navigationOptions: {tabBarVisible: false}}
 },
 {
-  initialRouteName:'Notifications'
+  initialRouteName:'Notifications',
+  swipeEnabled: false,
+  lazy: true,
+  animationEnabled: false
   },
 );
 
