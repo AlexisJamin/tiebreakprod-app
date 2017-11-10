@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import { Font } from 'expo'
+import React, { Component } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Font } from 'expo';
 import { connect } from 'react-redux';
 
 
@@ -10,7 +10,7 @@ constructor() {
     super();
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
+      fontAvenirLoaded: false
     };
   }
 
@@ -22,8 +22,7 @@ constructor() {
     });
     this.setState({ 
       fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true,
-
+      fontAvenirLoaded: true
     });
   }
 
@@ -44,7 +43,7 @@ const styles = StyleSheet.create({
     height: 30, 
     borderWidth:1, 
     borderColor:'rgb(42,129,82)', 
-    borderRadius:'3', 
+    borderRadius:3, 
     overflow:'hidden', 
     paddingTop:5, 
     paddingBottom: 5, 
@@ -53,6 +52,6 @@ const styles = StyleSheet.create({
     color: 'white', 
     backgroundColor: 'rgb(42,129,82)', 
     textAlign:'center'
-  },
+  }
 });
 

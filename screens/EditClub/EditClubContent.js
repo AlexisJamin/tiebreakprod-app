@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Font } from 'expo';
-import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
-import Modal from 'react-native-modalbox';
-import { ButtonGroup, CheckBox } from 'react-native-elements';
 
 import EditClubContentClubList from './EditClubContentClubList';
 

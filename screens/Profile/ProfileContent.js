@@ -1,15 +1,14 @@
-import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} from 'react-native'
-import { Font } from 'expo'
+import React, { Component } from 'react';
+import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} from 'react-native';
+import { Font } from 'expo';
 import Svg,{
     Line,
-} from 'react-native-svg'
-import { connect } from 'react-redux'
-import { NavigationActions } from 'react-navigation'
+} from 'react-native-svg';
+import { connect } from 'react-redux';
 
-import ProfileContentClubs from './ProfileContentClubs'
-import ProfileContentClubsBullets from './ProfileContentClubsBullets'
-import ProfileContentDispo from './ProfileContentDispo'
+import ProfileContentClubs from './ProfileContentClubs';
+import ProfileContentClubsBullets from './ProfileContentClubsBullets';
+import ProfileContentDispo from './ProfileContentDispo';
 
 
 
@@ -37,8 +36,7 @@ constructor(props) {
     });
     this.setState({ 
       fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true,
-
+      fontAvenirLoaded: true
     });
   }
 
@@ -94,7 +92,7 @@ constructor(props) {
 
           <View style={{
             alignItems:'center',
-            marginBottom:15,
+            marginBottom:15
           }}>
           
                   {profileImage}
@@ -181,7 +179,7 @@ constructor(props) {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-around',
+          justifyContent: 'space-around'
         }}>
 
                <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
@@ -200,20 +198,20 @@ constructor(props) {
           flex: 1,
           flexDirection: 'row',
           justifyContent: 'center',
-          top: 20,
+          top: 20
           }}>
 
 
           <View style={{
           flexDirection: 'column',
-          justifyContent: 'space-around',
+          justifyContent: 'space-around'
           }}>
           {clubListBullets}
           </View>
 
           <View style={{
           flexDirection: 'column',
-          justifyContent: 'space-around',
+          justifyContent: 'space-around'
           }}>
           {clubList}
           </View>
@@ -239,7 +237,7 @@ constructor(props) {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-around',
+          justifyContent: 'space-around'
         }}>
 
                <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
@@ -257,7 +255,7 @@ constructor(props) {
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'space-around',
-          top: 10,
+          top: 10
           }}>
                     {newUserDispo}
                     {dayList}
@@ -279,40 +277,40 @@ export default connect(mapStateToProps, null) (ProfileContent);
 
 const styles = StyleSheet.create({
   name: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
+    color:'black',
+    backgroundColor:'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
     fontSize: 15,
     paddingTop: 2,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   age: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
+    color:'black',
+    backgroundColor:'rgba(0,0,0,0)',
+    fontFamily:'Avenir',
     fontSize: 13,
     paddingTop: 4,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   gender: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
+    color:'black',
+    backgroundColor:'rgba(0,0,0,0)',
+    fontFamily:'Avenir',
     fontSize: 12,
     paddingTop: 4,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent:'center'
   },
   level: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
+    color:'black',
+    backgroundColor:'rgba(0,0,0,0)',
+    fontFamily:'Avenir',
     fontSize: 12,
     paddingTop: 9,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   clubs: {
     color: 'black',
@@ -322,7 +320,7 @@ const styles = StyleSheet.create({
     left:5,
     marginBottom: 12,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   button: {
     width:50,
@@ -338,6 +336,6 @@ const styles = StyleSheet.create({
     color: 'white', 
     backgroundColor: 'rgb(42,129,82)', 
     textAlign:'center'
-  },
+  }
 });
 

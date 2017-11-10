@@ -68,7 +68,7 @@ const data = [
     level: 'Intermédiaire',
     bestLevel: '15/1'
   },
-]
+];
 
 
 
@@ -79,7 +79,7 @@ export default class CommunityContent extends React.Component {
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.state = {
-      data: data,
+      data: data
     };
   }
 
@@ -133,7 +133,7 @@ render () {
           containerStyle={{ borderBottomWidth: 0, height:90, justifyContent: 'center' }}
           subtitleContainerStyle={{marginLeft:20, width:300}}
           rightTitleNumberOfLines={3}
-          hideChevron='true'
+          hideChevron={true}
           avatar={{uri:item.avatar_url}}
           title={
             <View style={styles.titleView}>

@@ -14,6 +14,9 @@ const ProfileNavigator = TabNavigator(
 },
 {
   initialRouteName:'ProfileContent',
+  swipeEnabled: false,
+  lazy: true,
+  animationEnabled: false
   },
 );
 

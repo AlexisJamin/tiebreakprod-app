@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Font } from 'expo';
-import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
@@ -175,7 +174,7 @@ constructor(props) {
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'space-around',
-          top: 10,
+          top: 10
           }}>
 
           {dayList}
@@ -190,12 +189,11 @@ constructor(props) {
           </TouchableWithoutFeedback>
 
           <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
+          <View style={{flex:1, justifyContent:'space-around'}}>
           <View style={{
-          flex:1, 
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          marginTop:20, 
-          marginBottom:-30
+          flexDirection:'row',
+          justifyContent:'space-around',
+          marginTop:15
           }}>
          <Text style={{fontSize:14}}> {days[this.state.modal]} </Text> 
          <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
@@ -204,11 +202,10 @@ constructor(props) {
          </TouchableWithoutFeedback>
          </View>
 
-         <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:5, alignItems:'center'}}>
-
+         <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:1, marginRight:1, alignItems:'center'}}>
          {checkboxList}
-
-          </View>
+         </View>
+         </View>
 
           <TouchableWithoutFeedback onPress={this._onPressValidateModal}>
           <Text style={styles.buttonModal}>Valider</Text>
@@ -243,28 +240,28 @@ const styles = StyleSheet.create({
     paddingBottom:10 
   },
   modal: {
-    height: 280
+    height:330
   },
   subtitle: {
-    color: 'white',
+    color:'white',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   container: {
-    backgroundColor: 'white',
-    height: 40,
-    marginBottom:30,
+    backgroundColor:'white',
+    height:40,
+    marginBottom:30
   },
   checkHours: {
     width:72,
     height: 35, 
     borderWidth:1, 
-    borderRadius:'3', 
+    borderRadius:3, 
     overflow:'hidden',
     borderColor:'rgb(213,212,216)', 
     backgroundColor:'white'
-  },
+  }
 });
 

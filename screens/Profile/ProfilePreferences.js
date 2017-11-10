@@ -35,7 +35,6 @@ class ProfilePreferences extends React.Component {
 
 constructor(props) {
     super(props);
-    //this.handleClick = this.handleClick.bind(this);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
 
     let filterCondition;
@@ -307,24 +306,24 @@ constructor(props) {
 
          <Switch
          onTintColor='rgb(42,129,82)'
-         value='true'
+         value={true}
          />
          </View>
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', marginBottom:30, paddingLeft:10}}> GEOLOCALISATION </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'AvenirNext', textAlign:'left', marginBottom:30, paddingLeft:10}}> GEOLOCALISATION </Text>
           ) : null 
          }
 
          <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', width:200}}>Autoriser Tie Break (nécessaire pour trouver des amis / parties / terrains ) </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'Avenir', width:200}}>Autoriser Tie Break (nécessaire pour trouver des amis / parties / terrains ) </Text> 
           ) : null 
          }
 
          <Switch
          onTintColor='rgb(42,129,82)'
-         value='true'
+         value={true}
          />
          </View>
 

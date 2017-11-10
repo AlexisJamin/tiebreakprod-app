@@ -12,7 +12,12 @@ const CommunityNavigator = TabNavigator(
 {
   CommunityContent: {screen: CommunityContent, navigationOptions: {tabBarVisible: false}},
   CommunityFriends: {screen: CommunityFriends, navigationOptions: {tabBarVisible: false}},
-}
+},
+{
+  swipeEnabled: false,
+  lazy: true,
+  animationEnabled: false
+  },
 );
 
 export default class Community extends React.Component {
@@ -58,7 +63,7 @@ styles = StyleSheet.create({
     maxHeight: 40,
     flex: .1,
     borderWidth: 6,
-    borderColor: '#E4E4E4',
+    borderColor: '#E4E4E4'
   }
 })
 

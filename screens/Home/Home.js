@@ -41,7 +41,7 @@ navigationRoute() {
     CalendarButtonIndex:this.props.button.CalendarButtonIndex,
     ProfileButtonIndex:this.props.button.ProfileButtonIndex
   })
-  //this.props.navigation.navigate('Community');
+  this.props.navigation.navigate('Community');
 };
 
   render() {

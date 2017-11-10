@@ -183,11 +183,10 @@ constructor(props) {
 
 
           <TextInput 
-            ref='firstName'
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
-            autoCorrect='false'
+            autoCorrect={false}
             defaultValue={this.state.firstName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
@@ -200,7 +199,7 @@ constructor(props) {
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
-            autoCorrect='false'
+            autoCorrect={false}
             value={this.state.lastName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
@@ -363,7 +362,7 @@ constructor(props) {
     let pickerResult = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      base64: 'true'
+      base64: true
     });
 
     this._handleImagePicked(pickerResult);
@@ -373,7 +372,7 @@ constructor(props) {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      base64: 'true'
+      base64: true
     });
 
     this._handleImagePicked(pickerResult);
@@ -423,7 +422,8 @@ const styles = StyleSheet.create({
     borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
-    marginTop:20, 
+    marginTop:20,
+    paddingLeft:10
   },
   modalDrop: {
     marginLeft:1,
@@ -433,9 +433,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color:'black', 
-    top:8,
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontSize: 18,
+    paddingTop:10,
+    backgroundColor:'rgba(0,0,0,0)',
+    fontSize:14,
   },
   container: {
     justifyContent:'center',

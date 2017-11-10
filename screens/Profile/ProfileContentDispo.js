@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
-import { Font } from 'expo'
+import React, { Component } from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { Font } from 'expo';
 import { connect } from 'react-redux';
 
-import ProfileContentDispoHours from './ProfileContentDispoHours'
+import ProfileContentDispoHours from './ProfileContentDispoHours';
 
 
 function mapStateToProps(store) {
@@ -16,7 +16,7 @@ constructor() {
     super();
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
+      fontAvenirLoaded: false
     };
   }
 
@@ -28,8 +28,7 @@ constructor() {
     });
     this.setState({ 
       fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true,
-
+      fontAvenirLoaded: true
     });
   }
 
@@ -48,7 +47,7 @@ constructor() {
               paddingTop:10, 
               paddingBottom: 10, 
               marginRight:40,
-              flexDirection: 'row',
+              flexDirection: 'row'
               }}>
                 
 
@@ -58,7 +57,7 @@ constructor() {
                       </Image>
                     </View>
 
-              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, marginRight:15, alignItems:'center'}}>
               {hoursList}
               </View>
               
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingTop: 2,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   age: {
     color: 'black',
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     paddingTop: 4,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   gender: {
     color: 'black',
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingTop: 4,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   level: {
     color: 'black',
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingTop: 9,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   clubs: {
     color: 'black',
@@ -115,14 +114,14 @@ const styles = StyleSheet.create({
     left:5,
     marginBottom: 12,
     alignItem:'center', 
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   button: {
     width:50,
     height: 30, 
     borderWidth:1, 
     borderColor:'rgb(42,129,82)', 
-    borderRadius:'3', 
+    borderRadius:3, 
     overflow:'hidden', 
     paddingTop:5, 
     paddingBottom: 5, 
@@ -131,6 +130,6 @@ const styles = StyleSheet.create({
     color: 'white', 
     backgroundColor: 'rgb(42,129,82)', 
     textAlign:'center'
-  },
+  }
 });
 

@@ -14,6 +14,9 @@ const CalendarNavigator = TabNavigator(
 },
 {
   initialRouteName:'CalendarFuture',
+  swipeEnabled: false,
+  lazy: true,
+  animationEnabled: false
   },
 );
 

@@ -1,8 +1,7 @@
-import React, { Component } from 'react'
-import { View, Text, Image, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Font } from 'expo'
-import { connect } from 'react-redux'
-import Modal from 'react-native-modalbox'
+import React, { Component } from 'react';
+import { View, Text, Image, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Font } from 'expo';
+import { connect } from 'react-redux';
 
 import EditDispoContentHours from './EditDispoContentHours'
 
@@ -18,7 +17,7 @@ constructor(props) {
     this.handleClick = this.handleClick.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
+      fontAvenirLoaded: false
     };
   }
 
@@ -30,8 +29,7 @@ constructor(props) {
     });
     this.setState({ 
       fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true,
-
+      fontAvenirLoaded: true
     });
   }
 
@@ -61,7 +59,7 @@ constructor(props) {
               paddingTop:10, 
               paddingBottom: 10, 
               marginRight:40,
-              flexDirection: 'row',
+              flexDirection: 'row'
               }}>
                 
 
@@ -69,7 +67,7 @@ constructor(props) {
                       {day}
                     </View>
 
-              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, alignItems:'center'}}>
+              <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, marginRight:15, alignItems:'center'}}>
               {hoursList}
               <View style={styles.buttonPlus}><Image style={{marginTop:8}} source={require('../../assets/icons/General/Add.imageset/icAdd.png')}/></View>
               </View>
