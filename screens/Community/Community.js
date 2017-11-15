@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Keyboard } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 
 import CommunityHeader from './CommunityHeader';
@@ -21,6 +21,14 @@ const CommunityNavigator = TabNavigator(
 );
 
 export default class Community extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      player:''
+    };
+  }
+
   render() {
     return (
 
@@ -36,7 +44,18 @@ export default class Community extends React.Component {
   
           <View style={{flex:1, alignItems:'stretch'}}>
           <CommunityButton navigation={this.props.navigation}/>
-          <TextInput style={styles.searchBar}/>
+          <TextInput 
+          style={styles.searchBar}
+          keyboardType="default"
+          returnKeyType='done'
+          autoCapitalize='none'
+          autoCorrect={false}
+          placeholder='rechercher un joueur'
+          underlineColorAndroid='rgba(0,0,0,0)'
+          blurOnSubmit={false}
+          onChangeText={(player) => this.setState({player})}
+          onSubmitEditing={Keyboard.dismiss}
+          />
           </View>
 
         </View>
@@ -58,12 +77,12 @@ Community.router = CommunityNavigator.router;
 
 styles = StyleSheet.create({
   searchBar: {
-    paddingLeft: 30,
-    fontSize: 13,
-    maxHeight: 40,
-    flex: .1,
-    borderWidth: 6,
-    borderColor: '#E4E4E4'
+    paddingLeft:20,
+    fontSize:13,
+    maxHeight:40,
+    flex:.1,
+    borderWidth:6,
+    borderColor:'#E4E4E4'
   }
 })
 

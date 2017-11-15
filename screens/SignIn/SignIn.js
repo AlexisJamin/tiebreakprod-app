@@ -175,7 +175,7 @@ class SignIn extends React.Component {
             user.set("filterStyle", "indifferent");
             user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
             
-            //signin._getLocationAsync();
+            signin._getLocationAsync();
 
             user.signUp(null, {
             success: function(user) {              

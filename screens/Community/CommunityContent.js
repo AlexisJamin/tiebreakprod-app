@@ -118,7 +118,7 @@ render () {
     <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
 
    <List
-   containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
+   containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
    >
       <FlatList
         data={this.state.data}
@@ -127,34 +127,20 @@ render () {
         ListFooterComponent={this.renderFooter}
         renderItem={({ item }) => (
           <ListItem
-          avatarStyle={{width:50, height:50, borderRadius:25, borderWidth:1, borderColor:'white'}}
-          avatarContainerStyle={{top:12, marginLeft:10}}
-          titleContainerStyle={{marginLeft:20}}
-          containerStyle={{ borderBottomWidth: 0, height:90, justifyContent: 'center' }}
-          subtitleContainerStyle={{marginLeft:20, width:300}}
-          rightTitleNumberOfLines={3}
-          hideChevron={true}
+          avatarStyle={{width:60, height:60, borderRadius:30, borderWidth:1, borderColor:'white', overflow:'hidden', backgroundColor:'white'}}
+          avatarContainerStyle={{width:60, height:60, marginTop:7}}
+          avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
+          titleContainerStyle={{marginLeft:50}}
+          containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
           avatar={{uri:item.avatar_url}}
-          title={
-            <View style={styles.titleView}>
-            <Text style={styles.ratingText}>{item.name}</Text>
-            </View>
-          }
+          title={<Text style={{fontSize:15}}>{item.name}</Text>}
+          subtitleNumberOfLines={3}
+          subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
-            <View style={styles.subtitleView}>
-            <Text style={styles.ratingText}>{item.dispo} disponibilités en commun</Text>
-            <Text style={styles.ratingText}>{item.geo} km</Text>
-            </View>
-          }
-          rightTitle={
-            <View style={{
-              alignItems:'center',
-              top:12,
-              width:85,
-              height:40}}>
-              <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} style={styles.ratingImage}/>
-                <Text style={styles.ratingLevel}>{item.level}</Text>
-                <Text style={styles.ratingLevel}>({item.bestLevel})</Text>
+             <View>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.dispo} disponibilités en commun</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.level} ({item.bestLevel})</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.geo} km</Text>
             </View>
           }
           />
@@ -170,41 +156,12 @@ render () {
 }
 
 styles = StyleSheet.create({
-  titleView: {
-    flexDirection: 'row',
-    paddingLeft: 10,
-    paddingTop: 5
-  },
   searchBar: {
   paddingLeft: 30,
   fontSize: 16,
   maxHeight: 50,
   flex: .1,
   borderWidth: 9,
-  borderColor: '#E4E4E4',
-},
-  subtitleView: {
-    flexDirection: 'column',
-    paddingLeft: 10,
-  },
-  imageView: {
-    width:65,
-    height:40,
-  },
-  ratingImage: {
-    height: 15,
-    width: 15,
-  },
-  titleText: {
-    paddingLeft: 10,
-    color: 'black'
-  },
-  ratingText: {
-    paddingLeft: 10,
-    color: 'black'
-  },
-  ratingLevel: {
-    color: 'black',
-    fontSize:'10'
-  }
+  borderColor: '#E4E4E4'
+}
 })

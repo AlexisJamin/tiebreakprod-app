@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Facebook, Location, Permissions, Font } from 'expo';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
+import { Facebook, Location, Permissions, Font, Constants } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
@@ -59,7 +59,16 @@ constructor(props) {
    success: function(user) {
     console.log("Trouvé !");
 
-    //login._getLocationAsync();
+     if (Platform.OS === 'android' && !Constants.isDevice) {
+      console.log("émulateur Android");
+      login.setState({
+        location:{
+          coords:{latitude:null, longitude:null}
+        }
+      });
+    } else {
+      login._getLocationAsync();
+    }
 
     var userId = user.id;
     // Do stuff after successful login.
@@ -94,8 +103,8 @@ constructor(props) {
                   availability:availability,
                   userId:userId,
                   picture: picture,
-                  //latitude:login.state.location.coords.latitude,
-                  //longitude:login.state.location.coords.longitude
+                  latitude:login.state.location.coords.latitude,
+                  longitude:login.state.location.coords.longitude
                 })
 
                 login.props.handleSubmitPreferences({
@@ -193,7 +202,7 @@ constructor(props) {
     this.props.navigation.navigate("SignIn");
   };
 
-/*
+
     _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -202,8 +211,13 @@ constructor(props) {
 
     let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
     console.log(location);
-    this.setState({ location });
-  }; */
+    this.setState({location});
+    var user = Parse.User.current();
+    var point = new Parse.GeoPoint({latitude:location.coords.latitude, longitude:location.coords.longitude});
+    user.set("geolocation", point);
+    user.save();
+  };
+
 
   render() {
 

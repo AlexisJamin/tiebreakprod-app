@@ -98,6 +98,24 @@ const data = [
   }
 ];
 
+const data2 = [
+  {
+    name: 'Amie Farha',
+    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+    dispo: '5',
+    geo: '2',
+    level: '15/2',
+    bestLevel: '15/1'
+  },
+  {
+    name: 'Christopher Jackson',
+    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+    dispo: '3',
+    geo: '3',
+    level: 'Intermédiaire',
+    bestLevel: '15/1'
+  }
+  ];
 class EditClubSearch extends React.Component {
 
 constructor(props) {
@@ -121,6 +139,28 @@ constructor(props) {
       fontAvenirNextLoaded: true,
       fontAvenirLoaded: true 
     });
+
+    var Club = Parse.Object.extend("Club");
+    var query = new Parse.Query(Club);
+    var edit = this;
+    // User's location
+    var user = Parse.User.current();
+    var userGeoPoint = user.get("geolocation");
+    console.log(userGeoPoint);
+    // Interested in locations near user.
+    query.near("geopoint", userGeoPoint);
+    // Limit what could be a lot of points.
+    query.limit(20);
+    // Final list of objects
+    query.find({
+      success: function(Club) {
+        console.log("clubs autour de moi");
+        console.log(Club);
+        var ClubCopy = JSON.parse(JSON.stringify(Club));
+        edit.setState({ data: ClubCopy });
+      }
+    });
+
   }
 
    renderSeparator() {
@@ -149,53 +189,44 @@ constructor(props) {
   }
 
   render() {
-
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
 
-      <View style={{flexDirection:'row', justifyContent:"space-around", top:30, marginLeft:5}}>
-      <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
-      <Image style={{marginTop:32}} source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
-      </TouchableWithoutFeedback>
-      <TextInput 
-        style={styles.searchBar}
-        keyboardType="default"
-        returnKeyType='done'
-        autoCapitalize='none'
-        autoCorrect={false}
-        placeholder='rechercher un club'
-        underlineColorAndroid='rgba(0,0,0,0)'
-        blurOnSubmit={false}
-        onChangeText={(club) => this.setState({club})}
-        onSubmitEditing={Keyboard.dismiss}
-      />
+      <View style={{flexDirection:'row', justifyContent:"space-around", marginTop:30, marginBottom:30}}>
+          <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
+          <Image style={{top:12, left:5}} source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
+          </TouchableWithoutFeedback>
+          <TextInput 
+            style={styles.searchBar}
+            keyboardType="default"
+            returnKeyType='done'
+            autoCapitalize='none'
+            autoCorrect={false}
+            placeholder='rechercher un club'
+            underlineColorAndroid='rgba(0,0,0,0)'
+            blurOnSubmit={false}
+            onChangeText={(club) => this.setState({club})}
+            onSubmitEditing={Keyboard.dismiss}
+          />
       </View>
 
        <ScrollView>
 
       <List
-       containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
+       containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
        >
           <FlatList
             data={this.state.data}
-            keyExtractor={item => item.name}
+            keyExtractor={data => data.name}
             ItemSeparatorComponent={this.renderSeparator}
             ListFooterComponent={this.renderFooter}
             renderItem={({ item }) => (
               <ListItem
-              avatarStyle={{width:50, height:50, borderRadius:25, borderWidth:1, borderColor:'white'}}
-              avatarContainerStyle={{top:12, marginLeft:10}}
               titleContainerStyle={{marginLeft:20}}
-              containerStyle={{ borderBottomWidth: 0, height:90, justifyContent: 'center' }}
-              subtitleContainerStyle={{marginLeft:20, width:300}}
-              avatar={{uri:item.avatar_url}}
-              title={
-                <Text style={styles.text}>{item.name}</Text>
-              }
-              subtitle={
-                <Text style={styles.text}>{item.geo} km</Text>
-              }
+              containerStyle={{borderBottomWidth: 0, height:70, justifyContent:'center'}}
+              title={item.name}
+              titleStyle={styles.text}
               />
             )}
           />
@@ -214,17 +245,16 @@ export default connect(mapStateToProps, mapDispatchToProps) (EditClubSearch);
 
 const styles = StyleSheet.create({
   searchBar: {
-    width:300,
+    width:250,
     height:40, 
     borderWidth:1, 
     borderColor:'rgb(213,212,216)', 
     overflow:'hidden', 
     borderRadius:5,
-    marginTop:20,
     paddingLeft:20
   },
     text: {
-    paddingLeft: 10,
-    color: 'black'
+    paddingLeft:10,
+    color:'black'
   }
 });
