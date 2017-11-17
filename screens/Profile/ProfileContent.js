@@ -47,7 +47,7 @@ constructor(props) {
     } else {
     var clubList = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
-      clubList.push(<ProfileContentClubs clubName = {this.props.userClub[i]} />)
+      clubList.push(<ProfileContentClubs clubName = {this.props.userClub[i].name} />)
     }
 
     var clubListBullets = [];

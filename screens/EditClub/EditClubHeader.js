@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Image, Text, StyleSheet } from 'react-native';
 import { Font } from 'expo';
 
 
@@ -27,17 +27,13 @@ export default class EditClubHeader extends Component {
        <View style={{
         flex:1,
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         top: 40,
         }}>
 
-       <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
-       <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
-       </TouchableWithoutFeedback> 
        {
         this.state.fontLoaded ? (<Text style={styles.title}> Éditer mes clubs </Text> ) : null 
        }
-       <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
        
        </View>
        

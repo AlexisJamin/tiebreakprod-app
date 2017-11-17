@@ -1,75 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
+import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
+var GeoPoint = require('geopoint');
 
-
-const data = [
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-]
-
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 
 export default class CommunityContent extends React.Component {
@@ -79,8 +15,45 @@ export default class CommunityContent extends React.Component {
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.state = {
-      data: data
+      data: ''
     };
+
+    console.log('hello');
+
+    var query = new Parse.Query(Parse.User);
+    var edit = this;
+    // User's location
+    var user = Parse.User.current();
+    var userGeoPoint = user.get("geolocation");
+    console.log(userGeoPoint);
+    // Interested in locations near user.
+    query.near("geolocation", userGeoPoint);
+    // Limit what could be a lot of points.
+    query.limit(2);
+    // Final list of objects
+    query.find({
+      success: function(Community) {
+        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+        var CommunityCopy = JSON.parse(JSON.stringify(Community));
+        var userGeoPointCopy = new GeoPoint(userGeoPoint.latitude, userGeoPoint.longitude);
+        for (var i = 0; i < CommunityCopy.length; i++) {
+          var CommunityCopyGeoPoint = new GeoPoint(CommunityCopy[i].geolocation.latitude, CommunityCopy[i].geolocation.longitude);
+          var distance = Math.round(userGeoPointCopy.distanceTo(CommunityCopyGeoPoint, true));
+          var distanceParam = {distance: distance};
+          Object.assign(CommunityCopy[i], distanceParam);
+        }
+        console.log("setState");
+        console.log(CommunityCopy);
+        edit.setState({ data: CommunityCopy });
+      }
+    });
+
+  }
+
+  async componentDidMount() {
+
+    
+
   }
 
   renderSeparator() {
@@ -122,7 +95,7 @@ render () {
    >
       <FlatList
         data={this.state.data}
-        keyExtractor={item => item.name}
+        keyExtractor={item => item.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
         renderItem={({ item }) => (
@@ -132,15 +105,15 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:50}}
           containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
-          avatar={{uri:item.avatar_url}}
-          title={<Text style={{fontSize:15}}>{item.name}</Text>}
+          avatar={{uri:item.picture}}
+          title={<Text style={{fontSize:15}}>{item.lastName}</Text>}
           subtitleNumberOfLines={3}
           subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
              <View>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.dispo} disponibilités en commun</Text>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.level} ({item.bestLevel})</Text>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.geo} km</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>XXX disponibilités en commun</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>
             </View>
           }
           />

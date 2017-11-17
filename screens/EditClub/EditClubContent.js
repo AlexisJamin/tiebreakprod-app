@@ -71,7 +71,7 @@ constructor(props) {
     } else {
     var clubList = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
-      clubList.push(<EditClubContentClubList clubName = {this.props.userClub[i]} />)
+      clubList.push(<EditClubContentClubList clubName = {this.props.userClub[i].name} />)
     }
   }
 
@@ -87,7 +87,7 @@ constructor(props) {
        <KeyboardAwareScrollView>
 
        <View style={{
-        flexDirection:'row',
+        flexDirection:'column',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20
@@ -127,33 +127,11 @@ const styles = StyleSheet.create({
     paddingTop:15,
     paddingBottom:15 
   },
-  page: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  title: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center',
-  },
-   subtitle: {
-    color: 'white',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center',
-  },
-  container: {
-    backgroundColor: 'white',
-    height: 40,
-    marginBottom:30,
-  },
   clubs: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
+    textDecorationLine:'underline',
     fontSize: 14,
     left:5,
     marginBottom: 12,

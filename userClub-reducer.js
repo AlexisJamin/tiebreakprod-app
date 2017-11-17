@@ -1,7 +1,8 @@
 export default function userClub(store=[], action) {
   if(action.type == 'userClub') {
-  	store.unshift(action.value);
-    return store;
+  	var copyStore = store.concat();
+  	copyStore.unshift(action.value);
+    return copyStore;
   } else {
     return store;
   }

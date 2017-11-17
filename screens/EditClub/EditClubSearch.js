@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
+var GeoPoint = require('geopoint');
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
@@ -16,119 +17,31 @@ function mapStateToProps(store) {
 
 function mapDispatchToProps(dispatch) {
   return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
-    },
         handleSubmitClub: function(value) { 
         dispatch( {type: 'userClub', value: value} ) 
-    },
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    },
-    handleSubmitButton: function(value) { 
-        dispatch( {type: 'button', value: value} ) 
     }
   }
 };
 
-const data = [
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  }
-];
 
-const data2 = [
-  {
-    name: 'Amie Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Christopher Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  }
-  ];
 class EditClubSearch extends React.Component {
 
 constructor(props) {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.addClub = this.addClub.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
       club:'',
+      selectedClubId:'',
+      selectedClubName:'',
       data:''
     };
   }
+
+
 
   async componentDidMount() {
     await Font.loadAsync({
@@ -140,6 +53,15 @@ constructor(props) {
       fontAvenirLoaded: true 
     });
 
+  
+    function sortClubs (club) {
+    console.log(club);
+    console.log(club.objectId);
+    for (var i = 0; i < this.props.userClub.length; i++) {
+      return club.objectId != this.props.userClub[i].id;
+    }
+  }
+
     var Club = Parse.Object.extend("Club");
     var query = new Parse.Query(Club);
     var edit = this;
@@ -150,17 +72,25 @@ constructor(props) {
     // Interested in locations near user.
     query.near("geopoint", userGeoPoint);
     // Limit what could be a lot of points.
-    query.limit(20);
+    query.limit(3);
     // Final list of objects
     query.find({
       success: function(Club) {
-        console.log("clubs autour de moi");
-        console.log(Club);
+        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         var ClubCopy = JSON.parse(JSON.stringify(Club));
-        edit.setState({ data: ClubCopy });
+        // sorts clubs already in user's club list
+        var ClubCopySorted = ClubCopy.filter(sortClubs);
+        // calculate distance between user and the clubs
+        var userGeoPointCopy = new GeoPoint(userGeoPoint.latitude, userGeoPoint.longitude);
+        for (var i = 0; i < ClubCopySorted.length; i++) {
+          var ClubCopyGeoPoint = new GeoPoint(ClubCopySorted[i].geopoint.latitude, ClubCopySorted[i].geopoint.longitude);
+          var distance = Math.round(userGeoPointCopy.distanceTo(ClubCopyGeoPoint, true));
+          var distanceParam = {distance: distance};
+          Object.assign(ClubCopySorted[i], distanceParam);
+        }
+        edit.setState({ data: ClubCopySorted });
       }
     });
-
   }
 
    renderSeparator() {
@@ -186,6 +116,13 @@ constructor(props) {
         <ActivityIndicator animating size="large" />
       </View>
     );
+  }
+
+  addClub(id, name) {
+    console.log(name);
+    this.setState({selectedClubId:id, selectedClubName: name});
+    this.props.handleSubmitClub({id:id, name:name});
+    this.props.navigation.goBack();
   }
 
   render() {
@@ -218,15 +155,17 @@ constructor(props) {
        >
           <FlatList
             data={this.state.data}
-            keyExtractor={data => data.name}
+            keyExtractor={data => data.objectId}
             ItemSeparatorComponent={this.renderSeparator}
             ListFooterComponent={this.renderFooter}
             renderItem={({ item }) => (
               <ListItem
               titleContainerStyle={{marginLeft:20}}
+              subtitleContainerStyle={{marginLeft:20}}
               containerStyle={{borderBottomWidth: 0, height:70, justifyContent:'center'}}
-              title={item.name}
-              titleStyle={styles.text}
+              title={<Text style={{fontSize:15}}>{item.name}</Text>}
+              subtitle={<Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>}
+              onPress={()=>{this.addClub(item.objectId, item.name)}}
               />
             )}
           />

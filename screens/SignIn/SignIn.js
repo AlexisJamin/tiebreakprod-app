@@ -103,9 +103,7 @@ class SignIn extends React.Component {
       highestLevel:'à compléter',
       availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
       userId:userId,
-      picture: '',
-      latitude:signin.state.location.coords.latitude,
-      longitude:signin.state.location.coords.longitude
+      picture: ''
     })
 
       signin.props.handleSubmitPreferences({
@@ -202,9 +200,7 @@ class SignIn extends React.Component {
                 highestLevel:'à compléter',
                 availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
                 userId:userId,
-                picture: picture.url(),
-                latitude:signin.state.location.coords.latitude,
-                longitude:signin.state.location.coords.longitude
+                picture: picture.url()
               })
 
                 signin.props.handleSubmitPreferences({

@@ -28,7 +28,7 @@ constructor() {
   render() {
     return (
           <View>
-              <View style={{flexDirection:'row', justifyContent:"space-around"}}>
+              <View style={{flexDirection:'row', justifyContent:"space-between"}}>
                {
                this.state.fontAvenirLoaded ? (<Text style={styles.clubs}>{this.props.clubName}</Text>) : null 
                }   

@@ -34,8 +34,7 @@ constructor(props) {
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false, 
-      location:null
+      fontAvenirLoaded: false
     };
   }
 
@@ -58,17 +57,6 @@ constructor(props) {
    Parse.User.logIn(this.state.username, this.state.password, {
    success: function(user) {
     console.log("Trouvé !");
-
-     if (Platform.OS === 'android' && !Constants.isDevice) {
-      console.log("émulateur Android");
-      login.setState({
-        location:{
-          coords:{latitude:null, longitude:null}
-        }
-      });
-    } else {
-      login._getLocationAsync();
-    }
 
     var userId = user.id;
     // Do stuff after successful login.
@@ -102,9 +90,7 @@ constructor(props) {
                   highestLevel:highestLevel,
                   availability:availability,
                   userId:userId,
-                  picture: picture,
-                  latitude:login.state.location.coords.latitude,
-                  longitude:login.state.location.coords.longitude
+                  picture: picture
                 })
 
                 login.props.handleSubmitPreferences({
@@ -132,7 +118,7 @@ constructor(props) {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
-                      login.props.handleSubmitClub(clubName)
+                      login.props.handleSubmitClub({id:club.id, name:clubName})
                     },
                     error: function(object, error) {
                       // The object was not retrieved successfully.
@@ -201,23 +187,6 @@ constructor(props) {
     });
     this.props.navigation.navigate("SignIn");
   };
-
-
-    _getLocationAsync = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-     console.log('Permission to access location was denied');
-    }
-
-    let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
-    console.log(location);
-    this.setState({location});
-    var user = Parse.User.current();
-    var point = new Parse.GeoPoint({latitude:location.coords.latitude, longitude:location.coords.longitude});
-    user.set("geolocation", point);
-    user.save();
-  };
-
 
   render() {
 
