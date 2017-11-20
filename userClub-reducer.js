@@ -5,7 +5,9 @@ export default function userClub(store=[], action) {
     return copyStore;
   } 
   if (action.type == 'newUserClub') {
-  	return store = [action.value];
+  	var copyStore = store.concat();
+  	copyStore.splice(action.value,1);
+    return copyStore;
   }
   else {
     return store;

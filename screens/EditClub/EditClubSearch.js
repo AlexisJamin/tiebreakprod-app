@@ -60,7 +60,7 @@ constructor(props) {
     // Interested in locations near user.
     query.near("geopoint", userGeoPoint);
     // Limit what could be a lot of points.
-    query.limit(3);
+    query.limit(6);
     // Final list of objects
     query.find({
       success: function(Club) {
@@ -78,14 +78,14 @@ constructor(props) {
           var distanceParam = {distance: distance};
           Object.assign(ClubCopy[i], distanceParam);
 
-          for (var j = 0; j < edit.props.userClub.length; j++) {
+          /*for (var j = 0; j < edit.props.userClub.length; j++) {
             if (ClubCopy[i].objectId == edit.props.userClub[j].id) {
               console.log('doublon trouvé rang' + ' ' + i);
               ClubCopy.splice(i, 1);
               i--;
               console.log(i);
             }
-          }
+          }*/
         }
         edit.setState({ data: ClubCopy });
       }

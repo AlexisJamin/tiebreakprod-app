@@ -57,13 +57,9 @@ constructor(props) {
     this.props.navigation.goBack();
   }
 
-  handleClick(position) {
-    console.log(position);
-    var userClubList = this.props.userClub.concat();
-    console.log(userClubList);
-    var newClubList = userClubList.splice(position, 1);
-    console.log(newClubList);
-    this.props.handleSubmitClub(newClubList);
+  handleClick(indice) {
+    console.log(indice);
+    this.props.handleSubmitClub(indice);
   }
 
   render() {
