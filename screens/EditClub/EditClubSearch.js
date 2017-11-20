@@ -41,8 +41,6 @@ constructor(props) {
     };
   }
 
-
-
   async componentDidMount() {
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
@@ -53,22 +51,12 @@ constructor(props) {
       fontAvenirLoaded: true 
     });
 
-  
-    function sortClubs (club) {
-    console.log(club);
-    console.log(club.objectId);
-    for (var i = 0; i < this.props.userClub.length; i++) {
-      return club.objectId != this.props.userClub[i].id;
-    }
-  }
-
     var Club = Parse.Object.extend("Club");
     var query = new Parse.Query(Club);
     var edit = this;
     // User's location
     var user = Parse.User.current();
     var userGeoPoint = user.get("geolocation");
-    console.log(userGeoPoint);
     // Interested in locations near user.
     query.near("geopoint", userGeoPoint);
     // Limit what could be a lot of points.
@@ -78,17 +66,28 @@ constructor(props) {
       success: function(Club) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         var ClubCopy = JSON.parse(JSON.stringify(Club));
+        console.log('Clubs autour de moi');
+        console.log(ClubCopy);
         // sorts clubs already in user's club list
-        var ClubCopySorted = ClubCopy.filter(sortClubs);
         // calculate distance between user and the clubs
         var userGeoPointCopy = new GeoPoint(userGeoPoint.latitude, userGeoPoint.longitude);
-        for (var i = 0; i < ClubCopySorted.length; i++) {
-          var ClubCopyGeoPoint = new GeoPoint(ClubCopySorted[i].geopoint.latitude, ClubCopySorted[i].geopoint.longitude);
+        for (var i = 0; i < ClubCopy.length; i++) {
+          if (i==-1) {i++}
+          var ClubCopyGeoPoint = new GeoPoint(ClubCopy[i].geopoint.latitude, ClubCopy[i].geopoint.longitude);
           var distance = Math.round(userGeoPointCopy.distanceTo(ClubCopyGeoPoint, true));
           var distanceParam = {distance: distance};
-          Object.assign(ClubCopySorted[i], distanceParam);
+          Object.assign(ClubCopy[i], distanceParam);
+
+          for (var j = 0; j < edit.props.userClub.length; j++) {
+            if (ClubCopy[i].objectId == edit.props.userClub[j].id) {
+              console.log('doublon trouvé rang' + ' ' + i);
+              ClubCopy.splice(i, 1);
+              i--;
+              console.log(i);
+            }
+          }
         }
-        edit.setState({ data: ClubCopySorted });
+        edit.setState({ data: ClubCopy });
       }
     });
   }
@@ -119,6 +118,7 @@ constructor(props) {
   }
 
   addClub(id, name) {
+    console.log('clic sur club');
     console.log(name);
     this.setState({selectedClubId:id, selectedClubName: name});
     this.props.handleSubmitClub({id:id, name:name});

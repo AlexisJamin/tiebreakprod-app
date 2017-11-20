@@ -46,6 +46,7 @@ class SignIn extends React.Component {
       picture:'',
       location:null
     };
+    this._getLocationAsync();
   }
 
   async componentDidMount() {
@@ -152,7 +153,6 @@ class SignIn extends React.Component {
         if (this.state.password===this.state.confirmPassword && this.validateEmail(this.state.username)) 
           { 
             emailFormatIsFalse=false;
-            
 
             if (signin.state.picture.length>0) {
 
@@ -173,7 +173,6 @@ class SignIn extends React.Component {
             user.set("filterStyle", "indifferent");
             user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
             
-            signin._getLocationAsync();
 
             user.signUp(null, {
             success: function(user) {              

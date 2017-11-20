@@ -7,7 +7,6 @@ import { Parse } from 'parse/react-native';
 import Modal from 'react-native-modalbox';
 import { ButtonGroup, CheckBox } from 'react-native-elements';
 
-
 import EditDispoContentDays from './EditDispoContentDays';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");

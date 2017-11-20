@@ -17,17 +17,8 @@ function mapStateToProps(store) {
 
 function mapDispatchToProps(dispatch) {
   return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
-    },
         handleSubmitClub: function(value) { 
-        dispatch( {type: 'userClub', value: value} ) 
-    },
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    },
-    handleSubmitButton: function(value) { 
-        dispatch( {type: 'button', value: value} ) 
+        dispatch( {type: 'newUserClub', value: value} ) 
     }
   }
 };
@@ -36,8 +27,8 @@ class EditClubContent extends React.Component {
 
 constructor(props) {
     super(props);
-    this._onPressAddClub = this._onPressAddClub.bind(this);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false
@@ -55,13 +46,24 @@ constructor(props) {
     });
   }
 
-
-  _onPressAddClub () {
-
+  _onPressValidateButton () {
+    var user = Parse.User.current();
+    var clubs = [];
+    for (var i = 0; i < this.props.userClub.length; i++) {
+      clubs.push({"__type":"Pointer","className":"Club","objectId":this.props.userClub[i].id});
+    }
+    user.set("clubs", clubs);
+    user.save();
+    this.props.navigation.goBack();
   }
 
-  _onPressValidateButton () {
-
+  handleClick(position) {
+    console.log(position);
+    var userClubList = this.props.userClub.concat();
+    console.log(userClubList);
+    var newClubList = userClubList.splice(position, 1);
+    console.log(newClubList);
+    this.props.handleSubmitClub(newClubList);
   }
 
   render() {
@@ -71,7 +73,7 @@ constructor(props) {
     } else {
     var clubList = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
-      clubList.push(<EditClubContentClubList clubName = {this.props.userClub[i].name} />)
+      clubList.push(<EditClubContentClubList clubName={this.props.userClub[i].name} position={i} handleClick={this.handleClick}/>)
     }
   }
 

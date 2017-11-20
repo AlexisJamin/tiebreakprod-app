@@ -29,7 +29,7 @@ export default class CommunityContent extends React.Component {
     // Interested in locations near user.
     query.near("geolocation", userGeoPoint);
     // Limit what could be a lot of points.
-    query.limit(2);
+    query.limit(5);
     // Final list of objects
     query.find({
       success: function(Community) {
@@ -44,6 +44,8 @@ export default class CommunityContent extends React.Component {
         }
         console.log("setState");
         console.log(CommunityCopy);
+        console.log(CommunityCopy[0].picture);
+        console.log(CommunityCopy[0].picture.url);
         edit.setState({ data: CommunityCopy });
       }
     });
@@ -86,6 +88,7 @@ export default class CommunityContent extends React.Component {
 
 
 render () {
+
   return (
 
     <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
@@ -105,7 +108,7 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:50}}
           containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
-          avatar={{uri:item.picture}}
+          avatar={{uri:item.picture[url]}}
           title={<Text style={{fontSize:15}}>{item.lastName}</Text>}
           subtitleNumberOfLines={3}
           subtitleContainerStyle={{marginLeft:50, width:300}}

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import Svg, { Line } from 'react-native-svg';
 import { Font } from 'expo';
 
 export default class EditClubContentClubList extends React.Component {
 
-constructor() {
-    super();
+constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false
@@ -25,6 +26,10 @@ constructor() {
     });
   }
 
+  handleClick() {
+    this.props.handleClick(this.props.position);
+  }
+
   render() {
     return (
           <View>
@@ -32,7 +37,9 @@ constructor() {
                {
                this.state.fontAvenirLoaded ? (<Text style={styles.clubs}>{this.props.clubName}</Text>) : null 
                }   
+               <TouchableWithoutFeedback style={{padding:30}} onPress={this.handleClick}>
                <Image style={{marginLeft:15, marginTop:3}} source={require('../../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')} /> 
+               </TouchableWithoutFeedback>
                </View>
 
                 <Svg
