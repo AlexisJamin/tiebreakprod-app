@@ -108,7 +108,7 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:50}}
           containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
-          avatar={{uri:item.picture[url]}}
+          avatar={<Image source={{uri:item.picture}}/>}
           title={<Text style={{fontSize:15}}>{item.lastName}</Text>}
           subtitleNumberOfLines={3}
           subtitleContainerStyle={{marginLeft:50, width:300}}
