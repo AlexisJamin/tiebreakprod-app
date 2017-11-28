@@ -1,60 +1,62 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
-var GeoPoint = require('geopoint');
+import { connect } from 'react-redux';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
+function mapStateToProps(store) {
 
-export default class CommunityContent extends React.Component {
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
+
+class CommunityContent extends React.Component {
 
   constructor(props) {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.state = {
-      data: ''
+      data: null,
     };
-
-    console.log('hello');
-
-    var query = new Parse.Query(Parse.User);
-    var edit = this;
-    // User's location
-    var user = Parse.User.current();
-    var userGeoPoint = user.get("geolocation");
-    console.log(userGeoPoint);
-    // Interested in locations near user.
-    query.near("geolocation", userGeoPoint);
-    // Limit what could be a lot of points.
-    query.limit(5);
-    // Final list of objects
-    query.find({
-      success: function(Community) {
-        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-        var CommunityCopy = JSON.parse(JSON.stringify(Community));
-        var userGeoPointCopy = new GeoPoint(userGeoPoint.latitude, userGeoPoint.longitude);
-        for (var i = 0; i < CommunityCopy.length; i++) {
-          var CommunityCopyGeoPoint = new GeoPoint(CommunityCopy[i].geolocation.latitude, CommunityCopy[i].geolocation.longitude);
-          var distance = Math.round(userGeoPointCopy.distanceTo(CommunityCopyGeoPoint, true));
-          var distanceParam = {distance: distance};
-          Object.assign(CommunityCopy[i], distanceParam);
-        }
-        console.log("setState");
-        console.log(CommunityCopy);
-        console.log(CommunityCopy[0].picture);
-        console.log(CommunityCopy[0].picture.url);
-        edit.setState({ data: CommunityCopy });
-      }
-    });
-
   }
 
   async componentDidMount() {
 
-    
+    console.log('hello');
+
+    var user = Parse.User.current();
+    var userGeoPoint = user.get("geolocation");
+    var query = new Parse.Query(Parse.User);
+    var edit = this;
+    query.notEqualTo('email', Parse.User.current().getEmail());
+    // User's location
+    // Interested in locations near user.
+    query.withinKilometers("geolocation", userGeoPoint, this.props.userPreferences.filterFieldType.range);
+    //query.near("geolocation", userGeoPoint);
+    // Limit what could be a lot of points.
+    query.limit(2);
+    // Final list of objects
+    query.find({
+      success: function(Community) {
+        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+        var CommunityCopy = [];
+        for (var i = 0; i < Community.length; i++) {
+          CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
+        }
+        for (var i = 0; i < CommunityCopy.length; i++) {
+          var distance = Math.round(userGeoPoint.kilometersTo(CommunityCopy[i].geolocation));
+          var distanceParam = {distance: distance};
+          Object.assign(CommunityCopy[i], distanceParam);
+        }
+        edit.setState({ data: CommunityCopy });
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
 
   }
 
@@ -88,17 +90,18 @@ export default class CommunityContent extends React.Component {
 
 
 render () {
-
   return (
 
     <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
+
+    <ScrollView>
 
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
    >
       <FlatList
         data={this.state.data}
-        keyExtractor={item => item.objectId}
+        keyExtractor={data => data.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
         renderItem={({ item }) => (
@@ -108,8 +111,8 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:50}}
           containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
-          avatar={<Image source={{uri:item.picture}}/>}
-          title={<Text style={{fontSize:15}}>{item.lastName}</Text>}
+          avatar={ ( item.picture && { uri : item.picture.url } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
+          title={<Text style={{fontSize:15}}>{item.firstName} {item.lastName[0]}</Text>}
           subtitleNumberOfLines={3}
           subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
@@ -123,21 +126,15 @@ render () {
         )}
       />
     </List>
+
+    </ScrollView>
            
     </View>
            
-
     );
   }
 }
 
-styles = StyleSheet.create({
-  searchBar: {
-  paddingLeft: 30,
-  fontSize: 16,
-  maxHeight: 50,
-  flex: .1,
-  borderWidth: 9,
-  borderColor: '#E4E4E4'
-}
-})
+export default connect(mapStateToProps, null) (CommunityContent);
+
+

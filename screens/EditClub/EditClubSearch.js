@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
-var GeoPoint = require('geopoint');
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
@@ -60,21 +59,16 @@ constructor(props) {
     // Interested in locations near user.
     query.near("geopoint", userGeoPoint);
     // Limit what could be a lot of points.
-    query.limit(5);
+    //query.limit(5);
     // Final list of objects
     query.find({
       success: function(Club) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         var ClubCopy = JSON.parse(JSON.stringify(Club));
-        console.log('Clubs autour de moi');
-        console.log(ClubCopy);
         // sorts clubs already in user's club list
         // calculate distance between user and the clubs
-        var userGeoPointCopy = new GeoPoint(userGeoPoint.latitude, userGeoPoint.longitude);
         for (var i = 0; i < ClubCopy.length; i++) {
-          if (i==-1) {i++}
-          var ClubCopyGeoPoint = new GeoPoint(ClubCopy[i].geopoint.latitude, ClubCopy[i].geopoint.longitude);
-          var distance = Math.round(userGeoPointCopy.distanceTo(ClubCopyGeoPoint, true));
+          var distance = Math.round(userGeoPoint.kilometersTo(ClubCopy[i].geopoint));
           var distanceParam = {distance: distance};
           Object.assign(ClubCopy[i], distanceParam);
         }
@@ -83,7 +77,6 @@ constructor(props) {
                 return o1.objectId === o2.id; 
            });
         });
-        console.log(ClubCopyFiltered);
         edit.setState({ data: ClubCopyFiltered });
       }
     });
