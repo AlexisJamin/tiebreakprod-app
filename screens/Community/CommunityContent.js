@@ -32,12 +32,20 @@ class CommunityContent extends React.Component {
     var query = new Parse.Query(Parse.User);
     var edit = this;
     query.notEqualTo('email', Parse.User.current().getEmail());
+    query.greaterThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.from);
+    query.lessThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.to);
+    if (this.props.userPreferences.filterGender === "man") {
+      query.notEqualTo("gender", "female");
+    }
+     if (this.props.userPreferences.filterGender === "woman") {
+      query.notEqualTo("gender", "male");
+    }
     // User's location
     // Interested in locations near user.
     query.withinKilometers("geolocation", userGeoPoint, this.props.userPreferences.filterFieldType.range);
     //query.near("geolocation", userGeoPoint);
     // Limit what could be a lot of points.
-    query.limit(2);
+    query.limit(10);
     var userAvailability = this.props.user.availability;
     // Final list of objects
     query.find({
@@ -62,13 +70,21 @@ class CommunityContent extends React.Component {
                 var array = CommunityCopy[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
                 commonDispo = commonDispo + array.length;
               }
-              else {commonDispo = 0}
+              else {commonDispo = 0;}
             }
         var commonDispoParam = {commonDispo: commonDispo};
         Object.assign(CommunityCopy[i], commonDispoParam);
         }
-        console.log(CommunityCopy);
-        edit.setState({ data: CommunityCopy });
+        //console.log(CommunityCopy);
+        CommunityCopy.sort(function (a, b) {
+        return a.commonDispo - b.commonDispo;
+        }).reverse();
+
+        function notEqualToZero(element) {
+        return element.commonDispo != 0;
+      }
+        var CommunityCopyFiltered = CommunityCopy.filter(notEqualToZero);
+        edit.setState({ data: CommunityCopyFiltered });
       },
       error: function(e) {
         console.log(e);
@@ -139,6 +155,7 @@ render () {
             <Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>
             </View>
           }
+          onPress={() => this.props.navigation.navigate("ProfileView")}
           />
         )}
       />

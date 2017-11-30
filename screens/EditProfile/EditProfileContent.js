@@ -213,7 +213,7 @@ constructor(props) {
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
           defaultValue={defaultValueGender}
-          options={['male', 'female']}
+          options={['man', 'woman']}
           onSelect={(index, gender) => this.setState({gender})}
           />
 
