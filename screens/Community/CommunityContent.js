@@ -38,6 +38,7 @@ class CommunityContent extends React.Component {
     //query.near("geolocation", userGeoPoint);
     // Limit what could be a lot of points.
     query.limit(2);
+    var userAvailability = this.props.user.availability;
     // Final list of objects
     query.find({
       success: function(Community) {
@@ -46,11 +47,27 @@ class CommunityContent extends React.Component {
         for (var i = 0; i < Community.length; i++) {
           CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
         }
+
         for (var i = 0; i < CommunityCopy.length; i++) {
           var distance = Math.round(userGeoPoint.kilometersTo(CommunityCopy[i].geolocation));
           var distanceParam = {distance: distance};
           Object.assign(CommunityCopy[i], distanceParam);
         }
+
+        var commonDispo =0;
+        for (var i = 0; i < CommunityCopy.length; i++) {
+        commonDispo = 0;
+            for (var j = 0; j < userAvailability.length; j++) {
+              if (CommunityCopy[i].availability != undefined) { 
+                var array = CommunityCopy[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
+                commonDispo = commonDispo + array.length;
+              }
+              else {commonDispo = 0}
+            }
+        var commonDispoParam = {commonDispo: commonDispo};
+        Object.assign(CommunityCopy[i], commonDispoParam);
+        }
+        console.log(CommunityCopy);
         edit.setState({ data: CommunityCopy });
       },
       error: function(e) {
@@ -117,7 +134,7 @@ render () {
           subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
              <View>
-            <Text style={{fontSize:12, paddingTop:2}}>XXX disponibilités en commun</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.commonDispo} disponibilité(s) en commun</Text>
             <Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>
             <Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>
             </View>
