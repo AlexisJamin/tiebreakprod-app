@@ -102,7 +102,7 @@ constructor(props) {
           <View style={{flex:1, justifyContent: 'space-around', flexDirection: 'row'}}>
             
             <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-            <View style={{flexDirection:'row'}}>
+            <View style={{flexDirection:'column', alignItems:'center'}}>
             {
              this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.props.user.firstName} {this.props.user.lastName[0]}. </Text> 
              ) : null 
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
     fontSize: 15,
-    paddingTop: 2,
+    marginTop: 2,
     alignItem:'center', 
     justifyContent: 'center'
   },
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0)',
     fontFamily:'Avenir',
     fontSize: 13,
-    paddingTop: 4,
+    marginTop: 2,
     alignItem:'center', 
     justifyContent: 'center'
   },

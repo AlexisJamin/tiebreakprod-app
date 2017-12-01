@@ -45,7 +45,6 @@ constructor(props) {
 
     var commonAvailabitities = [...this.props.viewProfile.availability];
     var commonAvailabititiesFiltered = [];
-    console.log(commonAvailabitities);
     
     for (var i = 0; i < commonAvailabitities.length; i++) {
       if (commonAvailabitities[i].hours != undefined) {   
@@ -56,7 +55,7 @@ constructor(props) {
 
     var clubList = [];
     for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
-      clubList.push(<ProfileViewContentClubs clubObjectId = {this.props.viewProfile.clubs[i].objectId} />)
+      clubList.push(<ProfileViewContentClubs clubId = {this.props.viewProfile.clubs[i].id} />)
     }
 
     var clubListBullets = [];
@@ -98,7 +97,7 @@ constructor(props) {
 
           <View style={{flex:1, justifyContent: 'center', flexDirection: 'row'}}>
             
-            <View style={{flexDirection:'row'}}>
+            <View style={{flexDirection:'column', alignItems:'center'}}>
             {
              this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.props.viewProfile.firstName} {this.props.viewProfile.lastName[0]}. </Text> 
              ) : null 
@@ -176,7 +175,7 @@ constructor(props) {
         }}>
 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>CLUBS</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>CLUBS PRÉFÉRÉS</Text>) : null 
               }   
 
           </View>
@@ -263,7 +262,7 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
     fontSize: 15,
-    paddingTop: 2,
+    marginTop: 2,
     alignItem:'center', 
     justifyContent: 'center'
   },
@@ -272,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0)',
     fontFamily:'Avenir',
     fontSize: 13,
-    paddingTop: 8,
+    marginTop: 2,
     alignItem:'center', 
     justifyContent: 'center'
   },
