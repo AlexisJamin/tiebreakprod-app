@@ -17,7 +17,7 @@ function mapDispatchToProps(dispatch) {
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
     },
-    handleSubmitButton: function(value) { 
+        handleSubmitButton: function(value) { 
         dispatch( {type: 'button', value: value} ) 
     }
   }

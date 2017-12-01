@@ -14,7 +14,7 @@ import ProfileViewContentDispo from './ProfileViewContentDispo';
 
 function mapStateToProps(store) {
 
-  return { user: store.user, userClub: store.userClub }
+  return { user: store.user, userClub: store.userClub, viewProfile: store.viewProfile }
 }
 
 
@@ -42,42 +42,27 @@ constructor(props) {
 
 
   render() {
-    if (this.props.userClub.length == 0) {
-    var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
-    } else {
     var clubList = [];
-    for (var i = 0; i < this.props.userClub.length; i++) {
-      clubList.push(<ProfileContentClubs clubName = {this.props.userClub[i].name} />)
+    for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
+      clubList.push(<ProfileViewContentClubs clubObjectId = {this.props.viewProfile.clubs[i].objectId} />)
     }
 
     var clubListBullets = [];
-    for (var i = 0; i < this.props.userClub.length; i++) {
-      clubListBullets.push(<ProfileContentClubsBullets/>)
+    for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
+      clubListBullets.push(<ProfileViewContentClubsBullets/>)
     }
-  }
-    if (this.props.user.availability[0].hours.length == 0 &&
-        this.props.user.availability[1].hours.length == 0 &&
-        this.props.user.availability[2].hours.length == 0 &&
-        this.props.user.availability[3].hours.length == 0 &&
-        this.props.user.availability[4].hours.length == 0 &&
-        this.props.user.availability[5].hours.length == 0 &&
-        this.props.user.availability[6].hours.length == 0) {
-    var newUserDispo = (<View style={{alignItems:'center', top: 20, marginBottom:10}}>
-                        <Text style={{marginBottom:10}}> À COMPLÉTER</Text>
-                        <Text> (nécessaire pour trouver des ami(e)s / parties) </Text>
-                        </View>);
-    } else {
+  
     var dayList = [];
-    for (var i = 0; i < this.props.user.availability.length; i++) {
-      if (this.props.user.availability[i].hours.length > 0) {
-      dayList.push(<ProfileContentDispo days = {this.props.user.availability[i].day.slice(0,3)} hours = {this.props.user.availability[i].hours}/>)
+    for (var i = 0; i < this.props.viewProfile.availability.length; i++) {
+      if (this.props.viewProfile.availability[i].hours.length > 0) {
+      dayList.push(<ProfileViewContentDispo days = {this.props.viewProfile.availability[i].day.slice(0,3)} hours = {this.props.viewProfile.availability[i].hours}/>)
       }
     }
-  }
   
-  if (this.props.user.picture!='')
+  
+  if (this.props.viewProfile.picture!='')
            {
-           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
+           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.viewProfile.picture}}/>
            } else {
              profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
              }
@@ -99,12 +84,11 @@ constructor(props) {
 
               </View>
 
-          <View style={{flex:1, justifyContent: 'space-around', flexDirection: 'row'}}>
+          <View style={{flex:1, justifyContent: 'center', flexDirection: 'row'}}>
             
-            <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
             <View style={{flexDirection:'row'}}>
             {
-             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.props.user.firstName} {this.props.user.lastName[0]}. </Text> 
+             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.props.viewProfile.firstName} {this.props.viewProfile.lastName[0]}. </Text> 
              ) : null 
             }
             {
@@ -112,9 +96,6 @@ constructor(props) {
              ) : null 
             }
             </View>
-            <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditProfile')} >
-            <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
-            </TouchableWithoutFeedback>
           
           </View>
 
@@ -140,21 +121,21 @@ constructor(props) {
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{this.props.user.currentLevel} ({this.props.user.highestLevel})</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{this.props.viewProfile.currentLevel} ({this.props.viewProfile.highestLevel})</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Style.imageset/shape.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.user.style}</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.viewProfile.style}</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Gender.imageset/group5.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.user.gender}</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.viewProfile.gender}</Text>) : null 
               }  
             </View>
 
@@ -179,20 +160,14 @@ constructor(props) {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-around'
+          justifyContent: 'center'
         }}>
 
-               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES CLUBS</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>CLUBS</Text>) : null 
               }   
-            <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditClub')} >
-             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
-             </TouchableWithoutFeedback>
 
           </View>
-
-          {newUserClub}
 
           <View style={{
           flex: 1,
@@ -237,16 +212,12 @@ constructor(props) {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-around'
+          justifyContent: 'center'
         }}>
 
-               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES DISPONIBILITÉS</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>DISPONIBILITÉS</Text>) : null 
               }   
-            <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('EditDispo')} >
-            <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
-            </TouchableWithoutFeedback>
 
           </View>
 
@@ -257,7 +228,6 @@ constructor(props) {
           justifyContent: 'space-around',
           top: 10
           }}>
-                    {newUserDispo}
                     {dayList}
 
 
@@ -290,7 +260,7 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0)',
     fontFamily:'Avenir',
     fontSize: 13,
-    paddingTop: 4,
+    paddingTop: 8,
     alignItem:'center', 
     justifyContent: 'center'
   },

@@ -12,12 +12,21 @@ function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };
 
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'viewProfile', value: value} ) 
+    }
+  }
+};
+
 class CommunityContent extends React.Component {
 
   constructor(props) {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.viewProfile = this.viewProfile.bind(this);
     this.state = {
       data: null,
     };
@@ -120,6 +129,39 @@ class CommunityContent extends React.Component {
     );
   };
 
+  viewProfile(id) {
+     var view = this;
+     var User = Parse.Object.extend("User");
+     var query = new Parse.Query(User);
+     
+     query.get(id, {
+      success: function(user) {
+          // The object was retrieved successfully.
+          var lastName = user.get("lastName");
+          var firstName = user.get("firstName");
+          var style = user.get("style");
+          var gender = user.get("gender");
+          var currentLevel = user.get("currentLevel");
+          var highestLevel = user.get("highestLevel");
+          var availability = user.get("availability");
+          var picture = user.get("picture").url();
+          var clubs = user.get("clubs");
+
+          view.props.handleSubmit({
+            lastName:lastName,
+            firstName:firstName,
+            style:style,
+            gender:gender,
+            currentLevel:currentLevel,
+            highestLevel:highestLevel,
+            availability:availability,
+            picture: picture,
+            clubs: clubs
+          })
+    view.props.navigation.navigate("ProfileView");
+        }
+      });
+  }
 
 
 render () {
@@ -155,7 +197,7 @@ render () {
             <Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>
             </View>
           }
-          onPress={() => this.props.navigation.navigate("ProfileView")}
+          onPress={()=>{this.viewProfile(item.objectId)}}
           />
         )}
       />
@@ -169,6 +211,6 @@ render () {
   }
 }
 
-export default connect(mapStateToProps, null) (CommunityContent);
+export default connect(mapStateToProps, mapDispatchToProps) (CommunityContent);
 
 

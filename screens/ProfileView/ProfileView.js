@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
 
 import ProfileViewHeader from './ProfileViewHeader'
-//import ProfileViewContent from './ProfileViewContent'
+import ProfileViewContent from './ProfileViewContent'
 
 export default class ProfileView extends React.Component {
 
@@ -17,7 +17,7 @@ export default class ProfileView extends React.Component {
            <ProfileViewHeader navigation={this.props.navigation}/>
           </View>
 
-          
+          <ProfileViewContent/>
         
         </View>
     );

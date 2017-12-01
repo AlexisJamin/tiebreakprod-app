@@ -4,31 +4,21 @@ import { Font } from 'expo';
 import { connect } from 'react-redux';
 
 function mapStateToProps(store) {
-
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button, viewProfile: store.viewProfile }
 };
 
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
-    },
-        handleSubmitClub: function(value) { 
-        dispatch( {type: 'userClub', value: value} ) 
-    },
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    },
-    handleSubmitButton: function(value) { 
-        dispatch( {type: 'button', value: value} ) 
+        dispatch( {type: 'profileView', value: value} ) 
     }
   }
 };
 
-class ProfileViewHeader extends Component {
+class ProfileViewHeader extends React.Component {
 
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
       fontLoaded: false
     };
@@ -55,13 +45,13 @@ class ProfileViewHeader extends Component {
         top: 40
         }}>
 
-       		<TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
-          <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
-          </TouchableWithoutFeedback>
-       {
-        this.state.fontLoaded ? (<Text style={styles.title}> Prénom N. </Text> ) : null 
-       }
-       <TouchableWithoutFeedback style={{padding:30}} onPress>
+     		<TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
+        <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
+        </TouchableWithoutFeedback>
+
+       <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
+       
+       <TouchableWithoutFeedback style={{padding:30}}>
        <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
        </TouchableWithoutFeedback>
        

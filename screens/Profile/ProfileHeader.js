@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
-import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
-import { Font } from 'expo'
-import { NavigationActions } from 'react-navigation'
+import React, { Component } from 'react';
+import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Font } from 'expo';
 
 
 export default class ProfileHeader extends Component {
