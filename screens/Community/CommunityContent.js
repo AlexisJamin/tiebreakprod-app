@@ -71,7 +71,7 @@ class CommunityContent extends React.Component {
           Object.assign(CommunityCopy[i], distanceParam);
         }
 
-        var commonDispo =0;
+        var commonDispo = 0;
         for (var i = 0; i < CommunityCopy.length; i++) {
         commonDispo = 0;
             for (var j = 0; j < userAvailability.length; j++) {
@@ -84,7 +84,6 @@ class CommunityContent extends React.Component {
         var commonDispoParam = {commonDispo: commonDispo};
         Object.assign(CommunityCopy[i], commonDispoParam);
         }
-        //console.log(CommunityCopy);
         CommunityCopy.sort(function (a, b) {
         return a.commonDispo - b.commonDispo;
         }).reverse();

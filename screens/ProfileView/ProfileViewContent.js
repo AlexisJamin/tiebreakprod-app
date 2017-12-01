@@ -42,6 +42,18 @@ constructor(props) {
 
 
   render() {
+
+    var commonAvailabitities = [...this.props.viewProfile.availability];
+    var commonAvailabititiesFiltered = [];
+    console.log(commonAvailabitities);
+    
+    for (var i = 0; i < commonAvailabitities.length; i++) {
+      if (commonAvailabitities[i].hours != undefined) {   
+      var array = commonAvailabitities[i].hours.filter((n) => this.props.user.availability[i].hours.includes(n));
+      commonAvailabititiesFiltered.push({day:commonAvailabitities[i].day, hours:array});
+      }
+    }
+
     var clubList = [];
     for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
       clubList.push(<ProfileViewContentClubs clubObjectId = {this.props.viewProfile.clubs[i].objectId} />)
@@ -53,9 +65,9 @@ constructor(props) {
     }
   
     var dayList = [];
-    for (var i = 0; i < this.props.viewProfile.availability.length; i++) {
-      if (this.props.viewProfile.availability[i].hours.length > 0) {
-      dayList.push(<ProfileViewContentDispo days = {this.props.viewProfile.availability[i].day.slice(0,3)} hours = {this.props.viewProfile.availability[i].hours}/>)
+    for (var i = 0; i < commonAvailabititiesFiltered.length; i++) {
+      if (commonAvailabititiesFiltered[i].hours.length > 0) {
+      dayList.push(<ProfileViewContentDispo days = {commonAvailabititiesFiltered[i].day.slice(0,3)} hours = {commonAvailabititiesFiltered[i].hours}/>)
       }
     }
   
@@ -216,7 +228,7 @@ constructor(props) {
         }}>
 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>DISPONIBILITÉS</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>DISPONIBILITÉS COMMUNES</Text>) : null 
               }   
 
           </View>
