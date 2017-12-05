@@ -34,8 +34,6 @@ class CommunityContent extends React.Component {
 
   async componentDidMount() {
 
-    console.log('hello');
-
     var user = Parse.User.current();
     var userGeoPoint = user.get("geolocation");
     var query = new Parse.Query(Parse.User);

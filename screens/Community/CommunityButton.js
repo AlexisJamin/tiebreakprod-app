@@ -32,7 +32,8 @@ class CommunityButton extends React.Component {
     if (selectedIndex==0) {
       this.props.navigation.navigate("CommunityContent");
       console.log("clic sur bouton Communauté");
-    } else {
+    }  
+    if (selectedIndex==1) {
       this.props.navigation.navigate("CommunityFriends");
       console.log("clic sur bouton Amis");
     }

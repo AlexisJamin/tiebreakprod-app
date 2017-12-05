@@ -1,86 +1,135 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { Parse } from 'parse/react-native';
+
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 
-const data = [
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-];
-
-
-
-export default class CommunityContent extends React.Component {
+class CommunityFriends extends React.Component {
 
   constructor(props) {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.state = {
-      data: data
+      data: ''
     };
+  }
+
+  async componentDidMount() {
+
+    var friends = [];
+    var edit = this;
+    var user = Parse.User.current();
+    console.log(user.id);
+    var query = new Parse.Query('Relation');
+    query.equalTo('status', 3);
+    query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    // Final list of objects
+    query.find({
+      success: function(Friends) {
+        console.log('query 1');
+        if (Friends.length != 0) {
+          var friendsQuery1 = JSON.parse(JSON.stringify(Friends));
+          
+          for (var i = 0; i < friendsQuery1.length; i++) {
+            var User = Parse.Object.extend("User");
+            var query = new Parse.Query(User);
+            query.get(friendsQuery1[i].toUser.objectId,{
+                success: function(users) {
+                  console.log('query user 1');
+                  var lastName = users.get("lastName");
+                  var firstName = users.get("firstName");
+                  var style = users.get("style");
+                  var gender = users.get("gender");
+                  var currentLevel = users.get("currentLevel");
+                  var highestLevel = users.get("highestLevel");
+                  var availability = users.get("availability");
+                  var clubs = users.get("clubs");
+                  var picture = users.get("picture").url();
+                  console.log('coucou');
+                  console.log(friends);
+                  console.log(users.id);
+                  friends.push({
+                    lastName:lastName,
+                    firstName:firstName,
+                    style:style,
+                    gender:gender,
+                    currentLevel:currentLevel,
+                    highestLevel:highestLevel,
+                    availability:availability,
+                    objectId:users.id,
+                    picture:picture,
+                    clubs:clubs
+                  });
+                  console.log(friends);
+                  edit.setState({data: friends})
+              }
+            });
+         }
+        }
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    })
+
+    var query = new Parse.Query('Relation');
+    query.equalTo('status', 3);
+    query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    // Final list of objects
+    query.find({
+      success: function(Friends) {
+        console.log('query 2');
+        if (Friends.length != 0) {
+          var friendsQuery2 = JSON.parse(JSON.stringify(Friends));
+          
+          for (var i = 0; i < friendsQuery1.length; i++) {
+            var User = Parse.Object.extend("User");
+            var query = new Parse.Query(User);
+            query.get(friendsQuery2[i].toUser.objectId,{
+                success: function(users) {
+                  console.log('query user 2');
+                  var lastName = users.get("lastName");
+                  var firstName = users.get("firstName");
+                  var style = users.get("style");
+                  var gender = users.get("gender");
+                  var currentLevel = users.get("currentLevel");
+                  var highestLevel = users.get("highestLevel");
+                  var availability = users.get("availability");
+                  var clubs = users.get("clubs");
+                  var picture = users.get("picture").url();
+                  console.log('coucou');
+                  console.log(friends);
+                  console.log(users.id);
+                  friends.push({
+                    lastName:lastName,
+                    firstName:firstName,
+                    style:style,
+                    gender:gender,
+                    currentLevel:currentLevel,
+                    highestLevel:highestLevel,
+                    availability:availability,
+                    objectId:users.id,
+                    picture:picture,
+                    clubs:clubs
+                  });
+                  console.log(friends);
+                  edit.setState({data: friends})
+              }
+            });
+         }
+       }
+       console.log(friends);
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
+
   }
 
   renderSeparator() {
@@ -122,7 +171,7 @@ render () {
    >
       <FlatList
         data={this.state.data}
-        keyExtractor={item => item.name}
+        keyExtractor={item => item.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
         renderItem={({ item }) => (
@@ -132,15 +181,15 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:50}}
           containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
-          avatar={{uri:item.avatar_url}}
-          title={<Text style={{fontSize:15}}>{item.name}</Text>}
+          avatar={{ uri : item.picture }  || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
+          title={<Text style={{fontSize:15}}>{item.firstName} {item.lastName[0]}.</Text>}
           subtitleNumberOfLines={3}
           subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
              <View>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.dispo} disponibilités en commun</Text>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.level} ({item.bestLevel})</Text>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.geo} km</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>XXX disponibilités en commun</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>XX km</Text>
             </View>
           }
           />
@@ -150,18 +199,10 @@ render () {
            
     </View>
            
-
     );
   }
 }
 
-styles = StyleSheet.create({
-  searchBar: {
-  paddingLeft: 30,
-  fontSize: 16,
-  maxHeight: 50,
-  flex: .1,
-  borderWidth: 9,
-  borderColor: '#E4E4E4',
-}
-})
+export default connect(null, null) (CommunityFriends);
+
+
