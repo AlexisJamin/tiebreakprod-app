@@ -70,13 +70,23 @@ constructor(props) {
       }
     }
   
-  
   if (this.props.viewProfile.picture!='')
            {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.viewProfile.picture}}/>
            } else {
              profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
              }
+
+  var deleteFriend;
+    if (this.props.viewProfile.isFriend) {
+      deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
+       <Text style={{textDecorationLine:'underline'}}> Supprimer le lien d'amitié </Text>
+       </TouchableWithoutFeedback>);
+    } else {
+      deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
+       <Text style={{textDecorationLine:'underline'}}> Ajouter comme ami(e) </Text>
+       </TouchableWithoutFeedback>);
+    }
 
     return (
 
@@ -87,8 +97,7 @@ constructor(props) {
         <View>
 
           <View style={{
-            alignItems:'center',
-            marginBottom:15
+            alignItems:'center'
           }}>
           
                   {profileImage}
@@ -204,7 +213,7 @@ constructor(props) {
 
           </View>
 
-         <View style={{flex:1, top: 20, alignItems: 'center'}}>
+         <View style={{flex:1, top:20, alignItems:'center'}}>
             <Svg
               height="40"
               width="300"
@@ -221,9 +230,9 @@ constructor(props) {
           </View>
 
           <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'center'
+          flex:1,
+          flexDirection:'row',
+          justifyContent:'center'
         }}>
 
                {
@@ -234,14 +243,24 @@ constructor(props) {
 
 
           <View style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'space-around',
-          top: 10
+          flex:1,
+          flexDirection:'column',
+          justifyContent:'space-around',
+          top:10
           }}>
                     {dayList}
 
 
+         </View>
+
+         <View style={{
+          flex:1,
+          flexDirection:'row',
+          justifyContent:'center',
+          marginTop:20,
+          marginBottom:20
+        }}>
+         {deleteAddFriend}
          </View>
 
          </View>

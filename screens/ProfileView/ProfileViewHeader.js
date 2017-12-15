@@ -32,6 +32,16 @@ class ProfileViewHeader extends React.Component {
   }
   
   render() {
+    var header;
+    if (this.props.viewProfile.isFriend) {
+      header= (<TouchableWithoutFeedback style={{padding:30}}>
+       <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
+       </TouchableWithoutFeedback>);
+    } else {
+      header= (<TouchableWithoutFeedback style={{padding:30}}>
+       <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
+       </TouchableWithoutFeedback>);
+    }
 
     return (
 
@@ -50,10 +60,8 @@ class ProfileViewHeader extends React.Component {
         </TouchableWithoutFeedback>
 
        <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-       
-       <TouchableWithoutFeedback style={{padding:30}}>
-       <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
-       </TouchableWithoutFeedback>
+
+       {header}
        
        </View>
        

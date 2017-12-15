@@ -153,6 +153,7 @@ class CommunityContent extends React.Component {
             highestLevel:highestLevel,
             availability:availability,
             picture: picture,
+            isFriend: false,
             clubs: clubs
           })
     view.props.navigation.navigate("ProfileView");

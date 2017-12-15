@@ -7,6 +7,18 @@ import { Parse } from 'parse/react-native';
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
+function mapStateToProps(store) {
+
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'viewProfile', value: value} ) 
+    }
+  }
+};
 
 class CommunityFriends extends React.Component {
 
@@ -14,6 +26,7 @@ class CommunityFriends extends React.Component {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.viewProfile = this.viewProfile.bind(this);
     this.state = {
       data: ''
     };
@@ -24,6 +37,8 @@ class CommunityFriends extends React.Component {
     var friends = [];
     var edit = this;
     var user = Parse.User.current();
+    var userGeoPoint = user.get("geolocation");
+    var userAvailability = this.props.user.availability;
     console.log(user.id);
     var query = new Parse.Query('Relation');
     query.equalTo('status', 3);
@@ -48,6 +63,7 @@ class CommunityFriends extends React.Component {
                   var currentLevel = users.get("currentLevel");
                   var highestLevel = users.get("highestLevel");
                   var availability = users.get("availability");
+                  var geolocation = users.get("geolocation");
                   var clubs = users.get("clubs");
                   var picture = users.get("picture").url();
                   console.log('coucou');
@@ -63,9 +79,29 @@ class CommunityFriends extends React.Component {
                     availability:availability,
                     objectId:users.id,
                     picture:picture,
+                    geolocation: geolocation,
                     clubs:clubs
                   });
                   console.log(friends);
+                  for (var i = 0; i < friends.length; i++) {
+                    var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
+                    var distanceParam = {distance: distance};
+                    Object.assign(friends[i], distanceParam);
+                  }
+
+                  var commonDispo = 0;
+                  for (var i = 0; i < friends.length; i++) {
+                  commonDispo = 0;
+                      for (var j = 0; j < userAvailability.length; j++) {
+                        if (friends[i].availability != undefined) { 
+                          var array = friends[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
+                          commonDispo = commonDispo + array.length;
+                        }
+                        else {commonDispo = 0;}
+                      }
+                  var commonDispoParam = {commonDispo: commonDispo};
+                  Object.assign(friends[i], commonDispoParam);
+                  }
                   edit.setState({data: friends})
               }
             });
@@ -100,6 +136,7 @@ class CommunityFriends extends React.Component {
                   var currentLevel = users.get("currentLevel");
                   var highestLevel = users.get("highestLevel");
                   var availability = users.get("availability");
+                  var geolocation = users.get("geolocation");
                   var clubs = users.get("clubs");
                   var picture = users.get("picture").url();
                   console.log('coucou');
@@ -114,10 +151,29 @@ class CommunityFriends extends React.Component {
                     highestLevel:highestLevel,
                     availability:availability,
                     objectId:users.id,
+                    geolocation: geolocation,
                     picture:picture,
                     clubs:clubs
                   });
                   console.log(friends);
+                  for (var i = 0; i < friends.length; i++) {
+                    var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
+                    var distanceParam = {distance: distance};
+                    Object.assign(friends[i], distanceParam);
+                  }
+                  var commonDispo = 0;
+                  for (var i = 0; i < friends.length; i++) {
+                  commonDispo = 0;
+                      for (var j = 0; j < userAvailability.length; j++) {
+                        if (friends[i].availability != undefined) { 
+                          var array = friends[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
+                          commonDispo = commonDispo + array.length;
+                        }
+                        else {commonDispo = 0;}
+                      }
+                  var commonDispoParam = {commonDispo: commonDispo};
+                  Object.assign(friends[i], commonDispoParam);
+                  }
                   edit.setState({data: friends})
               }
             });
@@ -159,6 +215,40 @@ class CommunityFriends extends React.Component {
     );
   };
 
+  viewProfile(id) {
+     var view = this;
+     var User = Parse.Object.extend("User");
+     var query = new Parse.Query(User);
+     
+     query.get(id, {
+      success: function(user) {
+          // The object was retrieved successfully.
+          var lastName = user.get("lastName");
+          var firstName = user.get("firstName");
+          var style = user.get("style");
+          var gender = user.get("gender");
+          var currentLevel = user.get("currentLevel");
+          var highestLevel = user.get("highestLevel");
+          var availability = user.get("availability");
+          var picture = user.get("picture").url();
+          var clubs = user.get("clubs");
+
+          view.props.handleSubmit({
+            lastName:lastName,
+            firstName:firstName,
+            style:style,
+            gender:gender,
+            currentLevel:currentLevel,
+            highestLevel:highestLevel,
+            availability:availability,
+            picture: picture,
+            isFriend: true,
+            clubs: clubs
+          })
+    view.props.navigation.navigate("ProfileView");
+        }
+      });
+  }
 
 
 render () {
@@ -187,11 +277,12 @@ render () {
           subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
              <View>
-            <Text style={{fontSize:12, paddingTop:2}}>XXX disponibilités en commun</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.commonDispo} disponibilité(s) en commun</Text>
             <Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>
-            <Text style={{fontSize:12, paddingTop:2}}>XX km</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>
             </View>
           }
+          onPress={()=>{this.viewProfile(item.objectId)}}
           />
         )}
       />
@@ -203,6 +294,6 @@ render () {
   }
 }
 
-export default connect(null, null) (CommunityFriends);
+export default connect(mapStateToProps, mapDispatchToProps) (CommunityFriends);
 
 
