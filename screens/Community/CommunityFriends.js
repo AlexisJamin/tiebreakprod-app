@@ -232,6 +232,7 @@ class CommunityFriends extends React.Component {
           var availability = user.get("availability");
           var picture = user.get("picture").url();
           var clubs = user.get("clubs");
+          var id = user.id;
 
           view.props.handleSubmit({
             lastName:lastName,
@@ -243,7 +244,10 @@ class CommunityFriends extends React.Component {
             availability:availability,
             picture: picture,
             isFriend: true,
-            clubs: clubs
+            friendRequestSent:false,
+            friendRequestReceived:false,
+            clubs: clubs,
+            id: id
           })
     view.props.navigation.navigate("ProfileView");
         }

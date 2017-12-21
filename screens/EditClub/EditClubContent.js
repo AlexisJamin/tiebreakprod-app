@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Font } from 'expo';
 import { connect } from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
 
 import EditClubContentClubList from './EditClubContentClubList';
@@ -82,13 +81,13 @@ constructor(props) {
         ) : null 
        }
 
-       <KeyboardAwareScrollView>
+       <ScrollView>
 
        <View style={{
         flexDirection:'column',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20
+        marginBottom:20
       }}>
       {clubList}
       </View>
@@ -102,7 +101,7 @@ constructor(props) {
        </View>
       </TouchableWithoutFeedback>   
 
-      </KeyboardAwareScrollView>
+      </ScrollView>
 
       <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
       <Text style={styles.buttonValidate}>Valider</Text>

@@ -39,7 +39,7 @@ class Notifications extends React.Component {
     var query = new Parse.Query("Notification");
     var edit = this;
     query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
-    query.ascending("updatedAt");
+    query.descending("updatedAt");
     query.limit(10);
     // Final list of objects
     query.find({
@@ -154,7 +154,7 @@ class Notifications extends React.Component {
     });
     this.setState({data: NotificationCopy})
 
-     if (type == (0 || 1) ) {
+     if (type == 0) {
          var User = Parse.Object.extend("User");
          var query = new Parse.Query(User);
          query.get(userId, {
@@ -169,6 +169,7 @@ class Notifications extends React.Component {
               var availability = user.get("availability");
               var picture = user.get("picture").url();
               var clubs = user.get("clubs");
+              var id = user.id;
 
               view.props.handleSubmit({
                 lastName:lastName,
@@ -180,12 +181,53 @@ class Notifications extends React.Component {
                 availability:availability,
                 picture: picture,
                 isFriend: false,
-                clubs: clubs
+                friendRequestSent: false,
+                friendRequestReceived:true,
+                clubs: clubs,
+                id: id
               })
             view.props.navigation.navigate("ProfileView");
             }
           });
       }
+
+       if (type == 1) {
+         var User = Parse.Object.extend("User");
+         var query = new Parse.Query(User);
+         query.get(userId, {
+          success: function(user) {
+              // The object was retrieved successfully.
+              var lastName = user.get("lastName");
+              var firstName = user.get("firstName");
+              var style = user.get("style");
+              var gender = user.get("gender");
+              var currentLevel = user.get("currentLevel");
+              var highestLevel = user.get("highestLevel");
+              var availability = user.get("availability");
+              var picture = user.get("picture").url();
+              var clubs = user.get("clubs");
+              var id = user.id;
+
+              view.props.handleSubmit({
+                lastName:lastName,
+                firstName:firstName,
+                style:style,
+                gender:gender,
+                currentLevel:currentLevel,
+                highestLevel:highestLevel,
+                availability:availability,
+                picture: picture,
+                isFriend: true,
+                friendRequestSent:false,
+                friendRequestReceived:false,
+                clubs: clubs,
+                id: id
+              })
+            view.props.navigation.navigate("ProfileView");
+            }
+          });
+      }
+
   }
 
 
@@ -208,14 +250,14 @@ render () {
         renderItem={({ item }) => (
           <ListItem
           avatarStyle={[styles.avatar, !item.seen && styles.background]}
-          avatarContainerStyle={{width:40, height:40}}
+          avatarContainerStyle={{width:50, height:50, top:-5}}
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:30}}
           containerStyle={[styles.container, !item.seen && styles.background]}
           avatar={{ uri : item.fromUserPicture } || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
-          title={<Text style={{fontSize:13}}>{item.fromUserFirstName} {item.fromUserLastName}.</Text>}
+          title={<Text style={{fontSize:15, fontWeight:'bold'}}>{item.fromUserFirstName} {item.fromUserLastName}.</Text>}
           subtitleContainerStyle={{marginLeft:30, width:300}}
-          subtitle={<Text style={{fontSize:11, paddingTop:2}}>{item.typeName} </Text>}
+          subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'bold'}}>{item.typeName} </Text>}
           hideChevron={true}
           onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type)}}
           />
@@ -236,16 +278,16 @@ export default connect(mapStateToProps, mapDispatchToProps) (Notifications);
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth:0, 
-    height:60, 
+    height:80, 
     justifyContent:'center'
   },
     background: {
     backgroundColor:'#F5F5F5'
   },
   avatar: {
-    width:40, 
-    height:40, 
-    borderRadius:20, 
+    width:50, 
+    height:50, 
+    borderRadius:25, 
     borderWidth:1, 
     borderColor:'white', 
     overflow:'hidden', 

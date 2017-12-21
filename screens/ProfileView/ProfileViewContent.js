@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback, Alert} from 'react-native';
 import { Font } from 'expo';
 import Svg,{
     Line,
 } from 'react-native-svg';
 import { connect } from 'react-redux';
+import { Parse } from 'parse/react-native';
+
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 import ProfileViewContentClubs from './ProfileViewContentClubs';
 import ProfileViewContentClubsBullets from './ProfileViewContentClubsBullets';
@@ -13,19 +17,43 @@ import ProfileViewContentDispo from './ProfileViewContentDispo';
 
 
 function mapStateToProps(store) {
-
   return { user: store.user, userClub: store.userClub, viewProfile: store.viewProfile }
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'viewProfile', value: value} ) 
+    }
+  }
+};
 
 
 class ProfileViewContent extends React.Component {
 
 constructor(props) {
     super(props);
+    this._onPressAddFriend = this._onPressAddFriend.bind(this);
+    this._onPressAnswerAdd = this._onPressAnswerAdd.bind(this);
+    this._onPressAnswerRefuse = this._onPressAnswerRefuse.bind(this);
+    this._onPressAnswer = this._onPressAnswer.bind(this);
+    this._onPressDeleteFriend = this._onPressDeleteFriend.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false
+      fontAvenirLoaded: false,
+      friendRequestSent: false,
+      friendRequestReceived: false,
+      friendRequestRefused: false,
+      isFriend: false,
     };
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({
+      friendRequestSent:props.viewProfile.friendRequestSent,
+      isFriend:props.viewProfile.isFriend,
+      friendRequestReceived:props.viewProfile.friendRequestReceived
+    })
   }
 
   async componentDidMount() {
@@ -38,8 +66,238 @@ constructor(props) {
       fontAvenirNextLoaded: true,
       fontAvenirLoaded: true
     });
+    
+      var user = Parse.User.current();
+      var edit = this;
+      var query = new Parse.Query("Relation");
+      query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+      query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+      query.find({
+        success: function(relation) {
+          console.log('fromUser');
+          var relationCopy = JSON.parse(JSON.stringify(relation));
+            if (relationCopy[0].status == 1) {
+            console.log('friendRequestSent');
+            edit.setState({friendRequestSent:true, isFriend:false, friendRequestRefused:false, friendRequestReceived:false})
+          } else if (relationCopy[0].status == 2) {
+            console.log('friendRequestRefused');
+            edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
+          } else if (relationCopy[0].status == 3) {
+            console.log('isFriend');
+            edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
+          } 
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+
+      var query2 = new Parse.Query("Relation");
+      query2.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+      query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+      query2.find({
+        success: function(relation) {
+          console.log('toUser');
+          var relationCopy = JSON.parse(JSON.stringify(relation));
+           if (relationCopy[0].status == 1) {
+            console.log('friendRequestReceived');
+            edit.setState({friendRequestReceived:true, isFriend:false, friendRequestSent:false, friendRequestRefused:false})
+          } else if (relationCopy[0].status == 2) {
+            console.log('friendRequestRefused');
+            edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
+          } else if (relationCopy[0].status == 3) {
+            console.log('isFriend');
+            edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
+          }
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+    }
+
+  _onPressAddFriend () {
+    var add = this;
+    var user = Parse.User.current();
+    var otherUser = { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id };
+    var relation = new Parse.Object("Relation");
+    relation.set("fromUser", Parse.User.current());
+    relation.set("toUser", otherUser);
+    relation.set("createdAt", Date());
+    relation.set("updatedAt", Date());
+    relation.set("status", 1);
+    relation.save(null, {
+        success: function(relation) {
+          var notification = new Parse.Object("Notification");
+          notification.set("fromUser", Parse.User.current());
+          notification.set("toUser", otherUser);
+          notification.set("createdAt", Date());
+          notification.set("updatedAt", Date());
+          notification.set("type", 0);
+          notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
+          notification.set("seen", false);
+          notification.save(null, {
+            success: function(notification) {
+              add.props.handleSubmit({
+                lastName:add.props.viewProfile.lastName,
+                firstName:add.props.viewProfile.firstName,
+                style:add.props.viewProfile.style,
+                gender:add.props.viewProfile.gender,
+                currentLevel:add.props.viewProfile.currentLevel,
+                highestLevel:add.props.viewProfile.highestLevel,
+                availability:add.props.viewProfile.availability,
+                picture: add.props.viewProfile.picture,
+                clubs: add.props.viewProfile.clubs,
+                id: add.props.viewProfile.id,
+                friendRequestSent:true,
+                friendRequestReceived:false,
+                isFriend:false,
+              })
+              add.setState({friendRequestSent:true})
+            },
+            error: function(error) {
+              console.log(error);
+            }
+          });
+        },
+        error: function(error) {
+         console.log(error);
+        }
+      });
   }
 
+  _onPressAnswer() {
+    console.log('on Press !');
+    Alert.alert(
+    'Ajouter comme ami(e)',
+    '',
+    [
+      {text: 'Refuser', onPress: () => this._onPressAnswerRefuse(), style:'destructive'},
+      {text: 'Ajouter', onPress: () => this._onPressAnswerAdd()},
+    ],
+    { cancelable: false }
+  )
+  }
+
+  _onPressAnswerAdd() {
+
+    var user = Parse.User.current();
+    var add = this;
+    var relation = new Parse.Query("Relation");
+    relation.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    relation.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+    relation.first({
+      success: function(relation) {
+        relation.set("updatedAt", Date());
+        relation.set("status", 3);
+        relation.save();
+
+        var notification = new Parse.Object("Notification");
+        notification.set("fromUser", Parse.User.current());
+        notification.set("toUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
+        notification.set("createdAt", Date());
+        notification.set("updatedAt", Date());
+        notification.set("type", 1);
+        notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
+        notification.set("seen", false);
+        notification.save();
+        add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:true})
+      },
+      error: function(error) {
+        console.log(error.message);
+      }
+    });
+  }
+
+  _onPressAnswerRefuse() {
+
+    var user = Parse.User.current();
+    var add = this;
+    var relation = new Parse.Query("Relation");
+    relation.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    relation.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+    relation.first({
+      success: function(relation) {
+        relation.set("updatedAt", Date());
+        relation.set("status", 2);
+        relation.save();
+
+        var notification = new Parse.Object("Notification");
+        notification.set("fromUser", Parse.User.current());
+        notification.set("toUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
+        notification.set("createdAt", Date());
+        notification.set("updatedAt", Date());
+        notification.set("type", 2);
+        notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
+        notification.set("seen", false);
+        notification.save();
+        add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:false, friendRequestRefused:true})
+      },
+      error: function(error) {
+        console.log(error.message);
+      }
+    });
+  }
+
+  _onPressDeleteFriend() {
+    var user = Parse.User.current();
+    var add = this;
+    var relation1 = new Parse.Query("Relation");
+    relation1.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    relation1.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+    relation1.first({
+      success: function(relation) {
+        relation.destroy();
+        add.props.handleSubmit({
+          lastName:add.props.viewProfile.lastName,
+          firstName:add.props.viewProfile.firstName,
+          style:add.props.viewProfile.style,
+          gender:add.props.viewProfile.gender,
+          currentLevel:add.props.viewProfile.currentLevel,
+          highestLevel:add.props.viewProfile.highestLevel,
+          availability:add.props.viewProfile.availability,
+          picture: add.props.viewProfile.picture,
+          clubs: add.props.viewProfile.clubs,
+          id: add.props.viewProfile.id,
+          friendRequestSent:false,
+          friendRequestReceived:false,
+          isFriend:false,
+        })
+        add.setState({isFriend:false})
+      },
+      error: function(error) {
+        console.log(error.message);
+      }
+    });
+
+    var relation2 = new Parse.Query("Relation");
+    relation2.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    relation2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+    relation2.first({
+      success: function(relation) {
+        relation.destroy();
+        add.props.handleSubmit({
+          lastName:add.props.viewProfile.lastName,
+          firstName:add.props.viewProfile.firstName,
+          style:add.props.viewProfile.style,
+          gender:add.props.viewProfile.gender,
+          currentLevel:add.props.viewProfile.currentLevel,
+          highestLevel:add.props.viewProfile.highestLevel,
+          availability:add.props.viewProfile.availability,
+          picture: add.props.viewProfile.picture,
+          clubs: add.props.viewProfile.clubs,
+          id: add.props.viewProfile.id,
+          friendRequestSent:false,
+          friendRequestReceived:false,
+          isFriend:false,
+        })
+        add.setState({isFriend:false})
+      },
+      error: function(error) {
+        console.log(error.message);
+      }
+    });
+  }
 
   render() {
 
@@ -77,15 +335,27 @@ constructor(props) {
              profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
              }
 
-  var deleteFriend;
-    if (this.props.viewProfile.isFriend) {
-      deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
+  var deleteAddFriend= null;
+    if (this.state.isFriend) {
+      deleteAddFriend=(<TouchableWithoutFeedback onPress={this._onPressDeleteFriend} style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> Supprimer le lien d'amitié </Text>
        </TouchableWithoutFeedback>);
-    } else {
-      deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
+    } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false) {
+      deleteAddFriend=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> Ajouter comme ami(e) </Text>
        </TouchableWithoutFeedback>);
+    } else if (this.state.isFriend == false && this.state.friendRequestSent) {
+      deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
+       <Text style={{textDecorationLine:'underline'}}> En attente de réponse </Text>
+       </TouchableWithoutFeedback>);
+    }
+
+  var friendRequest = null;
+    if (this.state.friendRequestReceived) {
+      friendRequest=(<TouchableWithoutFeedback onPress={this._onPressAnswer}>
+         <Text style={styles.buttonValidate}>Répondre à la demande d'amitié</Text>
+         </TouchableWithoutFeedback>);
+      deleteAddFriend = null;
     }
 
     return (
@@ -267,13 +537,15 @@ constructor(props) {
 
          </ScrollView>
 
+         {friendRequest}
+
          </View>
 
     );
   }
 }
 
-export default connect(mapStateToProps, null) (ProfileViewContent);
+export default connect(mapStateToProps, mapDispatchToProps) (ProfileViewContent);
 
 const styles = StyleSheet.create({
   name: {
@@ -336,6 +608,15 @@ const styles = StyleSheet.create({
     color: 'white', 
     backgroundColor: 'rgb(42,129,82)', 
     textAlign:'center'
+  },
+  buttonValidate: {
+    backgroundColor:'rgb(200,90,24)',
+    color:'white',
+    fontSize:18,
+    lineHeight:30,
+    textAlign:'center',
+    paddingTop:15,
+    paddingBottom:15 
   }
 });
 

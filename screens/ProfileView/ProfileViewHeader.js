@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Font } from 'expo';
 import { connect } from 'react-redux';
+import { Parse } from 'parse/react-native';
+
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button, viewProfile: store.viewProfile }
+  return { viewProfile: store.viewProfile }
 };
 
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
-        dispatch( {type: 'profileView', value: value} ) 
+        dispatch( {type: 'viewProfile', value: value} ) 
     }
   }
 };
@@ -19,28 +23,142 @@ class ProfileViewHeader extends React.Component {
 
 	constructor(props) {
 		super(props);
+    this._onPressAddFriend = this._onPressAddFriend.bind(this);
 		this.state = {
-      fontLoaded: false
+      fontLoaded:false,
+      friendRequestRefused:false,
+      friendRequestSent:false,
+      friendRequestReceived:false,
+      isFriend:false
     };
 	}
+
+  componentWillReceiveProps(props) {
+    this.setState({
+      friendRequestSent:props.viewProfile.friendRequestSent,
+      isFriend:props.viewProfile.isFriend,
+      friendRequestReceived:props.viewProfile.friendRequestReceived
+    })
+  }
 
 	async componentDidMount() {
     await Font.loadAsync({
       'SevenOneEightUltra': require('../../assets/fonts/SevenOneEight-Ultra.ttf'),
     });
     this.setState({ fontLoaded: true });
+
+      var user = Parse.User.current();
+      var edit = this;
+      var query = new Parse.Query("Relation");
+      query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+      query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+      query.find({
+        success: function(relation) {
+          console.log('fromUser Header');
+          var relationCopy = JSON.parse(JSON.stringify(relation));
+            if (relationCopy[0].status == 1) {
+            console.log('friendRequestSent Header');
+            edit.setState({friendRequestSent:true, isFriend:false, friendRequestRefused:false, friendRequestReceived:false})
+          } else if (relationCopy[0].status == 2) {
+            console.log('friendRequestRefused Header');
+            edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
+          } else if (relationCopy[0].status == 3) {
+            console.log('isFriend Header');
+            edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
+          } 
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+
+      var query2 = new Parse.Query("Relation");
+      query2.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
+      query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+      query2.find({
+        success: function(relation) {
+          console.log('toUser Header');
+          var relationCopy = JSON.parse(JSON.stringify(relation));
+            if (relationCopy[0].status == 1) {
+            console.log('friendRequestReceived Header');
+            edit.setState({friendRequestReceived:true, isFriend:false, friendRequestSent:false, friendRequestRefused:false})
+          } else if (relationCopy[0].status == 2) {
+            console.log('friendRequestRefused Header');
+            edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
+          } else if (relationCopy[0].status == 3) {
+            console.log('isFriend Header');
+            edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
+          }
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+  }
+
+  _onPressAddFriend () {
+    var add = this;
+    var user = Parse.User.current();
+    var otherUser = { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id };
+    var relation = new Parse.Object("Relation");
+    relation.set("fromUser", Parse.User.current());
+    relation.set("toUser", otherUser);
+    relation.set("createdAt", Date());
+    relation.set("updatedAt", Date());
+    relation.set("status", 1);
+    relation.save(null, {
+        success: function(relation) {
+          var notification = new Parse.Object("Notification");
+          notification.set("fromUser", Parse.User.current());
+          notification.set("toUser", otherUser);
+          notification.set("createdAt", Date());
+          notification.set("updatedAt", Date());
+          notification.set("type", 0);
+          notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
+          notification.set("seen", false);
+          notification.save(null, {
+            success: function(notification) {
+              add.props.handleSubmit({
+                lastName:add.props.viewProfile.lastName,
+                firstName:add.props.viewProfile.firstName,
+                style:add.props.viewProfile.style,
+                gender:add.props.viewProfile.gender,
+                currentLevel:add.props.viewProfile.currentLevel,
+                highestLevel:add.props.viewProfile.highestLevel,
+                availability:add.props.viewProfile.availability,
+                picture: add.props.viewProfile.picture,
+                clubs: add.props.viewProfile.clubs,
+                id: add.props.viewProfile.id,
+                friendRequestSent:true,
+                friendRequestReceived:false,
+                isFriend:false
+              })
+              add.setState({friendRequestSent: true})
+            },
+            error: function(error) {
+              console.log(error);
+            }
+          });
+        },
+        error: function(error) {
+         console.log(error);
+        }
+      });
   }
   
   render() {
-    var header;
-    if (this.props.viewProfile.isFriend) {
+
+    var header= null;
+    if (this.state.isFriend) {
       header= (<TouchableWithoutFeedback style={{padding:30}}>
        <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
        </TouchableWithoutFeedback>);
-    } else {
-      header= (<TouchableWithoutFeedback style={{padding:30}}>
+    } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false) {
+      header=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} style={{padding:30}}>
        <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
        </TouchableWithoutFeedback>);
+    } else {
+      header= null;
     }
 
     return (
