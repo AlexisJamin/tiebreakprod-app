@@ -28,7 +28,7 @@ class CommunityFriends extends React.Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.viewProfile = this.viewProfile.bind(this);
     this.state = {
-      data: ''
+      data: [],
     };
   }
 
@@ -39,17 +39,17 @@ class CommunityFriends extends React.Component {
     var user = Parse.User.current();
     var userGeoPoint = user.get("geolocation");
     var userAvailability = this.props.user.availability;
-    console.log(user.id);
     var query = new Parse.Query('Relation');
     query.equalTo('status', 3);
     query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
-    // Final list of objects
     query.find({
       success: function(Friends) {
         console.log('query 1');
         if (Friends.length != 0) {
-          var friendsQuery1 = JSON.parse(JSON.stringify(Friends));
-          
+          var friendsQuery1 = [];
+          for (var i = 0; i < Friends.length; i++) {  
+           friendsQuery1.push(JSON.parse(JSON.stringify(Friends[i])));
+           } 
           for (var i = 0; i < friendsQuery1.length; i++) {
             var User = Parse.Object.extend("User");
             var query = new Parse.Query(User);
@@ -102,7 +102,7 @@ class CommunityFriends extends React.Component {
                   var commonDispoParam = {commonDispo: commonDispo};
                   Object.assign(friends[i], commonDispoParam);
                   }
-                  edit.setState({data: friends})
+                  edit.setState({data: [...friends]})
               }
             });
          }
@@ -113,20 +113,21 @@ class CommunityFriends extends React.Component {
       }
     })
 
-    var query = new Parse.Query('Relation');
-    query.equalTo('status', 3);
-    query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
-    // Final list of objects
-    query.find({
+    var query2 = new Parse.Query('Relation');
+    query2.equalTo('status', 3);
+    query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    query2.find({
       success: function(Friends) {
         console.log('query 2');
         if (Friends.length != 0) {
-          var friendsQuery2 = JSON.parse(JSON.stringify(Friends));
-          
-          for (var i = 0; i < friendsQuery1.length; i++) {
+          var friendsQuery2 = [];
+          for (var i = 0; i < Friends.length; i++) {  
+           friendsQuery2.push(JSON.parse(JSON.stringify(Friends[i])));
+           } 
+          for (var i = 0; i < friendsQuery2.length; i++) {
             var User = Parse.Object.extend("User");
             var query = new Parse.Query(User);
-            query.get(friendsQuery2[i].toUser.objectId,{
+            query.get(friendsQuery2[i].fromUser.objectId,{
                 success: function(users) {
                   console.log('query user 2');
                   var lastName = users.get("lastName");
@@ -174,7 +175,7 @@ class CommunityFriends extends React.Component {
                   var commonDispoParam = {commonDispo: commonDispo};
                   Object.assign(friends[i], commonDispoParam);
                   }
-                  edit.setState({data: friends})
+                  edit.setState({data: [...friends]})
               }
             });
          }
