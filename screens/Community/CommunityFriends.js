@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
@@ -26,11 +26,15 @@ class CommunityFriends extends React.Component {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
     this.viewProfile = this.viewProfile.bind(this);
     this.state = {
       data: [],
       loading1: true,
       loading2: true,
+      refreshing1: false,
+      refreshing2: false,
     };
   }
 
@@ -101,11 +105,13 @@ class CommunityFriends extends React.Component {
                   Object.assign(friends[i], commonDispoParam);
                   }
                   edit.setState({data: [...friends], loading1:false})
+                  console.log('loading1 terminé');
               }
             });
          }
         }
         else {edit.setState({loading1:false})}
+        console.log('loading1 terminé');
       },
       error: function(e) {
         console.log(e);
@@ -171,11 +177,13 @@ class CommunityFriends extends React.Component {
                   Object.assign(friends[i], commonDispoParam);
                   }
                   edit.setState({data: [...friends], loading2:false})
+                  console.log('loading2 terminé');
               }
             });
          }
        } 
        else {edit.setState({loading2:false})}
+        console.log('loading2 terminé');
       },
       error: function(e) {
         console.log(e);
@@ -209,7 +217,176 @@ class CommunityFriends extends React.Component {
         <ActivityIndicator animating size="large" />
       </View>
     );
-  };
+  }
+
+  renderEmpty() {
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
+        <Text style={{marginTop:10}}> Vous n'avez pas encore d'ami(e)s.</Text>
+        <Text style={{marginTop:10}}> Cliquez sur "Communauté" pour en trouver ! </Text>
+      </View>
+    );
+  }
+
+  onRefresh() {
+    console.log('refresh');
+      this.setState({refreshing1:true, refreshing2:true, data:[]});
+      var friends = [];
+    var edit = this;
+    var user = Parse.User.current();
+    var userGeoPoint = user.get("geolocation");
+    var userAvailability = this.props.user.availability;
+    var query = new Parse.Query('Relation');
+    query.equalTo('status', 3);
+    query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    query.find({
+      success: function(Friends) {
+        console.log('query 1');
+        if (Friends.length != 0) {
+          var friendsQuery1 = [];
+          for (var i = 0; i < Friends.length; i++) {  
+           friendsQuery1.push(JSON.parse(JSON.stringify(Friends[i])));
+           } 
+          for (var i = 0; i < friendsQuery1.length; i++) {
+            var User = Parse.Object.extend("User");
+            var query = new Parse.Query(User);
+            query.get(friendsQuery1[i].toUser.objectId,{
+                success: function(users) {
+                  console.log('query user 1');
+                  var lastName = users.get("lastName");
+                  var firstName = users.get("firstName");
+                  var style = users.get("style");
+                  var gender = users.get("gender");
+                  var currentLevel = users.get("currentLevel");
+                  var highestLevel = users.get("highestLevel");
+                  var availability = users.get("availability");
+                  var geolocation = users.get("geolocation");
+                  var clubs = users.get("clubs");
+                  var picture = users.get("picture").url();
+                  friends.push({
+                    lastName:lastName,
+                    firstName:firstName,
+                    style:style,
+                    gender:gender,
+                    currentLevel:currentLevel,
+                    highestLevel:highestLevel,
+                    availability:availability,
+                    objectId:users.id,
+                    picture:picture,
+                    geolocation: geolocation,
+                    clubs:clubs
+                  });
+                  for (var i = 0; i < friends.length; i++) {
+                    var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
+                    var distanceParam = {distance: distance};
+                    Object.assign(friends[i], distanceParam);
+                  }
+
+                  var commonDispo = 0;
+                  for (var i = 0; i < friends.length; i++) {
+                  commonDispo = 0;
+                      for (var j = 0; j < userAvailability.length; j++) {
+                        if (friends[i].availability != undefined) { 
+                          var array = friends[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
+                          commonDispo = commonDispo + array.length;
+                        }
+                        else {commonDispo = 0;}
+                      }
+                  var commonDispoParam = {commonDispo: commonDispo};
+                  Object.assign(friends[i], commonDispoParam);
+                  }
+                  edit.setState({data: [...friends], refreshing1:false})
+                  console.log('refresh1 terminé');
+              }
+            });
+         }
+        }
+        else {edit.setState({refreshing1:false})}
+          console.log('refresh1 terminé');
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    })
+
+    var query2 = new Parse.Query('Relation');
+    query2.equalTo('status', 3);
+    query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    query2.find({
+      success: function(Friends) {
+        console.log('query 2');
+        if (Friends.length != 0) {
+          var friendsQuery2 = [];
+          for (var i = 0; i < Friends.length; i++) {  
+           friendsQuery2.push(JSON.parse(JSON.stringify(Friends[i])));
+           } 
+          for (var i = 0; i < friendsQuery2.length; i++) {
+            var User = Parse.Object.extend("User");
+            var query = new Parse.Query(User);
+            query.get(friendsQuery2[i].fromUser.objectId,{
+                success: function(users) {
+                  console.log('query user 2');
+                  var lastName = users.get("lastName");
+                  var firstName = users.get("firstName");
+                  var style = users.get("style");
+                  var gender = users.get("gender");
+                  var currentLevel = users.get("currentLevel");
+                  var highestLevel = users.get("highestLevel");
+                  var availability = users.get("availability");
+                  var geolocation = users.get("geolocation");
+                  var clubs = users.get("clubs");
+                  var picture = users.get("picture").url();
+                  friends.push({
+                    lastName:lastName,
+                    firstName:firstName,
+                    style:style,
+                    gender:gender,
+                    currentLevel:currentLevel,
+                    highestLevel:highestLevel,
+                    availability:availability,
+                    objectId:users.id,
+                    geolocation: geolocation,
+                    picture:picture,
+                    clubs:clubs
+                  });
+                  for (var i = 0; i < friends.length; i++) {
+                    var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
+                    var distanceParam = {distance: distance};
+                    Object.assign(friends[i], distanceParam);
+                  }
+                  var commonDispo = 0;
+                  for (var i = 0; i < friends.length; i++) {
+                  commonDispo = 0;
+                      for (var j = 0; j < userAvailability.length; j++) {
+                        if (friends[i].availability != undefined) { 
+                          var array = friends[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
+                          commonDispo = commonDispo + array.length;
+                        }
+                        else {commonDispo = 0;}
+                      }
+                  var commonDispoParam = {commonDispo: commonDispo};
+                  Object.assign(friends[i], commonDispoParam);
+                  }
+                  edit.setState({data: [...friends], refreshing2:false})
+                  console.log('refresh2 terminé');
+              }
+            });
+         }
+       } 
+       else {edit.setState({refreshing2:false})}
+        console.log('refresh2 terminé');
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
+    }
 
   viewProfile(id) {
      var view = this;
@@ -265,6 +442,13 @@ render () {
         keyExtractor={item => item.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
+        ListEmptyComponent={this.renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+        }
         renderItem={({ item }) => (
           <ListItem
           avatarStyle={{width:60, height:60, borderRadius:30, borderWidth:1, borderColor:'white', overflow:'hidden', backgroundColor:'white'}}

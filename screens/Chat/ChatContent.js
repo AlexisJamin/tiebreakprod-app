@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TextInput, RefreshControl, ActivityIndicator } from 'react-native';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -26,9 +26,13 @@ class ChatContent extends React.Component {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
     this.viewOnPress = this.viewOnPress.bind(this);
     this.state = {
       data: null,
+      loading: true,
+      refreshing: false,
     };
   }
 
@@ -60,7 +64,7 @@ async componentDidMount() {
                     var MessageCopy = JSON.parse(JSON.stringify(Message));
                     var messageParam = {message : MessageCopy.message};
                     Object.assign(conversation[i], messageParam);
-                    edit.setState({ data: conversation });
+                    edit.setState({ data: conversation, loading:false });
                   }
               });
            })(query2, ConversationCopy, i, edit);
@@ -78,12 +82,13 @@ async componentDidMount() {
                   var picture = users.get("picture").url();
                   var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
                   Object.assign(conversation[i], fromUserParam);
-                  edit.setState({ data: conversation });
+                  edit.setState({ data: conversation, loading:false });
                 }
               });
            })(query3, ConversationCopy, i, edit);
          }
         } 
+        else {edit.setState({loading:false})}
       },
       error: function(e) {
         console.log(e);
@@ -116,7 +121,82 @@ renderSeparator() {
         <ActivityIndicator animating size="large" />
       </View>
     );
-  };
+  }
+
+  renderEmpty() {
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
+        <Text style={{marginTop:10}}> Aucune conversation.</Text>
+        <Text style={{marginTop:10}}> Ajoutez des ami(e)s pour chatter ! </Text>
+      </View>
+    );
+  }
+
+    onRefresh() {
+      this.setState({refreshing:true});
+      var user = Parse.User.current();
+    var query = new Parse.Query("Conversation");
+    var edit = this;
+    query.equalTo('roomUsers', user.id); 
+    query.descending("updatedAt");
+    query.find({
+      success: function(Conversation) {
+        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+        if (Conversation.length != 0) {
+          var ConversationCopy = [];
+          for (var i = 0; i < Conversation.length; i++) {
+            ConversationCopy.push(JSON.parse(JSON.stringify(Conversation[i])));
+          }
+
+          for (var i = 0; i < ConversationCopy.length; i++) {
+
+            // enables to see lastMessage
+            var query2 = new Parse.Query("Message");
+            (function(query, conversation, i, edit) { 
+              query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
+              query.first({
+                success: function(Message) {
+                // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+                    var MessageCopy = JSON.parse(JSON.stringify(Message));
+                    var messageParam = {message : MessageCopy.message};
+                    Object.assign(conversation[i], messageParam);
+                    edit.setState({ data: conversation, refreshing:false });
+                  }
+              });
+           })(query2, ConversationCopy, i, edit);
+         
+            var roomUsersCopy = ConversationCopy[i].roomUsers.concat();
+            var roomUsersFiltered = roomUsersCopy.filter(userId => userId != user.id);
+
+            // enables to see user
+            var query3 = new Parse.Query(Parse.User);
+            (function(query, conversation, i, edit) { 
+              query.get(roomUsersFiltered[i],{
+                success: function(users) {
+                  var lastName = users.get("lastName");
+                  var firstName = users.get("firstName");
+                  var picture = users.get("picture").url();
+                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                  Object.assign(conversation[i], fromUserParam);
+                  edit.setState({ data: conversation, refreshing:false });
+                }
+              });
+           })(query3, ConversationCopy, i, edit);
+         }
+        } 
+        else {edit.setState({refreshing:false})}
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
+    }
 
   viewOnPress(id, firstName) {
 
@@ -140,6 +220,13 @@ render () {
         keyExtractor={data => data.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
+        ListEmptyComponent={this.renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+        }
         renderItem={({ item }) => (
           <ListItem
           avatarStyle={[styles.avatar, !item.seen && styles.background]}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -26,10 +26,13 @@ class CommunityContent extends React.Component {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
     this.viewProfile = this.viewProfile.bind(this);
     this.state = {
       data: null,
       loading: true,
+      refreshing: false,
     };
   }
 
@@ -59,6 +62,7 @@ class CommunityContent extends React.Component {
     query.find({
       success: function(Community) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+        if (Community.length != 0) {
         var CommunityCopy = [];
         for (var i = 0; i < Community.length; i++) {
           CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
@@ -92,6 +96,8 @@ class CommunityContent extends React.Component {
       }
         var CommunityCopyFiltered = CommunityCopy.filter(notEqualToZero);
         edit.setState({ data: CommunityCopyFiltered, loading: false });
+        }
+        else {edit.setState({loading:false})}
       },
       error: function(e) {
         console.log(e);
@@ -125,7 +131,94 @@ class CommunityContent extends React.Component {
         <ActivityIndicator animating size="large" />
       </View>
     );
-  };
+  }
+
+  renderEmpty() {
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
+        <Text style={{marginTop:10}}> Aucun résultat.</Text>
+        <Text style={{marginTop:10}}> Pensez à compléter votre profil ! </Text>
+      </View>
+    );
+  }
+
+  onRefresh() {
+    console.log('refresh');
+      this.setState({refreshing:true});
+      var user = Parse.User.current();
+    var userGeoPoint = user.get("geolocation");
+    var query = new Parse.Query(Parse.User);
+    var edit = this;
+    query.notEqualTo('email', Parse.User.current().getEmail());
+    query.greaterThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.from);
+    query.lessThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.to);
+    if (this.props.userPreferences.filterGender === "man") {
+      query.notEqualTo("gender", "female");
+    }
+     if (this.props.userPreferences.filterGender === "woman") {
+      query.notEqualTo("gender", "male");
+    }
+    // User's location
+    // Interested in locations near user.
+    query.withinKilometers("geolocation", userGeoPoint, this.props.userPreferences.filterFieldType.range);
+    //query.near("geolocation", userGeoPoint);
+    // Limit what could be a lot of points.
+    query.limit(10);
+    var userAvailability = this.props.user.availability;
+    // Final list of objects
+    query.find({
+      success: function(Community) {
+        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+        if (Conversation.length != 0) {
+        var CommunityCopy = [];
+        for (var i = 0; i < Community.length; i++) {
+          CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
+        }
+
+        for (var i = 0; i < CommunityCopy.length; i++) {
+          var distance = Math.round(userGeoPoint.kilometersTo(CommunityCopy[i].geolocation));
+          var distanceParam = {distance: distance};
+          Object.assign(CommunityCopy[i], distanceParam);
+        }
+
+        var commonDispo = 0;
+        for (var i = 0; i < CommunityCopy.length; i++) {
+        commonDispo = 0;
+            for (var j = 0; j < userAvailability.length; j++) {
+              if (CommunityCopy[i].availability != undefined) { 
+                var array = CommunityCopy[i].availability[j].hours.filter((n) => userAvailability[j].hours.includes(n));
+                commonDispo = commonDispo + array.length;
+              }
+              else {commonDispo = 0;}
+            }
+        var commonDispoParam = {commonDispo: commonDispo};
+        Object.assign(CommunityCopy[i], commonDispoParam);
+        }
+        CommunityCopy.sort(function (a, b) {
+        return a.commonDispo - b.commonDispo;
+        }).reverse();
+
+        function notEqualToZero(element) {
+        return element.commonDispo != 0;
+      }
+        var CommunityCopyFiltered = CommunityCopy.filter(notEqualToZero);
+        edit.setState({ data: CommunityCopyFiltered, refreshing: false });
+        console.log('refresh terminé');
+        }
+        else {edit.setState({refreshing:false})}
+          console.log('refresh terminé');
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
+    }
 
   viewProfile(id) {
      var view = this;
@@ -172,8 +265,6 @@ render () {
 
     <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
 
-    <ScrollView>
-
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
    >
@@ -183,6 +274,13 @@ render () {
         keyExtractor={data => data.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
+        ListEmptyComponent={this.renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+        }
         renderItem={({ item }) => (
           <ListItem
           avatarStyle={{width:60, height:60, borderRadius:30, borderWidth:1, borderColor:'white', overflow:'hidden', backgroundColor:'white'}}
@@ -206,8 +304,6 @@ render () {
         )}
       />
     </List>
-
-    </ScrollView>
            
     </View>
            

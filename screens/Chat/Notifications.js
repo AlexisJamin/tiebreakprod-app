@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -26,10 +26,13 @@ class Notifications extends React.Component {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
     this.viewOnPress = this.viewOnPress.bind(this);
     this.state = {
       data: null,
       loading: true,
+      refreshing: false,
     };
   }
 
@@ -89,6 +92,7 @@ class Notifications extends React.Component {
 
           }
         }
+        else {edit.setState({loading:false})}
       },
       error: function(e) {
         console.log(e);
@@ -121,7 +125,87 @@ class Notifications extends React.Component {
         <ActivityIndicator animating size="large" />
       </View>
     );
-  };
+  }
+
+  renderEmpty() {
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
+        <Text style={{marginTop:10}}> Aucune notification.</Text>
+        <Text style={{marginTop:10}}> Avez-vous pensé à compléter votre profil ? </Text>
+      </View>
+    );
+  }
+
+  onRefresh() {
+    this.setState({refreshing:true});
+    var user = Parse.User.current();
+    var query = new Parse.Query("Notification");
+    var edit = this;
+    query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    query.descending("updatedAt");
+    query.limit(10);
+    query.find({
+      success: function(Notification) {
+        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+        if (Notification.length != 0) {
+          var NotificationCopy = [];
+          for (var i = 0; i < Notification.length; i++) {
+            NotificationCopy.push(JSON.parse(JSON.stringify(Notification[i])));
+              if (NotificationCopy[i].type == 0) {
+                NotificationCopy[i].typeName = 'Souhaite devenir votre ami(e)';
+              } else if (NotificationCopy[i].type == 1) {
+                NotificationCopy[i].typeName = 'A accepté votre demande d’amitié';
+              } else if (NotificationCopy[i].type == 2) {
+                NotificationCopy[i].typeName = 'A refusé votre demande d’amitié';
+              } else if (NotificationCopy[i].type == 3) {
+                NotificationCopy[i].typeName = 'Vous propose une partie le XXX';
+              } else if (NotificationCopy[i].type == 4) {
+                NotificationCopy[i].typeName = 'A accepté votre proposition de partie le XXX';
+              } else if (NotificationCopy[i].type == 5) {
+                NotificationCopy[i].typeName = 'A refusé votre proposition de partie le XXX';
+              } else if (NotificationCopy[i].type == 6) {
+                NotificationCopy[i].typeName = 'A annulé votre partie le XXX';
+              } else if (NotificationCopy[i].type == 7) {
+                NotificationCopy[i].typeName = 'Aimerait participer à votre partie le XXX';
+              } else if (NotificationCopy[i].type == 8) {
+                NotificationCopy[i].typeName = 'Vous a envoyé un message';
+              } 
+          }
+          
+          for (var i = 0; i < NotificationCopy.length; i++) {
+            var User = Parse.Object.extend("User");
+            var query2 = new Parse.Query(User);
+
+            (function(query, notification, i, edit) { 
+
+              query.get(notification[i].fromUser.objectId,{
+                success: function(users) {
+                  var lastName = users.get("lastName");
+                  var firstName = users.get("firstName");
+                  var picture = users.get("picture").url();
+                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                  Object.assign(notification[i], fromUserParam);
+                  edit.setState({ data: notification, refreshing:false });
+                }
+              });
+            })(query2, NotificationCopy, i, edit);
+
+          }
+        }
+        else {edit.setState({refreshing:false})}
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
+
+  }
 
   viewOnPress(id, userId, type) {
     var view = this;
@@ -242,6 +326,13 @@ render () {
         keyExtractor={data => data.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
+        ListEmptyComponent={this.renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+        }
         renderItem={({ item }) => (
           <ListItem
           avatarStyle={[styles.avatar, !item.seen && styles.background]}
