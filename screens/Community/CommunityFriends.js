@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
@@ -29,6 +29,8 @@ class CommunityFriends extends React.Component {
     this.viewProfile = this.viewProfile.bind(this);
     this.state = {
       data: [],
+      loading1: true,
+      loading2: true,
     };
   }
 
@@ -66,9 +68,6 @@ class CommunityFriends extends React.Component {
                   var geolocation = users.get("geolocation");
                   var clubs = users.get("clubs");
                   var picture = users.get("picture").url();
-                  console.log('coucou');
-                  console.log(friends);
-                  console.log(users.id);
                   friends.push({
                     lastName:lastName,
                     firstName:firstName,
@@ -82,7 +81,6 @@ class CommunityFriends extends React.Component {
                     geolocation: geolocation,
                     clubs:clubs
                   });
-                  console.log(friends);
                   for (var i = 0; i < friends.length; i++) {
                     var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
                     var distanceParam = {distance: distance};
@@ -102,11 +100,12 @@ class CommunityFriends extends React.Component {
                   var commonDispoParam = {commonDispo: commonDispo};
                   Object.assign(friends[i], commonDispoParam);
                   }
-                  edit.setState({data: [...friends]})
+                  edit.setState({data: [...friends], loading1:false})
               }
             });
          }
         }
+        else {edit.setState({loading1:false})}
       },
       error: function(e) {
         console.log(e);
@@ -140,9 +139,6 @@ class CommunityFriends extends React.Component {
                   var geolocation = users.get("geolocation");
                   var clubs = users.get("clubs");
                   var picture = users.get("picture").url();
-                  console.log('coucou');
-                  console.log(friends);
-                  console.log(users.id);
                   friends.push({
                     lastName:lastName,
                     firstName:firstName,
@@ -156,7 +152,6 @@ class CommunityFriends extends React.Component {
                     picture:picture,
                     clubs:clubs
                   });
-                  console.log(friends);
                   for (var i = 0; i < friends.length; i++) {
                     var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
                     var distanceParam = {distance: distance};
@@ -175,12 +170,12 @@ class CommunityFriends extends React.Component {
                   var commonDispoParam = {commonDispo: commonDispo};
                   Object.assign(friends[i], commonDispoParam);
                   }
-                  edit.setState({data: [...friends]})
+                  edit.setState({data: [...friends], loading2:false})
               }
             });
          }
-       }
-       console.log(friends);
+       } 
+       else {edit.setState({loading2:false})}
       },
       error: function(e) {
         console.log(e);
@@ -201,7 +196,7 @@ class CommunityFriends extends React.Component {
   }
 
   renderFooter() {
-    if (!this.state.loading) return null;
+    if (!this.state.loading1 && !this.state.loading2) return null;
 
     return (
       <View
@@ -266,6 +261,7 @@ render () {
    >
       <FlatList
         data={this.state.data}
+        extraData={this.state}
         keyExtractor={item => item.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}

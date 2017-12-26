@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -29,6 +29,7 @@ class CommunityContent extends React.Component {
     this.viewProfile = this.viewProfile.bind(this);
     this.state = {
       data: null,
+      loading: true,
     };
   }
 
@@ -90,7 +91,7 @@ class CommunityContent extends React.Component {
         return element.commonDispo != 0;
       }
         var CommunityCopyFiltered = CommunityCopy.filter(notEqualToZero);
-        edit.setState({ data: CommunityCopyFiltered });
+        edit.setState({ data: CommunityCopyFiltered, loading: false });
       },
       error: function(e) {
         console.log(e);
@@ -178,6 +179,7 @@ render () {
    >
       <FlatList
         data={this.state.data}
+        extraData={this.state}
         keyExtractor={data => data.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}

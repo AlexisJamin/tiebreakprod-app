@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -29,11 +29,11 @@ class Notifications extends React.Component {
     this.viewOnPress = this.viewOnPress.bind(this);
     this.state = {
       data: null,
-      test : 'toto'
+      loading: true,
     };
   }
 
-  async componentDidMount() {
+   async componentDidMount() {
 
     var user = Parse.User.current();
     var query = new Parse.Query("Notification");
@@ -41,7 +41,6 @@ class Notifications extends React.Component {
     query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
     query.descending("updatedAt");
     query.limit(10);
-    // Final list of objects
     query.find({
       success: function(Notification) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
@@ -72,24 +71,21 @@ class Notifications extends React.Component {
           
           for (var i = 0; i < NotificationCopy.length; i++) {
             var User = Parse.Object.extend("User");
-            var query = new Parse.Query(User);
-            var array = []; 
-            //var notification = NotificationCopy[i];
+            var query2 = new Parse.Query(User);
 
             (function(query, notification, i, edit) { 
 
               query.get(notification[i].fromUser.objectId,{
                 success: function(users) {
-               
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
                   var picture = users.get("picture").url();
                   var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
                   Object.assign(notification[i], fromUserParam);
-                  edit.setState({ data: notification });
+                  edit.setState({ data: notification, loading:false });
                 }
               });
-            })(query, NotificationCopy, i, edit);
+            })(query2, NotificationCopy, i, edit);
 
           }
         }
@@ -140,7 +136,7 @@ class Notifications extends React.Component {
     
     var Notification = Parse.Object.extend("Notification");
     var query = new Parse.Query(Notification);
-    query.get(id, {
+    query.first(id, {
       success: function(notification) {
         // The object was retrieved successfully.
         notification.set("seen", true);
@@ -237,13 +233,12 @@ render () {
 
     <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
 
-    <ScrollView>
-
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
    >
       <FlatList
         data={this.state.data}
+        extraData={this.state}
         keyExtractor={data => data.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
@@ -264,8 +259,6 @@ render () {
         )}
       />
     </List>
-
-    </ScrollView>
            
     </View>
            
