@@ -119,7 +119,6 @@ class CommunityContent extends React.Component {
 
   renderFooter() {
     if (!this.state.loading) return null;
-
     return (
       <View
         style={{
@@ -134,6 +133,7 @@ class CommunityContent extends React.Component {
   }
 
   renderEmpty() {
+    if (this.state.loading) return null;
     return (
       <View
         style={{
@@ -150,8 +150,8 @@ class CommunityContent extends React.Component {
 
   onRefresh() {
     console.log('refresh');
-      this.setState({refreshing:true});
-      var user = Parse.User.current();
+    this.setState({refreshing:true});
+    var user = Parse.User.current();
     var userGeoPoint = user.get("geolocation");
     var query = new Parse.Query(Parse.User);
     var edit = this;
@@ -175,7 +175,7 @@ class CommunityContent extends React.Component {
     query.find({
       success: function(Community) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-        if (Conversation.length != 0) {
+        if (Community.length != 0) {
         var CommunityCopy = [];
         for (var i = 0; i < Community.length; i++) {
           CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
@@ -208,11 +208,9 @@ class CommunityContent extends React.Component {
         return element.commonDispo != 0;
       }
         var CommunityCopyFiltered = CommunityCopy.filter(notEqualToZero);
-        edit.setState({ data: CommunityCopyFiltered, refreshing: false });
-        console.log('refresh terminé');
+        edit.setState({ data:CommunityCopyFiltered, refreshing:false });
         }
         else {edit.setState({refreshing:false})}
-          console.log('refresh terminé');
       },
       error: function(e) {
         console.log(e);

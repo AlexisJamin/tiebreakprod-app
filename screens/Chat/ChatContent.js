@@ -8,7 +8,6 @@ Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
-
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };
 
@@ -109,7 +108,6 @@ renderSeparator() {
 
   renderFooter() {
     if (!this.state.loading) return null;
-
     return (
       <View
         style={{
@@ -124,6 +122,7 @@ renderSeparator() {
   }
 
   renderEmpty() {
+    if (this.state.loading) return null;
     return (
       <View
         style={{
@@ -199,9 +198,9 @@ renderSeparator() {
     }
 
   viewOnPress(id, firstName) {
-
     this.props.handleSubmit({
       firstName:firstName,
+      id:id,
     })
     this.props.navigation.navigate("Messenger");
 }
