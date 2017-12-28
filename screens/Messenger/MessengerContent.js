@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { Parse } from 'parse/react-native';
 import { connect } from 'react-redux';
 
@@ -24,17 +24,20 @@ class MessengerContent extends React.Component {
   constructor(props) {
     super(props);
     this.onSend = this.onSend.bind(this);
-    this.onLoadEarlier = this.onLoadEarlier.bind(this);
+    this.renderBubble = this.renderBubble.bind(this);
     this.state = {
       messages: [],
-      loadEarlier: true,
-      isLoadingEarlier: false,
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
 
     var user = Parse.User.current();
+    this.setState({
+      userId:user.id,
+      name:user.get('firstName'),
+      avatar:user.get('picture').url(),
+    })
     var query = new Parse.Query("Conversation");
     var edit = this;
     query.equalTo('objectId', this.props.viewProfile.id); 
@@ -42,60 +45,37 @@ class MessengerContent extends React.Component {
       success: function(Conversation) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         var ConversationCopy = JSON.parse(JSON.stringify(Conversation));
-        console.log(ConversationCopy.objectId);
         var query2 = new Parse.Query("Message");
         query2.equalTo('conversation', ConversationCopy.objectId);
-        query2.descending("updatedAt"); 
+        query2.descending("createdAt"); 
         query2.find({
           success: function(Message) {
-            console.log(Message);
-            console.log(Message.length);
           // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-            }
-        });
-        /*if (Conversation.length != 0) {
-          var ConversationCopy = [];
-          for (var i = 0; i < Conversation.length; i++) {
-            ConversationCopy.push(JSON.parse(JSON.stringify(Conversation[i])));
-          }
-
-          for (var i = 0; i < ConversationCopy.length; i++) {
-
-            // enables to see lastMessage
-            var query2 = new Parse.Query("Message");
-            (function(query, conversation, i, edit) { 
-              query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
-              query.first({
-                success: function(Message) {
-                // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-                    var MessageCopy = JSON.parse(JSON.stringify(Message));
-                    var messageParam = {message : MessageCopy.message};
-                    Object.assign(conversation[i], messageParam);
-                    edit.setState({ data: conversation, loading:false });
+            if (Message.length != 0) {
+              var array = [];
+              var MessageCopy = [];
+              for (var i = 0; i < Message.length; i++) {
+                MessageCopy.push(JSON.parse(JSON.stringify(Message[i])));
+              }
+              for (var i = 0; i < MessageCopy.length; i++) {
+                array.push(
+                  {
+                    _id: MessageCopy[i].objectId,
+                    text: MessageCopy[i].message,
+                    createdAt: MessageCopy[i].createdAt,
+                    user: {
+                      _id: MessageCopy[i].sender.objectId,
+                      name: MessageCopy[i].sender.firstName,
+                      avatar: MessageCopy[i].sender.picture.url,
+                    }
                   }
-              });
-           })(query2, ConversationCopy, i, edit);
-         
-            var roomUsersCopy = ConversationCopy[i].roomUsers.concat();
-            var roomUsersFiltered = roomUsersCopy.filter(userId => userId != user.id);
-
-            // enables to see user
-            var query3 = new Parse.Query(Parse.User);
-            (function(query, conversation, i, edit) { 
-              query.get(roomUsersFiltered[i],{
-                success: function(users) {
-                  var lastName = users.get("lastName");
-                  var firstName = users.get("firstName");
-                  var picture = users.get("picture").url();
-                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
-                  Object.assign(conversation[i], fromUserParam);
-                  edit.setState({ data: conversation, loading:false });
-                }
-              });
-           })(query3, ConversationCopy, i, edit);
-         }
-        } 
-        else {edit.setState({loading:false})} */
+                )
+              }
+              edit.setState({messages: array})
+            }
+          }
+        });
+        
       },
       error: function(e) {
         console.log(e);
@@ -103,18 +83,83 @@ class MessengerContent extends React.Component {
     });
   }
 
-  onSend(messages = []) {
-    this.setState((previousState) => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }));
+  componentDidMount() {
+    var user = Parse.User.current();
+    var query = new Parse.Query('Message');
+    var sub = this;
+
+    query.equalTo('conversation', this.props.viewProfile.id);
+    var subscription = query.subscribe();
+    console.log(subscription);
+
+    subscription.on('open', () => {
+     console.log('subscription opened');
+    });
+
+    subscription.on('create', function (messages = []) {
+     let array = [];
+     console.log('Message created with text: ', messages.get('message'));
+     var senderId = messages.get('sender').id;
+     if (senderId != user.id) {
+      array.push(
+        {
+          _id: messages.id,
+          text: messages.get('message'),
+          createdAt: messages.get('createdAt'),
+          user: {
+            _id: messages.get('sender').objectId,
+            name: messages.get('sender').firstName,
+            avatar: messages.get('sender').get('picture').url(),
+          }
+        }
+      )
+      sub.setState((previousState) => ({
+          messages: GiftedChat.append(previousState.messages, array),
+        }));
+     }
+    });
+
   }
 
-  onLoadEarlier() {
-    this.setState((previousState) => {
-      return {
-        isLoadingEarlier: true,
-      };
+  onSend(messages = []) {
+    console.log(messages);
+    var send = this;
+    var message = new Parse.Object("Message");
+    message.set("createdAt", Date());
+    message.set("updatedAt", Date());
+    message.set("message", messages[0].text);
+    message.set("sender", { "__type": "Pointer", "className": "_User", "objectId": messages[0].user._id });
+    message.set("conversation", this.props.viewProfile.id);
+    message.save(null, {
+      success: function(message) {
+        var messageCopy = JSON.parse(JSON.stringify(message));
+        messages[0]._id = messageCopy.objectId;
+        messages[0].createdAt = messageCopy.createdAt;
+        console.log('après modification');
+        console.log(messages);
+        send.setState((previousState) => ({
+          messages: GiftedChat.append(previousState.messages, messages),
+        }));
+      }
     });
+  }
+
+  renderBubble(props) {
+    return (
+      <Bubble
+      {...props}
+        wrapperStyle={{
+          left: {
+            backgroundColor: 'white',
+            borderWidth:0.5,
+            borderColor:'#CED0CE',
+          },
+          right: {
+            backgroundColor: 'rgb(42,127,83)',
+          }
+        }}
+      />
+    );
   }
 
 render () {
@@ -123,16 +168,14 @@ render () {
      <GiftedChat
         messages={this.state.messages}
         user={{
-          _id: 1,
-          name: 'Alexis Jamin',
-          avatar: 'https://facebook.github.io/react/img/logo_og.png'
+          _id: this.state.userId,
+          name: this.state.name,
+          avatar: this.state.avatar,
         }}
         placeholder={'Écrivez votre message...'}
-        onSend={(messages) => this.onSend(messages)}
+        renderBubble={this.renderBubble}
         showUserAvatar={true}
-        loadEarlier={this.state.loadEarlier}
-        onLoadEarlier={this.onLoadEarlier}
-        isLoadingEarlier={this.state.isLoadingEarlier}
+        onSend={(messages) => this.onSend(messages)}
       />
 
     );

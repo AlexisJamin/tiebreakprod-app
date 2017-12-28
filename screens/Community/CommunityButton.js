@@ -5,7 +5,6 @@ import { Font } from 'expo';
 import { connect } from 'react-redux';
 
 function mapStateToProps(store) {
-
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };
 
