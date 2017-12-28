@@ -11,6 +11,14 @@ function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, viewProfile: store.viewProfile }
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'viewProfile', value: value} ) 
+    }
+  }
+};
+
 class MessengerHeader extends Component {
 
   constructor() {
@@ -45,8 +53,16 @@ class MessengerHeader extends Component {
                {
                 this.state.fontLoaded ? ( <Text style={styles.title}>{this.props.viewProfile.firstName}</Text> ) : null 
                }
-   
+              
+              <TouchableWithoutFeedback 
+              style={{padding:30}} 
+              onPress={() => this.props.handleSubmit({
+                firstName:this.props.viewProfile.firstName,
+                id:this.props.viewProfile.id,
+                onPress:true,
+              })}>
              <Image style={{top:7}} source={require('../../assets/icons/General/More.imageset/icMore.png')} /> 
+             </TouchableWithoutFeedback>
         
          </View>
       </Image>
@@ -56,7 +72,7 @@ class MessengerHeader extends Component {
   }
 }
 
-export default connect(mapStateToProps, null) (MessengerHeader);
+export default connect(mapStateToProps, mapDispatchToProps) (MessengerHeader);
 
 const styles = StyleSheet.create({
   title: {

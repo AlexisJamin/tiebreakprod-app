@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import Modal from 'react-native-modalbox';
 import { Parse } from 'parse/react-native';
 import { connect } from 'react-redux';
 
@@ -28,6 +29,14 @@ class MessengerContent extends React.Component {
     this.state = {
       messages: [],
     };
+  }
+
+  componentWillReceiveProps(props) {
+    console.log('props reçues !!!');
+    if (props.viewProfile.onPress) {
+      console.log('onPress true');
+      this.refs.modal.open();
+    }
   }
 
   componentWillMount() {
@@ -132,14 +141,22 @@ class MessengerContent extends React.Component {
     message.set("conversation", this.props.viewProfile.id);
     message.save(null, {
       success: function(message) {
-        var messageCopy = JSON.parse(JSON.stringify(message));
-        messages[0]._id = messageCopy.objectId;
-        messages[0].createdAt = messageCopy.createdAt;
-        console.log('après modification');
-        console.log(messages);
+        messages[0]._id = message.id;
+        messages[0].createdAt = message.get('createdAt');
         send.setState((previousState) => ({
           messages: GiftedChat.append(previousState.messages, messages),
         }));
+
+        var query = new Parse.Query("Conversation");
+        query.equalTo('objectId', message.get('conversation')); 
+        query.first({
+          success: function(Conversation) {
+            Conversation.set('lastMessage', { "__type": "Pointer", "className": "Message", "objectId": message.id });
+            Conversation.set('updatedAt', Date());
+            Conversation.save();
+            console.log('conversation updated');
+            }
+        });
       }
     });
   }
@@ -165,6 +182,7 @@ class MessengerContent extends React.Component {
 render () {
   return (
 
+    <View style={{flex:1}}>
      <GiftedChat
         messages={this.state.messages}
         user={{
@@ -178,8 +196,61 @@ render () {
         onSend={(messages) => this.onSend(messages)}
       />
 
+      <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
+          
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 10}}>
+          <Text style={styles.modalTitle}>{this.props.viewProfile.firstName}</Text>
+          </View>
+
+          <TouchableWithoutFeedback>
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
+          <Text style={styles.modalText}>Voir le profil</Text>
+          </View>
+          </TouchableWithoutFeedback>
+
+          <TouchableWithoutFeedback>
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
+          <Text style={styles.modalText}>Bloquer {this.props.viewProfile.firstName}</Text>
+          </View>
+          </TouchableWithoutFeedback>
+
+          <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
+          <Text style={styles.modalText}>Annuler</Text>
+          </TouchableWithoutFeedback>
+        </Modal>
+
+        </View>
+
     );
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (MessengerContent);
+
+const styles = StyleSheet.create({
+  modal: {
+    flexDirection:'column',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 250,
+    borderWidth:1, 
+    borderRadius:15,
+    width: "95%",
+    borderColor:'rgb(213,212,216)',
+    bottom:12
+  },
+  modalText: {
+    color: "black",
+    fontSize: 20,
+    width:"100%",
+    textAlign:'center'
+  },
+  modalTitle: {
+    color: "grey",
+    fontStyle:"italic",
+    fontSize: 14,
+    width:"100%",
+    textAlign:'center'
+  }
+});
+

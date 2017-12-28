@@ -140,61 +140,61 @@ renderSeparator() {
     onRefresh() {
       this.setState({refreshing:true});
       var user = Parse.User.current();
-    var query = new Parse.Query("Conversation");
-    var edit = this;
-    query.equalTo('roomUsers', user.id); 
-    query.descending("updatedAt");
-    query.find({
-      success: function(Conversation) {
-        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-        if (Conversation.length != 0) {
-          var ConversationCopy = [];
-          for (var i = 0; i < Conversation.length; i++) {
-            ConversationCopy.push(JSON.parse(JSON.stringify(Conversation[i])));
-          }
+      var query = new Parse.Query("Conversation");
+      var edit = this;
+      query.equalTo('roomUsers', user.id); 
+      query.descending("updatedAt");
+      query.find({
+        success: function(Conversation) {
+          // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+          if (Conversation.length != 0) {
+            var ConversationCopy = [];
+            for (var i = 0; i < Conversation.length; i++) {
+              ConversationCopy.push(JSON.parse(JSON.stringify(Conversation[i])));
+            }
 
-          for (var i = 0; i < ConversationCopy.length; i++) {
+            for (var i = 0; i < ConversationCopy.length; i++) {
 
-            // enables to see lastMessage
-            var query2 = new Parse.Query("Message");
-            (function(query, conversation, i, edit) { 
-              query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
-              query.first({
-                success: function(Message) {
-                // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-                    var MessageCopy = JSON.parse(JSON.stringify(Message));
-                    var messageParam = {message : MessageCopy.message};
-                    Object.assign(conversation[i], messageParam);
+              // enables to see lastMessage
+              var query2 = new Parse.Query("Message");
+              (function(query, conversation, i, edit) { 
+                query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
+                query.first({
+                  success: function(Message) {
+                  // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+                      var MessageCopy = JSON.parse(JSON.stringify(Message));
+                      var messageParam = {message : MessageCopy.message};
+                      Object.assign(conversation[i], messageParam);
+                      edit.setState({ data: conversation, refreshing:false });
+                    }
+                });
+             })(query2, ConversationCopy, i, edit);
+           
+              var roomUsersCopy = ConversationCopy[i].roomUsers.concat();
+              var roomUsersFiltered = roomUsersCopy.filter(userId => userId != user.id);
+
+              // enables to see user
+              var query3 = new Parse.Query(Parse.User);
+              (function(query, conversation, i, edit) { 
+                query.get(roomUsersFiltered[i],{
+                  success: function(users) {
+                    var lastName = users.get("lastName");
+                    var firstName = users.get("firstName");
+                    var picture = users.get("picture").url();
+                    var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                    Object.assign(conversation[i], fromUserParam);
                     edit.setState({ data: conversation, refreshing:false });
                   }
-              });
-           })(query2, ConversationCopy, i, edit);
-         
-            var roomUsersCopy = ConversationCopy[i].roomUsers.concat();
-            var roomUsersFiltered = roomUsersCopy.filter(userId => userId != user.id);
-
-            // enables to see user
-            var query3 = new Parse.Query(Parse.User);
-            (function(query, conversation, i, edit) { 
-              query.get(roomUsersFiltered[i],{
-                success: function(users) {
-                  var lastName = users.get("lastName");
-                  var firstName = users.get("firstName");
-                  var picture = users.get("picture").url();
-                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
-                  Object.assign(conversation[i], fromUserParam);
-                  edit.setState({ data: conversation, refreshing:false });
-                }
-              });
-           })(query3, ConversationCopy, i, edit);
-         }
-        } 
-        else {edit.setState({refreshing:false})}
-      },
-      error: function(e) {
-        console.log(e);
-      }
-    });
+                });
+             })(query3, ConversationCopy, i, edit);
+           }
+          } 
+          else {edit.setState({refreshing:false})}
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
     }
 
   viewOnPress(id, firstName) {
@@ -236,7 +236,7 @@ render () {
           avatar={{ uri : item.fromUserPicture } || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
           title={<Text style={{fontSize:15, fontWeight:'bold'}}>{item.fromUserFirstName} {item.fromUserLastName}.</Text>}
           subtitleContainerStyle={{marginLeft:30, width:300}}
-          subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'normal'}}>{item.message} </Text>}
+          subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'normal'}}>Dernier message : "{item.message}" </Text>}
           hideChevron={true}
           onPress={()=>{this.viewOnPress(item.objectId, item.fromUserFirstName)}}
           />
