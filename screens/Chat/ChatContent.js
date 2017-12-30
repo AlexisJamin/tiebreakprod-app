@@ -14,7 +14,7 @@ function mapStateToProps(store) {
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
-        dispatch( {type: 'viewProfile', value: value} ) 
+        dispatch( {type: 'chat', value: value} ) 
     }
   }
 };
@@ -38,8 +38,8 @@ class ChatContent extends React.Component {
 async componentDidMount() {
 
     var user = Parse.User.current();
-    var query = new Parse.Query("Conversation");
     var edit = this;
+    var query = new Parse.Query("Conversation");
     query.equalTo('roomUsers', user.id); 
     query.descending("updatedAt");
     query.find({
@@ -76,10 +76,11 @@ async componentDidMount() {
             (function(query, conversation, i, edit) { 
               query.get(roomUsersFiltered[i],{
                 success: function(users) {
+                  var id = users.id;
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
                   var picture = users.get("picture").url();
-                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id};
                   Object.assign(conversation[i], fromUserParam);
                   edit.setState({ data: conversation, loading:false });
                 }
@@ -178,10 +179,11 @@ renderSeparator() {
               (function(query, conversation, i, edit) { 
                 query.get(roomUsersFiltered[i],{
                   success: function(users) {
+                    var id = users.id;
                     var lastName = users.get("lastName");
                     var firstName = users.get("firstName");
                     var picture = users.get("picture").url();
-                    var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                    var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id};
                     Object.assign(conversation[i], fromUserParam);
                     edit.setState({ data: conversation, refreshing:false });
                   }
@@ -197,10 +199,11 @@ renderSeparator() {
       });
     }
 
-  viewOnPress(id, firstName) {
+  viewOnPress(id, firstName, userId) {
     this.props.handleSubmit({
       firstName:firstName,
       id:id,
+      userId:userId,
     })
     this.props.navigation.navigate("Messenger");
 }
@@ -228,17 +231,17 @@ render () {
         }
         renderItem={({ item }) => (
           <ListItem
-          avatarStyle={[styles.avatar, !item.seen && styles.background]}
+          avatarStyle={styles.avatar}
           avatarContainerStyle={{width:50, height:50, top:-5}}
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:30}}
-          containerStyle={[styles.container, !item.seen && styles.background]}
+          containerStyle={styles.container}
           avatar={{ uri : item.fromUserPicture } || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
           title={<Text style={{fontSize:15, fontWeight:'bold'}}>{item.fromUserFirstName} {item.fromUserLastName}.</Text>}
           subtitleContainerStyle={{marginLeft:30, width:300}}
           subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'normal'}}>Dernier message : "{item.message}" </Text>}
           hideChevron={true}
-          onPress={()=>{this.viewOnPress(item.objectId, item.fromUserFirstName)}}
+          onPress={()=>{this.viewOnPress(item.objectId, item.fromUserFirstName, item.fromUserId)}}
           />
         )}
       />

@@ -201,7 +201,49 @@ constructor(props) {
         notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
         notification.set("seen", false);
         notification.save();
-        add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:true})
+
+        var conversation = new Parse.Object("Conversation");
+        conversation.set("roomUsers", [user.id, add.props.viewProfile.id]);
+        conversation.set("createdAt", Date());
+        conversation.set("updatedAt", Date());
+        conversation.set("firstUser", Parse.User.current());
+        conversation.set("secondUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
+        conversation.save(null, {
+        success: function(conversation) {
+          console.log('conversation créée');
+          var message = new Parse.Object("Message");
+          message.set("createdAt", Date());
+          message.set("updatedAt", Date());
+          message.set("message", '🎾');
+          message.set("sender", Parse.User.current());
+          message.set("conversation", conversation.id);
+          message.save(null, {
+          success: function(message) {
+            console.log('message créé');
+            console.log(message.get('createdAt'));
+            conversation.set("lastMessage", { "__type": "Pointer", "className": "Message", "objectId": message.id });
+            conversation.set("lastMessageDate", message.get('createdAt'));
+            conversation.save();
+            add.props.handleSubmit({
+              lastName:add.props.viewProfile.lastName,
+              firstName:add.props.viewProfile.firstName,
+              style:add.props.viewProfile.style,
+              gender:add.props.viewProfile.gender,
+              currentLevel:add.props.viewProfile.currentLevel,
+              highestLevel:add.props.viewProfile.highestLevel,
+              availability:add.props.viewProfile.availability,
+              picture: add.props.viewProfile.picture,
+              clubs: add.props.viewProfile.clubs,
+              id: add.props.viewProfile.id,
+              friendRequestSent:false,
+              friendRequestReceived:false,
+              isFriend:true,
+            })
+            add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:true})
+            }
+          });
+          }
+        });
       },
       error: function(error) {
         console.log(error.message);
@@ -247,27 +289,35 @@ constructor(props) {
     relation1.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
     relation1.first({
       success: function(relation) {
-        relation.destroy();
-        add.props.handleSubmit({
-          lastName:add.props.viewProfile.lastName,
-          firstName:add.props.viewProfile.firstName,
-          style:add.props.viewProfile.style,
-          gender:add.props.viewProfile.gender,
-          currentLevel:add.props.viewProfile.currentLevel,
-          highestLevel:add.props.viewProfile.highestLevel,
-          availability:add.props.viewProfile.availability,
-          picture: add.props.viewProfile.picture,
-          clubs: add.props.viewProfile.clubs,
-          id: add.props.viewProfile.id,
-          friendRequestSent:false,
-          friendRequestReceived:false,
-          isFriend:false,
-        })
-        add.setState({isFriend:false})
-      },
-      error: function(error) {
-        console.log(error.message);
-      }
+          console.log('relation 1');
+          var conversation = new Parse.Query("Conversation");
+          conversation.equalTo('roomUsers', user.id); 
+          conversation.equalTo('roomUsers', add.props.viewProfile.id); 
+          conversation.first({
+            success: function(conversation) {
+              console.log('relation 1 conversation');
+              conversation.destroy();
+              relation.destroy();
+              console.log('relation 1 destroy');
+              add.props.handleSubmit({
+                lastName:add.props.viewProfile.lastName,
+                firstName:add.props.viewProfile.firstName,
+                style:add.props.viewProfile.style,
+                gender:add.props.viewProfile.gender,
+                currentLevel:add.props.viewProfile.currentLevel,
+                highestLevel:add.props.viewProfile.highestLevel,
+                availability:add.props.viewProfile.availability,
+                picture: add.props.viewProfile.picture,
+                clubs: add.props.viewProfile.clubs,
+                id: add.props.viewProfile.id,
+                friendRequestSent:false,
+                friendRequestReceived:false,
+                isFriend:false,
+              })
+              add.setState({isFriend:false})
+            }
+          });
+       }
     });
 
     var relation2 = new Parse.Query("Relation");
@@ -275,27 +325,36 @@ constructor(props) {
     relation2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
     relation2.first({
       success: function(relation) {
-        relation.destroy();
-        add.props.handleSubmit({
-          lastName:add.props.viewProfile.lastName,
-          firstName:add.props.viewProfile.firstName,
-          style:add.props.viewProfile.style,
-          gender:add.props.viewProfile.gender,
-          currentLevel:add.props.viewProfile.currentLevel,
-          highestLevel:add.props.viewProfile.highestLevel,
-          availability:add.props.viewProfile.availability,
-          picture: add.props.viewProfile.picture,
-          clubs: add.props.viewProfile.clubs,
-          id: add.props.viewProfile.id,
-          friendRequestSent:false,
-          friendRequestReceived:false,
-          isFriend:false,
-        })
-        add.setState({isFriend:false})
-      },
-      error: function(error) {
-        console.log(error.message);
-      }
+        console.log('relation 2');
+          var conversation = new Parse.Query("Conversation");
+          conversation.equalTo('roomUsers', user.id); 
+          conversation.equalTo('roomUsers', add.props.viewProfile.id); 
+          conversation.first({
+            success: function(conversation) {
+              console.log('relation 2 conversation');
+              conversation.destroy();
+              relation.destroy();
+              console.log('relation 2 destroy');
+
+              add.props.handleSubmit({
+                lastName:add.props.viewProfile.lastName,
+                firstName:add.props.viewProfile.firstName,
+                style:add.props.viewProfile.style,
+                gender:add.props.viewProfile.gender,
+                currentLevel:add.props.viewProfile.currentLevel,
+                highestLevel:add.props.viewProfile.highestLevel,
+                availability:add.props.viewProfile.availability,
+                picture: add.props.viewProfile.picture,
+                clubs: add.props.viewProfile.clubs,
+                id: add.props.viewProfile.id,
+                friendRequestSent:false,
+                friendRequestReceived:false,
+                isFriend:false,
+              })
+              add.setState({isFriend:false})
+            }
+          });
+        }
     });
   }
 

@@ -260,6 +260,7 @@ class CommunityFriends extends React.Component {
             availability:availability,
             picture: picture,
             isFriend: true,
+            fromChat:false,
             friendRequestSent:false,
             friendRequestReceived:false,
             clubs: clubs,

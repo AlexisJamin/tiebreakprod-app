@@ -5,5 +5,6 @@ import userClub from './userClub-reducer';
 import userPreferences from './userPreferences-reducer';
 import button from './button-reducer';
 import viewProfile from './viewProfile-reducer';
+import chat from './chat-reducer';
 
-export default combineReducers({user, userClub, userPreferences, button, viewProfile});
+export default combineReducers({user, userClub, userPreferences, button, viewProfile, chat});

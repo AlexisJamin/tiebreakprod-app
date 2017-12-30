@@ -149,7 +149,7 @@ class ProfileViewHeader extends React.Component {
   render() {
 
     var header= null;
-    if (this.state.isFriend) {
+    if (this.state.isFriend && !this.props.viewProfile.fromChat) {
       header= (<TouchableWithoutFeedback style={{padding:30}}>
        <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
        </TouchableWithoutFeedback>);

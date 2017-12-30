@@ -8,13 +8,13 @@ Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
-  return { user: store.user, userClub: store.userClub, viewProfile: store.viewProfile }
+  return { user: store.user, userClub: store.userClub, chat: store.chat }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
-        dispatch( {type: 'viewProfile', value: value} ) 
+        dispatch( {type: 'chat', value: value} ) 
     }
   }
 };
@@ -51,14 +51,15 @@ class MessengerHeader extends Component {
              <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
              </TouchableWithoutFeedback>
                {
-                this.state.fontLoaded ? ( <Text style={styles.title}>{this.props.viewProfile.firstName}</Text> ) : null 
+                this.state.fontLoaded ? ( <Text style={styles.title}>{this.props.chat.firstName}</Text> ) : null 
                }
               
               <TouchableWithoutFeedback 
-              style={{padding:30}} 
+              style={{padding:30, top:7}} 
               onPress={() => this.props.handleSubmit({
-                firstName:this.props.viewProfile.firstName,
-                id:this.props.viewProfile.id,
+                firstName:this.props.chat.firstName,
+                id:this.props.chat.id,
+                userId:this.props.chat.userId,
                 onPress:true,
               })}>
              <Image style={{top:7}} source={require('../../assets/icons/General/More.imageset/icMore.png')} /> 

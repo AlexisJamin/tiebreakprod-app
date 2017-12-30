@@ -33,6 +33,7 @@ class CommunityContent extends React.Component {
       data: null,
       loading: true,
       refreshing: false,
+      isFriend:false,
     };
   }
 
@@ -220,8 +221,35 @@ class CommunityContent extends React.Component {
 
   viewProfile(id) {
      var view = this;
+     user= Parse.User.current();
      var User = Parse.Object.extend("User");
      var query = new Parse.Query(User);
+
+    var query1 = new Parse.Query('Relation');
+    query1.equalTo('status', 3);
+    query1.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });
+    query1.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": id });    
+    query1.first({
+    success: function(Friends) {
+      console.log(Friends);
+      if (Friends != undefined) {
+        view.setState({isFriend:true})
+      }
+    }
+    });
+
+    var query2 = new Parse.Query('Relation');
+    query2.equalTo('status', 3);
+    query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });
+    query2.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": id });    
+    query2.first({
+    success: function(Friends) {
+      console.log(Friends);
+      if (Friends != undefined) {
+        view.setState({isFriend:true})
+      }
+    }
+    });
      
      query.get(id, {
       success: function(user) {
@@ -246,7 +274,8 @@ class CommunityContent extends React.Component {
             highestLevel:highestLevel,
             availability:availability,
             picture: picture,
-            isFriend: false,
+            fromChat:false,
+            isFriend:view.state.isFriend,
             friendRequestSent:false,
             friendRequestReceived:false,
             clubs: clubs,

@@ -9,7 +9,7 @@ Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
-  return { user: store.user, userClub: store.userClub, viewProfile: store.viewProfile }
+  return { user: store.user, userClub: store.userClub, chat: store.chat }
 };
 
 function mapDispatchToProps(dispatch) {
@@ -25,7 +25,9 @@ class MessengerContent extends React.Component {
   constructor(props) {
     super(props);
     this.onSend = this.onSend.bind(this);
+    this.onCloseModal = this.onCloseModal.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
+    this.onPressViewProfile = this.onPressViewProfile.bind(this);
     this.state = {
       messages: [],
     };
@@ -33,8 +35,7 @@ class MessengerContent extends React.Component {
 
   componentWillReceiveProps(props) {
     console.log('props reçues !!!');
-    if (props.viewProfile.onPress) {
-      console.log('onPress true');
+    if (props.chat.onPress) {
       this.refs.modal.open();
     }
   }
@@ -49,7 +50,7 @@ class MessengerContent extends React.Component {
     })
     var query = new Parse.Query("Conversation");
     var edit = this;
-    query.equalTo('objectId', this.props.viewProfile.id); 
+    query.equalTo('objectId', this.props.chat.id); 
     query.first({
       success: function(Conversation) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
@@ -97,9 +98,8 @@ class MessengerContent extends React.Component {
     var query = new Parse.Query('Message');
     var sub = this;
 
-    query.equalTo('conversation', this.props.viewProfile.id);
+    query.equalTo('conversation', this.props.chat.id);
     var subscription = query.subscribe();
-    console.log(subscription);
 
     subscription.on('open', () => {
      console.log('subscription opened');
@@ -138,7 +138,7 @@ class MessengerContent extends React.Component {
     message.set("updatedAt", Date());
     message.set("message", messages[0].text);
     message.set("sender", { "__type": "Pointer", "className": "_User", "objectId": messages[0].user._id });
-    message.set("conversation", this.props.viewProfile.id);
+    message.set("conversation", this.props.chat.id);
     message.save(null, {
       success: function(message) {
         messages[0]._id = message.id;
@@ -154,7 +154,6 @@ class MessengerContent extends React.Component {
             Conversation.set('lastMessage', { "__type": "Pointer", "className": "Message", "objectId": message.id });
             Conversation.set('updatedAt', Date());
             Conversation.save();
-            console.log('conversation updated');
             }
         });
       }
@@ -179,6 +178,58 @@ class MessengerContent extends React.Component {
     );
   }
 
+  onCloseModal() {
+    this.refs.modal.close();
+    this.props.handleSubmit({
+      firstName:this.props.chat.firstName,
+      id:this.props.chat.id,
+      onPress:false,
+    })
+  }
+
+  onPressViewProfile() {
+     var view = this;
+     var User = Parse.Object.extend("User");
+     var query1 = new Parse.Query(User);
+     query1.get(this.props.chat.userId,{
+      success: function(user) {
+          // The object was retrieved successfully.
+          var lastName = user.get("lastName");
+          var firstName = user.get("firstName");
+          var style = user.get("style");
+          var gender = user.get("gender");
+          var currentLevel = user.get("currentLevel");
+          var highestLevel = user.get("highestLevel");
+          var availability = user.get("availability");
+          var picture = user.get("picture").url();
+          var clubs = user.get("clubs");
+          var id = user.id;
+
+          view.props.handleSubmit({
+            lastName:lastName,
+            firstName:firstName,
+            style:style,
+            gender:gender,
+            currentLevel:currentLevel,
+            highestLevel:highestLevel,
+            availability:availability,
+            picture: picture,
+            isFriend:true,
+            fromChat:true,
+            friendRequestSent:false,
+            friendRequestReceived:false,
+            clubs:clubs,
+            id:id
+          })
+        view.refs.modal.close();
+        view.props.navigation.navigate("ProfileView");
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      }); 
+    } 
+
 render () {
   return (
 
@@ -199,10 +250,10 @@ render () {
       <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
           
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 10}}>
-          <Text style={styles.modalTitle}>{this.props.viewProfile.firstName}</Text>
+          <Text style={styles.modalTitle}>{this.props.chat.firstName}</Text>
           </View>
 
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={this.onPressViewProfile}>
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
           <Text style={styles.modalText}>Voir le profil</Text>
           </View>
@@ -210,11 +261,11 @@ render () {
 
           <TouchableWithoutFeedback>
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.modalText}>Bloquer {this.props.viewProfile.firstName}</Text>
+          <Text style={styles.modalText}>Bloquer {this.props.chat.firstName}</Text>
           </View>
           </TouchableWithoutFeedback>
 
-          <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
+          <TouchableWithoutFeedback onPress={this.onCloseModal}>
           <Text style={styles.modalText}>Annuler</Text>
           </TouchableWithoutFeedback>
         </Modal>

@@ -219,11 +219,13 @@ class Notifications extends React.Component {
     
     var Notification = Parse.Object.extend("Notification");
     var query = new Parse.Query(Notification);
-    query.first(id, {
+    query.equalTo('objectId', id); 
+    query.first({
       success: function(notification) {
         // The object was retrieved successfully.
         notification.set("seen", true);
         notification.save();
+        view.setState({data: NotificationCopy})
       },
       error: function(error) {
         // The object was not retrieved successfully.
@@ -231,7 +233,6 @@ class Notifications extends React.Component {
         console.log(error);
       }
     });
-    this.setState({data: NotificationCopy})
 
      if (type == 0) {
          var User = Parse.Object.extend("User");
@@ -296,7 +297,8 @@ class Notifications extends React.Component {
                 highestLevel:highestLevel,
                 availability:availability,
                 picture: picture,
-                isFriend: true,
+                fromChat:false,
+                isFriend:true,
                 friendRequestSent:false,
                 friendRequestReceived:false,
                 clubs: clubs,
