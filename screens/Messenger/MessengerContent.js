@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import Modal from 'react-native-modalbox';
 import { Parse } from 'parse/react-native';
@@ -28,6 +28,8 @@ class MessengerContent extends React.Component {
     this.onCloseModal = this.onCloseModal.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
     this.onPressViewProfile = this.onPressViewProfile.bind(this);
+    this.onPressMute = this.onPressMute.bind(this);
+    this.MuteFriend = this.MuteFriend.bind(this);
     this.state = {
       messages: [],
     };
@@ -95,9 +97,8 @@ class MessengerContent extends React.Component {
 
   componentDidMount() {
     var user = Parse.User.current();
-    var query = new Parse.Query('Message');
     var sub = this;
-
+    var query = new Parse.Query('Message');
     query.equalTo('conversation', this.props.chat.id);
     var subscription = query.subscribe();
 
@@ -230,6 +231,67 @@ class MessengerContent extends React.Component {
       }); 
     } 
 
+onPressMute() {
+  console.log('onPressMute');
+  Alert.alert(
+    'Bloquer'+this.props.chat.firstName+'?',
+    'Cette action est irréversible',
+    [
+      {text: 'Oui', onPress: () => this.MuteFriend()},
+      {text: 'Non', onPress: () => this.onCloseModal()},
+    ],
+    { cancelable: false }
+  )
+  }
+
+
+MuteFriend() {
+  console.log('muteFriend');
+  var user = Parse.User.current();
+  var add = this;
+  var relation1 = new Parse.Query("Relation");
+  relation1.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+  relation1.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.chat.userId }); 
+  relation1.first({
+    success: function(relation) {
+      var conversation = new Parse.Query("Conversation");
+      conversation.equalTo('roomUsers', user.id); 
+      conversation.equalTo('roomUsers', add.props.chat.userId); 
+      conversation.first({
+        success: function(conversation) {
+          conversation.destroy();
+          relation.set("updatedAt", Date());
+          relation.set("status", 2);
+          relation.save();
+          add.onCloseModal();
+          add.props.navigation.goBack();
+        }
+      });
+    }
+  });
+
+  var relation2 = new Parse.Query("Relation");
+  relation2.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+  relation2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.chat.userId }); 
+  relation2.first({
+    success: function(relation) {
+      var conversation = new Parse.Query("Conversation");
+      conversation.equalTo('roomUsers', user.id); 
+      conversation.equalTo('roomUsers', add.props.chat.userId); 
+      conversation.first({
+        success: function(conversation) {
+          conversation.destroy();
+          relation.set("updatedAt", Date());
+          relation.set("status", 2);
+          relation.save();
+          add.onCloseModal();
+          add.props.navigation.goBack();
+        }
+      });
+    }
+  });
+}
+
 render () {
   return (
 
@@ -259,7 +321,7 @@ render () {
           </View>
           </TouchableWithoutFeedback>
 
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={this.onPressMute}>
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
           <Text style={styles.modalText}>Bloquer {this.props.chat.firstName}</Text>
           </View>

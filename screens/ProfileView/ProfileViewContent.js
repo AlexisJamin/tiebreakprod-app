@@ -38,6 +38,7 @@ constructor(props) {
     this._onPressAnswerRefuse = this._onPressAnswerRefuse.bind(this);
     this._onPressAnswer = this._onPressAnswer.bind(this);
     this._onPressDeleteFriend = this._onPressDeleteFriend.bind(this);
+    this.ConfirmDeleteFriend = this.ConfirmDeleteFriend.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -167,7 +168,6 @@ constructor(props) {
   }
 
   _onPressAnswer() {
-    console.log('on Press !');
     Alert.alert(
     'Ajouter comme ami(e)',
     '',
@@ -282,6 +282,18 @@ constructor(props) {
   }
 
   _onPressDeleteFriend() {
+    Alert.alert(
+      "Supprimer le lien d'amitié avec"+this.props.viewProfile.firstName+'?',
+      '',
+      [
+        {text: 'Oui', onPress: () => this.ConfirmDeleteFriend()},
+        {text: 'Non'},
+      ],
+      { cancelable: false }
+    )
+  }
+
+  ConfirmDeleteFriend() {
     var user = Parse.User.current();
     var add = this;
     var relation1 = new Parse.Query("Relation");
@@ -399,7 +411,7 @@ constructor(props) {
       deleteAddFriend=(<TouchableWithoutFeedback onPress={this._onPressDeleteFriend} style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> Supprimer le lien d'amitié </Text>
        </TouchableWithoutFeedback>);
-    } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false) {
+    } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
       deleteAddFriend=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> Ajouter comme ami(e) </Text>
        </TouchableWithoutFeedback>);
@@ -407,6 +419,8 @@ constructor(props) {
       deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> En attente de réponse </Text>
        </TouchableWithoutFeedback>);
+    } else if (this.state.friendRequestRefused) {
+      deleteAddFriend=null;
     }
 
   var friendRequest = null;

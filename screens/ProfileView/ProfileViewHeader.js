@@ -153,7 +153,7 @@ class ProfileViewHeader extends React.Component {
       header= (<TouchableWithoutFeedback style={{padding:30}}>
        <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
        </TouchableWithoutFeedback>);
-    } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false) {
+    } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
       header=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} style={{padding:30}}>
        <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
        </TouchableWithoutFeedback>);

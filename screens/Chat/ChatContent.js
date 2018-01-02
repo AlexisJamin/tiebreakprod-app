@@ -35,8 +35,7 @@ class ChatContent extends React.Component {
     };
   }
 
-async componentDidMount() {
-
+  componentWillMount() {
     var user = Parse.User.current();
     var edit = this;
     var query = new Parse.Query("Conversation");
@@ -93,6 +92,36 @@ async componentDidMount() {
       error: function(e) {
         console.log(e);
       }
+    });
+  }
+
+ componentDidMount() {
+
+    var user = Parse.User.current();
+    var edit = this;
+
+    var query = new Parse.Query('Conversation');
+    query.equalTo('roomUsers', user.id); 
+    var subscription = query.subscribe();
+
+    subscription.on('open', () => {
+     console.log('subscription opened');
+    });
+
+    subscription.on('create', (conversation) => {
+     console.log('conversation created');
+      this.onRefresh();
+    });
+
+    subscription.on('update', (conversation) => {
+      console.log('conversation updated');
+      this.onRefresh();
+    });
+
+    subscription.on('delete', (conversation) => {
+      console.log('conversation deleted');
+      this.setState({data:null})
+      this.onRefresh();
     });
   }
 
