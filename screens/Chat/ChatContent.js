@@ -27,7 +27,7 @@ class ChatContent extends React.Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.renderEmpty = this.renderEmpty.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-    this.viewOnPress = this.viewOnPress.bind(this);
+    this.goToChat = this.goToChat.bind(this);
     this.state = {
       data: null,
       loading: true,
@@ -228,7 +228,7 @@ renderSeparator() {
       });
     }
 
-  viewOnPress(id, firstName, userId) {
+  goToChat(id, firstName, userId) {
     this.props.handleSubmit({
       firstName:firstName,
       id:id,
@@ -270,7 +270,7 @@ render () {
           subtitleContainerStyle={{marginLeft:30, width:300}}
           subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'normal'}}>Dernier message : "{item.message}" </Text>}
           hideChevron={true}
-          onPress={()=>{this.viewOnPress(item.objectId, item.fromUserFirstName, item.fromUserId)}}
+          onPress={()=>{this.goToChat(item.objectId, item.fromUserFirstName, item.fromUserId)}}
           />
         )}
       />

@@ -15,6 +15,9 @@ function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
         dispatch( {type: 'viewProfile', value: value} ) 
+    },
+    handleSubmitChat: function(value) {
+      dispatch( {type: 'chat', value: value} ) 
     }
   }
 };
@@ -24,6 +27,7 @@ class ProfileViewHeader extends React.Component {
 	constructor(props) {
 		super(props);
     this._onPressAddFriend = this._onPressAddFriend.bind(this);
+    this.goToChat = this.goToChat.bind(this);
 		this.state = {
       fontLoaded:false,
       friendRequestRefused:false,
@@ -145,12 +149,31 @@ class ProfileViewHeader extends React.Component {
         }
       });
   }
+
+  goToChat() {
+    var user = Parse.User.current();
+    var go = this;
+    var conversation = new Parse.Query("Conversation");
+    conversation.equalTo('roomUsers', user.id); 
+    conversation.equalTo('roomUsers', this.props.viewProfile.id); 
+    conversation.first({
+      success: function(conversation) {
+        console.log(conversation);
+        go.props.handleSubmitChat({
+          id:conversation.id,
+          firstName:go.props.viewProfile.firstName,
+          userId:go.props.viewProfile.id,
+        })
+        go.props.navigation.navigate("Messenger");
+      }
+    });
+}
   
   render() {
 
     var header= null;
     if (this.state.isFriend && !this.props.viewProfile.fromChat) {
-      header= (<TouchableWithoutFeedback style={{padding:30}}>
+      header= (<TouchableWithoutFeedback style={{padding:30}} onPress={this.goToChat}>
        <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
        </TouchableWithoutFeedback>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
