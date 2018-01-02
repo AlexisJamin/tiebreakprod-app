@@ -35,8 +35,7 @@ class Notifications extends React.Component {
     };
   }
 
-   async componentDidMount() {
-
+  componentWillMount() {
     var user = Parse.User.current();
     var query = new Parse.Query("Notification");
     var edit = this;
@@ -96,6 +95,28 @@ class Notifications extends React.Component {
       error: function(e) {
         console.log(e);
       }
+    });
+  }
+
+  componentDidMount() {
+    var user = Parse.User.current();
+    var query = new Parse.Query("Notification");
+    var edit = this;
+    query.equalTo('toUser', Parse.User.current()); 
+    var subscription = query.subscribe();
+
+    subscription.on('open', () => {
+     console.log('subscription Notification opened');
+    });
+
+    subscription.on('create', (notification) => {
+     console.log('notification created');
+      this.onRefresh();
+    });
+
+    subscription.on('update', (notification) => {
+      console.log('notification updated');
+      this.onRefresh();
     });
   }
 

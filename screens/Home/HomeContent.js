@@ -37,16 +37,16 @@ export default class HomeContent extends React.Component {
             justifyContent: 'center',
             alignItems:'center'
            }}>
-            <Image source={require('../../assets/icons/Search/SearchWhite.imageset/fill56.png')}/>
+            <Image source={require('../../assets/icons/Buy/Buy.imageset/buy.png')}/>
           </Image>
         </View>
 
         <View style={{top: 10}}>
         {
-        this.state.fontAvenirNextLoaded ? ( <Text style={styles.title}> RECHERCHER UNE PARTIE </Text> ) : null 
+        this.state.fontAvenirNextLoaded ? ( <Text style={styles.title}> RÉSERVER UN TERRAIN </Text> ) : null 
         }
         {
-        this.state.fontAvenirLoaded ? ( <Text style={styles.subtitle}> Vous n'avez pas reservé de terrain. </Text> ) : null 
+        this.state.fontAvenirLoaded ? ( <Text style={styles.subtitle}> Bientôt disponible ! </Text> ) : null 
         }       
         </View>
 
@@ -90,13 +90,17 @@ export default class HomeContent extends React.Component {
 
             <View style={{top: 10}}>
             {
-            this.state.fontAvenirNextLoaded ? ( <Text style={styles.title}> PROPOSER UNE PARTIE </Text> ) : null 
+            this.state.fontAvenirNextLoaded ? ( 
+              <View>
+              <Text style={styles.title}> PROPOSER UNE PARTIE </Text> 
+              <Text style={[styles.title, styles.margin]}> (À SES AMIS) </Text> 
+              </View>) : null 
             }
             {
             this.state.fontAvenirLoaded ? ( 
               <View>
-              <Text style={styles.subtitle}> Vous avez reservé un terrain mais vous</Text> 
-              <Text style={styles.subtitle}> n'avez pas de partenaire. </Text> 
+              <Text style={styles.subtitle}> Vous avez reservé un terrain mais </Text> 
+              <Text style={styles.subtitle}> vous n'avez pas de partenaire. </Text> 
                 </View> ) : null 
             }       
             </View>
@@ -129,6 +133,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'left',
     paddingTop: 10
+  },
+  margin: {
+    marginTop:5
   }
 });
 

@@ -283,7 +283,7 @@ constructor(props) {
 
   _onPressDeleteFriend() {
     Alert.alert(
-      "Supprimer le lien d'amitié avec"+this.props.viewProfile.firstName+'?',
+      "Supprimer le lien d'amitié avec"+this.props.viewProfile.firstName +'?',
       '',
       [
         {text: 'Oui', onPress: () => this.ConfirmDeleteFriend()},

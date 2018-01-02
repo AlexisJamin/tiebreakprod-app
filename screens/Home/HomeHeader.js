@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Font } from 'expo';
 import { connect } from 'react-redux';
+import { Parse } from 'parse/react-native';
+
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
 
@@ -11,15 +15,6 @@ function mapStateToProps(store) {
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
-    },
-        handleSubmitClub: function(value) { 
-        dispatch( {type: 'userClub', value: value} ) 
-    },
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    },
-    handleSubmitButton: function(value) { 
         dispatch( {type: 'button', value: value} ) 
     }
   }
@@ -30,7 +25,7 @@ class HomeHeader extends Component {
 	constructor() {
 		super();
 		this.state = {
-      fontLoaded: false
+      fontLoaded:false
     };
 	}
 
@@ -38,11 +33,28 @@ class HomeHeader extends Component {
     await Font.loadAsync({
       'SevenOneEightUltra': require('../../assets/fonts/SevenOneEight-Ultra.ttf'),
     });
-    this.setState({ fontLoaded: true });
+    this.setState({ fontLoaded:true });
+
+    var query = new Parse.Query("Notification");
+    var edit = this;
+    query.equalTo('toUser', Parse.User.current()); 
+    var subscription = query.subscribe();
+
+    subscription.on('open', () => {
+     console.log('subscription opened');
+    });
+
+    subscription.on('create', (notification) => {
+     console.log('notification created');
+    });
+
+    subscription.on('update', (notification) => {
+      console.log('notification updated');
+    });
   }
 
   navigationRoute(route, index) {
-  this.props.handleSubmitButton({
+  this.props.handleSubmit({
     ChatButtonIndex:index,
     CommunityButtonIndex:this.props.button.CommunityButtonIndex,
     CalendarButtonIndex:this.props.button.CalendarButtonIndex,
@@ -60,9 +72,9 @@ class HomeHeader extends Component {
        
        <View style={{
         flex:1,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        top: 40
+        flexDirection:'row',
+        justifyContent:'space-around',
+        top:40
         }}>
 
        		<TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('Menu')}>

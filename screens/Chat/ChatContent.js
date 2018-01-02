@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, FlatList, TextInput, RefreshControl, ActivityIndicator } from 'react-native';
-import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
+import { Parse } from 'parse/react-native';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
