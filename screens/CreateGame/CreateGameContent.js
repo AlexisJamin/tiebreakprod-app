@@ -1,9 +1,8 @@
 import React from 'react'
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, DatePickerIOS } from 'react-native'
-import { Facebook, Constants, ImagePicker, registerRootComponent, Font } from 'expo'
+import { Font } from 'expo'
 import Modal from 'react-native-modalbox'
 import ModalDropdown from 'react-native-modal-dropdown'
-import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup, CheckBox } from 'react-native-elements'

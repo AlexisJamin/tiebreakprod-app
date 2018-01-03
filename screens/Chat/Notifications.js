@@ -15,6 +15,9 @@ function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
         dispatch( {type: 'viewProfile', value: value} ) 
+    },
+     handleSubmitChat: function(value) { 
+        dispatch( {type: 'chat', value: value} ) 
     }
   }
 };
@@ -227,7 +230,9 @@ class Notifications extends React.Component {
 
   }
 
-  viewOnPress(id, userId, type) {
+  viewOnPress(id, userId, type, firstName) {
+    console.log("type");
+    console.log(type);
     var view = this;
     // allows to change background color when seen
     var NotificationCopy = [...this.state.data];
@@ -330,6 +335,25 @@ class Notifications extends React.Component {
           });
       }
 
+      if (type == 8) {
+        console.log('type 8');
+         var user = Parse.User.current();
+         var conversation = new Parse.Query("Conversation");
+         conversation.equalTo('roomUsers', user.id); 
+         conversation.equalTo('roomUsers', userId); 
+         conversation.first({
+          success: function(conversation) {
+              // The object was retrieved successfully.
+              view.props.handleSubmitChat({
+              id:conversation.id,
+              firstName:firstName,
+              userId:userId,
+            })
+            view.props.navigation.navigate("Messenger");
+            }
+          });
+      } 
+
   }
 
 
@@ -367,7 +391,7 @@ render () {
           subtitleContainerStyle={{marginLeft:30, width:300}}
           subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'bold'}}>{item.typeName} </Text>}
           hideChevron={true}
-          onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type)}}
+          onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type, item.fromUserFirstName)}}
           />
         )}
       />

@@ -132,7 +132,6 @@ class MessengerContent extends React.Component {
   }
 
   onSend(messages = []) {
-    console.log(messages);
     var send = this;
     var message = new Parse.Object("Message");
     message.set("createdAt", Date());
@@ -155,8 +154,20 @@ class MessengerContent extends React.Component {
             Conversation.set('lastMessage', { "__type": "Pointer", "className": "Message", "objectId": message.id });
             Conversation.set('updatedAt', Date());
             Conversation.save();
+            
+            var notification = new Parse.Object("Notification");
+            notification.set("createdAt", Date());
+            notification.set("updatedAt", Date());
+            notification.set("conversation", { "__type": "Pointer", "className": "Conversation", "objectId": Conversation.id });
+            notification.set("toUser", { "__type": "Pointer", "className": "_User", "objectId": send.props.chat.userId });
+            notification.set("fromUser", Parse.User.current());
+            notification.set("type", 8);
+            notification.set("seen", false);
+            notification.save();
             }
         });
+
+
       }
     });
   }
