@@ -102,6 +102,7 @@ class Notifications extends React.Component {
   }
 
   componentDidMount() {
+    //not working yet because need to update server on Heroku
     var user = Parse.User.current();
     var query = new Parse.Query("Notification");
     var edit = this;

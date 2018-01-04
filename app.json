@@ -10,7 +10,7 @@
     "primaryColor": "#cccccc",
     "icon": "",
     "loading": {
-      "icon": "",
+      "icon": "./assets/icons/AppIcon.appiconset/Icon-v2.png",
       "hideExponentText": false
     },
     "packagerOpts": {

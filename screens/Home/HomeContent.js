@@ -27,7 +27,7 @@ export default class HomeContent extends React.Component {
   render() {
     return (
 
-      <View style={{flex:1, justifyContent:'space-around', marginBottom:150}}>
+      <View style={{flex:1, justifyContent:'space-around', marginBottom:160}}>
 
         <TouchableWithoutFeedback>
         <View style={{flexDirection:'row', justifyContent: 'space-around'}}>

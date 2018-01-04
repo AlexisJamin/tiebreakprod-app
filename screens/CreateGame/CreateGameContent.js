@@ -1,19 +1,17 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, DatePickerIOS } from 'react-native'
-import { Font } from 'expo'
-import Modal from 'react-native-modalbox'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard } from 'react-native'
+import { Font, Util } from 'expo'
 import ModalDropdown from 'react-native-modal-dropdown'
-import { connect } from 'react-redux'
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { ButtonGroup, CheckBox } from 'react-native-elements'
+import { ButtonGroup } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { connect } from 'react-redux'
 import { Parse } from 'parse/react-native'
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
-import moment from 'moment'
-var dateFormat = moment().format();
+import moment from 'moment/min/moment-with-locales';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -28,25 +26,52 @@ class CreateGameContent extends React.Component {
   constructor(props) {
     super(props);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
-    this.updateIndexCourt = this.updateIndexCourt.bind(this);
-    this.selectClub = this.selectClub.bind(this);
     this.state = {
-      fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
-      isDateTimePickerVisible: false,
-      clubs:["Tennis du Luxembourg","Tennis Atlantique"],
-      selectedIndexCourt: '',
-      selectedClub:'',
-      surface: '',
-      condition: '',
-      date:'',
-      price:'',
-      checked: false
+      fontAvenirNextLoaded:false,
+      fontAvenirLoaded:false,
+      isDateTimePickerVisible:false,
+      selectedConditionIndex:null,
+      selectedClubIndex:null,
+      clubListId:null,
+      clubListName:null,
+      surface:null,
+      date:null,
+      price:0
     };
+  }
+
+  componentWillMount() {
+   var user = Parse.User.current();
+   var edit = this;
+   var query = new Parse.Query("User");
+   var clubListName = [];
+   var clubListId = [];
+    query.get(user.id, {
+      success: function(users) {
+        // The object was retrieved successfully.
+        console.log('success clubList');
+        clubList = users.get("clubs");
+        for (var i = 0; i < clubList.length; i++) {
+          clubListName.push(users.get("clubs")[i].get('name'));
+          clubListId.push(users.get("clubs")[i].id);
+        }
+        edit.setState({ clubListId : clubListId, clubListName : clubListName})
+
+      },
+      error: function(object, error) {
+        // The object was not retrieved successfully.
+        // error is a Parse.Error with an error code and message.
+      }
+    });
   }
 
   async componentDidMount() {
    
+   var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
+   console.log(deviceLocale);
+   //moment.locale(deviceLocale);
+   console.log(moment().format('LLLL'));
+
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
       'Avenir': require('../../assets/fonts/Avenir.ttf'),
@@ -54,22 +79,44 @@ class CreateGameContent extends React.Component {
     this.setState({ 
       fontAvenirNextLoaded: true,
       fontAvenirLoaded: true,
-
     });
   }
 
-updateIndexCourt (selectedIndex) {
-    this.setState({selectedIndexCourt:selectedIndex})
-  }
-
-  selectClub (selectedClub) {
-    this.setState({selectedClub:selectedClub})
-  }
-  
-
   _onPressValidateButton() {
-    
+    if (this.state.surface != null && this.state.selectedConditionIndex != null && this.state.date != null && this.state.selectedClubIndex != null) {
+
+      if (this.state.selectedConditionIndex == 0) {
+        var condition = 'inside';
+      } else if (this.state.selectedConditionIndex == 1) {
+        var condition = 'outside';
       }
+
+      if (this.state.surface == 'Dur') {
+        var surface = 'hard';
+      } else if (this.state.surface == 'Gazon') {
+        var surface = 'grass';
+      } else if (this.state.surface == 'Moquette') {
+        var surface = 'carpet';
+      } else if (this.state.surface == 'Terre battue') {
+        var surface = 'clay';
+      } else if (this.state.surface == 'Synthétique') {
+        var surface = 'synthetic';
+      }
+      var game = new Parse.Object("Game");
+      game.set("organiser", Parse.User.current());
+      game.set("price", this.state.price);
+      game.set("surface", surface);
+      game.set("createdAt", Date());
+      game.set("updatedAt", Date());
+      game.set("date", this.state.date);
+      game.set("club", { "__type": "Pointer", "className": "Club", "objectId": this.state.clubListId[this.state.selectedClubIndex]});
+      game.set("condition", condition);
+      game.save();
+      this.props.navigation.goBack();
+    } else {
+      Alert.alert('Veuillez compléter tous les champs');
+    }
+  }
 
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
@@ -83,30 +130,27 @@ updateIndexCourt (selectedIndex) {
 
   render() {
 
-    const buttonsCourt = ['Intérieur', 'Extérieur']
-    const clubs = ['Tennis du Luxembourg', 'Tennis Atlantique', 'Tennis Elisabeth', 'Tennis 16', 'Autre']
-    const { selectedIndexCourt } = this.state;
-    const { selectedClub } = this.state;
+    const conditions = ['Intérieur', 'Extérieur'];
+    const surfaces = ['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique']
+    const clubs = this.state.clubListName;
 
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
 
-        <ScrollView>
+        <KeyboardAwareScrollView>
 
         <View style={styles.page}>
-
-        
 
          {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> DATE </Text>
           ) : null 
          }
 
-         <View style={styles.container}>
+        <View style={styles.container}>
         <TouchableWithoutFeedback onPress={this._showDateTimePicker}>
           <View style={styles.button}>
-            <Text></Text>
+            <Text style={{color:'white'}}>{ (this.state.date && moment(this.state.date).format('LLLL')) || 'Choisir une date' }</Text>
           </View>
         </TouchableWithoutFeedback>
         <DateTimePicker
@@ -130,27 +174,19 @@ updateIndexCourt (selectedIndex) {
           ) : null 
          }
 
-            <ButtonGroup 
-            onPress={() => this.selectClub()}
-            selectedIndex={selectedClub}
-            buttons={[this.state.clubs[0]]}
-            textStyle={styles.title}
-            selectedBackgroundColor={'rgb(42,127,83)'}
-            selectedTextStyle={styles.subtitle}
-            containerStyle={styles.clubs}
-            />
+         <View style={{alignItems:'center', justifyContent:'center'}}>
 
-            <ButtonGroup 
-            onPress={this.selectClub}
-            selectedIndex={selectedClub}
-            buttons={[this.state.clubs[1]]}
-            textStyle={styles.title}
-            selectedBackgroundColor={'rgb(42,127,83)'}
-            selectedTextStyle={styles.subtitle}
-            containerStyle={styles.clubs}
-            />
+          <ModalDropdown 
+          style={styles.input} 
+          dropdownStyle={styles.modalDrop} 
+          textStyle={styles.text}
+          dropdownTextStyle={styles.text}
+          defaultValue={'Mes clubs'}
+          options={clubs}
+          onSelect={(index, selectedClub) => this.setState({selectedClubIndex:index})}
+          />
 
-
+          </View>
 
           {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Conditions </Text>
@@ -158,9 +194,9 @@ updateIndexCourt (selectedIndex) {
          }
 
          <ButtonGroup 
-          onPress={this.updateIndexCourt}
-          selectedIndex={selectedIndexCourt}
-          buttons={buttonsCourt}
+          onPress={(index) => this.setState({selectedConditionIndex:index})}
+          selectedIndex={this.state.selectedConditionIndex}
+          buttons={conditions}
           textStyle={styles.title}
           selectedBackgroundColor={'rgb(42,127,83)'}
           selectedTextStyle={styles.subtitle}
@@ -172,13 +208,6 @@ updateIndexCourt (selectedIndex) {
           ) : null 
          }
 
-         <CheckBox
-          center
-          title='8h'
-          onPress={() => this.setState({checked:true})}
-          checked={this.state.checked}
-        />
-
           <View style={{alignItems:'center', justifyContent:'center'}}>
 
           <ModalDropdown 
@@ -187,7 +216,7 @@ updateIndexCourt (selectedIndex) {
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
           defaultValue={'Surface'}
-          options={['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique']}
+          options={surfaces}
           onSelect={(index, surface) => this.setState({surface})}
           />
 
@@ -203,11 +232,11 @@ updateIndexCourt (selectedIndex) {
           <TextInput 
             ref='price'
             style={styles.input} 
-            keyboardType="default"
+            keyboardType="numeric"
             returnKeyType='done'
             autoCapitalize='none'
-            autoCorrect='false'
-            secureTextEntry='true'
+            autoCorrect={false}
+            secureTextEntry={true}
             placeholder='Sans frais'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(price) => this.setState({price})}
@@ -219,14 +248,14 @@ updateIndexCourt (selectedIndex) {
 
        
 
-         </ScrollView>
+         </KeyboardAwareScrollView>
 
           
           <View style={{
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'stretch',
-         }}>
+            flexDirection:'column',
+            justifyContent:'center',
+            alignItems:'stretch'
+             }}>
             <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
             <Text style={styles.buttonLogIn}>Créer la partie</Text>
             </TouchableWithoutFeedback>
@@ -246,25 +275,25 @@ export default connect(null, mapDispatchToProps) (CreateGameContent);
 
 const styles = StyleSheet.create({
   buttonLogIn: {
-    backgroundColor: 'rgb(200,90,24)',
-    color: 'white',
-    fontSize: 18,
-    lineHeight: 30,
-    textAlign: 'center',
+    backgroundColor:'rgb(200,90,24)',
+    color:'white',
+    fontSize:18,
+    lineHeight:30,
+    textAlign:'center',
     overflow:'hidden', 
     paddingTop:15,
     paddingBottom:15 
   },
   page: {
-    flexDirection: 'column',
-    justifyContent: 'center'
+    flexDirection:'column',
+    justifyContent:'center'
   },
   title: {
-    color: 'black',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'Avenir',
-    fontSize: 15,
-    textAlign: 'center'
+    color:'black',
+    backgroundColor:'rgba(0,0,0,0)',
+    fontFamily:'Avenir',
+    fontSize:15,
+    textAlign:'center'
   },
   modalDrop: {
     marginLeft:1,
@@ -274,16 +303,16 @@ const styles = StyleSheet.create({
   },
   text: {
     color:'black', 
-    top:8,
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontSize: 18,
+    paddingTop:10,
+    backgroundColor:'rgba(0,0,0,0)',
+    fontSize: 14,
   },
    subtitle: {
     color: 'white',
-    backgroundColor: 'rgba(0,0,0,0)',
+    backgroundColor:'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 15,
-    textAlign: 'center'
+    textAlign:'center'
   },
   input: {
     width:350,
@@ -297,29 +326,29 @@ const styles = StyleSheet.create({
     backgroundColor:'white'
   },
   clubs: {
-   backgroundColor: 'white',
-    height: 60,
+   backgroundColor:'white',
+    height:60,
     marginBottom:30,
     width:350
   },
   courts: {
-    backgroundColor: 'white',
-    height: 40,
+    backgroundColor:'white',
+    height:40,
     marginBottom:30,
     width:350
   },
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex:1,
+    marginBottom:10,
+    justifyContent:'center',
+    alignItems:'center',
   },
   button: {
-    backgroundColor: 'lightblue',
-    padding: 12,
-    margin: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor:'rgb(42,127,83)',
+    padding:12,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:4,
+    borderColor:'rgba(0,0,0,0)',
   }
 });
