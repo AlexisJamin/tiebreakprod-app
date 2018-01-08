@@ -15,10 +15,13 @@ function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
         dispatch( {type: 'viewProfile', value: value} ) 
-    },
-     handleSubmitChat: function(value) { 
-        dispatch( {type: 'chat', value: value} ) 
-    }
+      },
+       handleSubmitChat: function(value) { 
+          dispatch( {type: 'chat', value: value} ) 
+      },
+      handleSubmitGame: function(value) { 
+          dispatch( {type: 'game', value: value} ) 
+      }
   }
 };
 
@@ -44,9 +47,10 @@ class Notifications extends React.Component {
     var edit = this;
     query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
     query.descending("updatedAt");
-    query.limit(10);
+    query.limit(1);
     query.find({
       success: function(Notification) {
+        console.log(Notification);
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         if (Notification.length != 0) {
           var NotificationCopy = [];
@@ -59,15 +63,15 @@ class Notifications extends React.Component {
               } else if (NotificationCopy[i].type == 2) {
                 NotificationCopy[i].typeName = 'A refusé votre demande d’amitié';
               } else if (NotificationCopy[i].type == 3) {
-                NotificationCopy[i].typeName = 'Vous propose une partie le XXX';
+                NotificationCopy[i].typeName = 'Vous a proposé une partie';
               } else if (NotificationCopy[i].type == 4) {
-                NotificationCopy[i].typeName = 'A accepté votre proposition de partie le XXX';
+                NotificationCopy[i].typeName = 'A accepté votre proposition de partie';
               } else if (NotificationCopy[i].type == 5) {
-                NotificationCopy[i].typeName = 'A refusé votre proposition de partie le XXX';
+                NotificationCopy[i].typeName = 'A refusé votre proposition de partie';
               } else if (NotificationCopy[i].type == 6) {
-                NotificationCopy[i].typeName = 'A annulé votre partie le XXX';
+                NotificationCopy[i].typeName = 'A annulé votre partie';
               } else if (NotificationCopy[i].type == 7) {
-                NotificationCopy[i].typeName = 'Aimerait participer à votre partie le XXX';
+                NotificationCopy[i].typeName = 'Aimerait participer à votre partie';
               } else if (NotificationCopy[i].type == 8) {
                 NotificationCopy[i].typeName = 'Vous a envoyé un message';
               } 
@@ -353,6 +357,24 @@ class Notifications extends React.Component {
             view.props.navigation.navigate("Messenger");
             }
           });
+      } 
+
+      if (type == 3) {
+         console.log('type 3');
+         var user = Parse.User.current();
+         var Notification = Parse.Object.extend("Notification");
+         var query = new Parse.Query(Notification);
+         query.equalTo('objectId', id); 
+         query.first({
+           success: function(notification) {
+            var gameId = notification.get('game').id;
+            view.props.handleSubmitGame({
+              gameId:gameId,
+            })
+            view.props.navigation.navigate("GameView");
+           }
+          });
+         
       } 
 
   }

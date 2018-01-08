@@ -19,6 +19,7 @@ import EditClub from './screens/EditClub/EditClub';
 import EditClubSearch from './screens/EditClub/EditClubSearch';
 import ProfileView from './screens/ProfileView/ProfileView';
 import Messenger from './screens/Messenger/Messenger';
+import GameView from './screens/GameView/GameView';
 
 
 const reducers = require('./combine-reducer').default;
@@ -38,6 +39,7 @@ const Navigator = StackNavigator({
         CreateGame: { screen: CreateGame },
         ProfileView: { screen: ProfileView },
         Messenger: { screen: Messenger },
+        GameView: { screen: GameView },
         }, { 
         initialRouteName:'Login', 
         headerMode: 'none',

@@ -194,6 +194,7 @@ class CreateGameContent extends React.Component {
     const conditions = ['Intérieur', 'Extérieur'];
     const surfaces = ['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique']
     const clubs = this.state.clubListName;
+    const minimumDate = new Date();
 
     return (
 
@@ -219,6 +220,7 @@ class CreateGameContent extends React.Component {
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
           mode="datetime"
+          minimumDate={minimumDate}
           cancelTextIOS="Annuler"
           confirmTextIOS="Valider"
           titleIOS="Choisir une date"
