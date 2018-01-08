@@ -154,16 +154,14 @@ class MessengerContent extends React.Component {
             Conversation.set('lastMessage', { "__type": "Pointer", "className": "Message", "objectId": message.id });
             Conversation.set('updatedAt', Date());
             Conversation.save();
+
+            Parse.Cloud.run("createNotification", { 
+            "userId": send.props.chat.userId,
+            "message": "vous a envoyé un message",
+            "conversationId": Conversation.id,
+            "type": 8,
+             })
             
-            var notification = new Parse.Object("Notification");
-            notification.set("createdAt", Date());
-            notification.set("updatedAt", Date());
-            notification.set("conversation", { "__type": "Pointer", "className": "Conversation", "objectId": Conversation.id });
-            notification.set("toUser", { "__type": "Pointer", "className": "_User", "objectId": send.props.chat.userId });
-            notification.set("fromUser", Parse.User.current());
-            notification.set("type", 8);
-            notification.set("seen", false);
-            notification.save();
             }
         });
 

@@ -35,7 +35,7 @@ class CommunityFriends extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
 
     var friends = [];
     var edit = this;
@@ -44,7 +44,7 @@ class CommunityFriends extends React.Component {
     var userAvailability = this.props.user.availability;
     var query = new Parse.Query('Relation');
     query.equalTo('status', 3);
-    query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    query.equalTo('fromUser', Parse.User.current());  
     query.find({
       success: function(Friends) {
         console.log('query 1');
@@ -117,7 +117,7 @@ class CommunityFriends extends React.Component {
 
     var query2 = new Parse.Query('Relation');
     query2.equalTo('status', 3);
-    query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id });  
+    query2.equalTo('toUser', Parse.User.current());  
     query2.find({
       success: function(Friends) {
         console.log('query 2');

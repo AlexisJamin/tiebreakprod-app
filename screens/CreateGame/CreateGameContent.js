@@ -11,7 +11,8 @@ import { Parse } from 'parse/react-native'
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
-import moment from 'moment/min/moment-with-locales';
+import moment from 'moment';
+import 'moment/locale/fr';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -26,6 +27,7 @@ class CreateGameContent extends React.Component {
   constructor(props) {
     super(props);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
+    this._onPressAnswerPositive = this._onPressAnswerPositive.bind(this);
     this.state = {
       fontAvenirNextLoaded:false,
       fontAvenirLoaded:false,
@@ -40,7 +42,10 @@ class CreateGameContent extends React.Component {
     };
   }
 
-  componentWillMount() {
+  async componentWillMount() {
+   moment.locale('fr');
+   //var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
+
    var user = Parse.User.current();
    var edit = this;
    var query = new Parse.Query("User");
@@ -66,11 +71,6 @@ class CreateGameContent extends React.Component {
   }
 
   async componentDidMount() {
-   
-   var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
-   console.log(deviceLocale);
-   //moment.locale(deviceLocale);
-   console.log(moment().format('LLLL'));
 
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
@@ -82,8 +82,41 @@ class CreateGameContent extends React.Component {
     });
   }
 
-  _onPressValidateButton() {
-    if (this.state.surface != null && this.state.selectedConditionIndex != null && this.state.date != null && this.state.selectedClubIndex != null) {
+  _onPressAnswerPositive() {
+      var add = this;
+      var friends = [];
+      var user = Parse.User.current();
+      var query = new Parse.Query('Relation');
+      query.equalTo('status', 3);
+      query.equalTo('fromUser', Parse.User.current());  
+      query.find({
+        success: function(Friends) {
+          for (var i = 0; i < Friends.length; i++) {
+            var FriendsCopy = JSON.parse(JSON.stringify(Friends[i]));
+            friends.push(FriendsCopy.toUser.objectId);
+          }
+          console.log(friends);
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      })
+
+      var query2 = new Parse.Query('Relation');
+      query2.equalTo('status', 3);
+      query2.equalTo('toUser', Parse.User.current());  
+      query2.find({
+        success: function(Friends) {
+          for (var i = 0; i < Friends.length; i++) {
+            var FriendsCopy = JSON.parse(JSON.stringify(Friends[i]));
+            friends.push(FriendsCopy.fromUser.objectId);
+          }
+          console.log(friends);
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
 
       if (this.state.selectedConditionIndex == 0) {
         var condition = 'inside';
@@ -111,8 +144,36 @@ class CreateGameContent extends React.Component {
       game.set("date", this.state.date);
       game.set("club", { "__type": "Pointer", "className": "Club", "objectId": this.state.clubListId[this.state.selectedClubIndex]});
       game.set("condition", condition);
-      game.save();
-      this.props.navigation.goBack();
+      game.save(null, {
+        success: function(game) {
+          for (var i = 0; i < friends.length; i++) {
+            Parse.Cloud.run("createNotification", { 
+            "userId": friends[i],
+            "message": "Vous propose une partie le "+moment(add.state.date).format('llll'),
+            "gameId": game.id,
+            "type": 3,
+             })
+          }
+          add.props.navigation.goBack();
+        }
+      });
+      
+  }
+
+
+  _onPressValidateButton() {
+    if (this.state.surface != null && this.state.selectedConditionIndex != null && this.state.date != null && this.state.selectedClubIndex != null) {
+
+      Alert.alert(
+        'Vous confirmez avoir réservé un terrain le :',
+        moment(this.state.date).format('llll')+' ?',
+        [
+          {text: 'Non'},
+          {text: 'Oui', onPress: () => this._onPressAnswerPositive()},
+        ],
+        { cancelable: false }
+      )
+
     } else {
       Alert.alert('Veuillez compléter tous les champs');
     }
@@ -246,10 +307,7 @@ class CreateGameContent extends React.Component {
 
           </View>
 
-       
-
          </KeyboardAwareScrollView>
-
           
           <View style={{
             flexDirection:'column',
@@ -259,11 +317,10 @@ class CreateGameContent extends React.Component {
             <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
             <Text style={styles.buttonLogIn}>Créer la partie</Text>
             </TouchableWithoutFeedback>
-        </View>
+
+          </View>
 
        
-
-
         </View>
 
     );

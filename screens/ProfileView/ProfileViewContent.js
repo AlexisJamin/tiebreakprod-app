@@ -129,17 +129,13 @@ constructor(props) {
     relation.set("status", 1);
     relation.save(null, {
         success: function(relation) {
-          var notification = new Parse.Object("Notification");
-          notification.set("fromUser", Parse.User.current());
-          notification.set("toUser", otherUser);
-          notification.set("createdAt", Date());
-          notification.set("updatedAt", Date());
-          notification.set("type", 0);
-          notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
-          notification.set("seen", false);
-          notification.save(null, {
-            success: function(notification) {
-              add.props.handleSubmit({
+          Parse.Cloud.run("createNotification", { 
+            "userId": add.props.viewProfile.id,
+            "message": "Souhaite devenir votre ami(e)",
+            "relationId": relation.id,
+            "type": 0,
+             })
+          add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
                 firstName:add.props.viewProfile.firstName,
                 style:add.props.viewProfile.style,
@@ -155,11 +151,6 @@ constructor(props) {
                 isFriend:false,
               })
               add.setState({friendRequestSent:true})
-            },
-            error: function(error) {
-              console.log(error);
-            }
-          });
         },
         error: function(error) {
          console.log(error);
@@ -192,15 +183,12 @@ constructor(props) {
         relation.set("status", 3);
         relation.save();
 
-        var notification = new Parse.Object("Notification");
-        notification.set("fromUser", Parse.User.current());
-        notification.set("toUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
-        notification.set("createdAt", Date());
-        notification.set("updatedAt", Date());
-        notification.set("type", 1);
-        notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
-        notification.set("seen", false);
-        notification.save();
+        Parse.Cloud.run("createNotification", { 
+            "userId": add.props.viewProfile.id,
+            "message": "A accepté votre demande d’amitié",
+            "relationId": relation.id,
+            "type": 1,
+             })
 
         var conversation = new Parse.Object("Conversation");
         conversation.set("roomUsers", [user.id, add.props.viewProfile.id]);
@@ -264,15 +252,13 @@ constructor(props) {
         relation.set("status", 2);
         relation.save();
 
-        var notification = new Parse.Object("Notification");
-        notification.set("fromUser", Parse.User.current());
-        notification.set("toUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
-        notification.set("createdAt", Date());
-        notification.set("updatedAt", Date());
-        notification.set("type", 2);
-        notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
-        notification.set("seen", false);
-        notification.save();
+        Parse.Cloud.run("createNotification", { 
+            "userId": add.props.viewProfile.id,
+            "message": "A refusé votre demande d’amitié",
+            "relationId": relation.id,
+            "type": 2,
+             })
+
         add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:false, friendRequestRefused:true})
       },
       error: function(error) {

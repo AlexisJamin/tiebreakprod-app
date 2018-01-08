@@ -103,7 +103,7 @@ class Notifications extends React.Component {
 
   componentDidMount() {
     //not working yet because need to update server on Heroku
-    var user = Parse.User.current();
+    /*var user = Parse.User.current();
     var query = new Parse.Query("Notification");
     var edit = this;
     query.equalTo('toUser', Parse.User.current()); 
@@ -121,7 +121,7 @@ class Notifications extends React.Component {
     subscription.on('update', (notification) => {
       console.log('notification updated');
       this.onRefresh();
-    });
+    });*/
   }
 
   renderSeparator() {
