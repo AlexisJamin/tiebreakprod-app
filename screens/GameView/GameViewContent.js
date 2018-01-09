@@ -32,7 +32,13 @@ class GameViewContent extends React.Component {
     this.state = {
       fontAvenirNextLoaded:false,
       fontAvenirLoaded:false,
-      clubGeo:null
+      gameDate:null,
+      latitude:null,
+      longitude:null,
+      clubName:null,
+      clubAddress:null,
+      gameSurface:null,
+      gameCondition:null
     };
   }
 
@@ -57,7 +63,15 @@ class GameViewContent extends React.Component {
             var clubName = club.get('name');
             var clubAddress = club.get('address');
             var clubGeo = club.get('geopoint');
-            edit.setState({clubGeo:clubGeo})
+            edit.setState({
+              latitude:clubGeo.latitude, 
+              longitude:clubGeo.longitude, 
+              gameDate:gameDate,
+              clubName:clubName,
+              clubAddress:clubAddress,
+              gameCondition:gameCondition,
+              gameSurface:gameSurface
+            })
           }
         });
       }
@@ -73,7 +87,6 @@ class GameViewContent extends React.Component {
       fontAvenirNextLoaded: true,
       fontAvenirLoaded: true,
     });
-
   }
 
   _onPressAnswerPositive() {
@@ -94,7 +107,40 @@ class GameViewContent extends React.Component {
   }
 
   render() {
-      const clubGeo = this.state;
+      console.log(this.state);
+      const {latitude} = this.state;
+      const {longitude} = this.state;
+      const {gameDate} = this.state;
+      const {clubName} = this.state;
+      const {clubAddress} = this.state;
+      const {gameCondition} = this.state;
+      const {gameSurface} = this.state;
+
+      if (gameCondition == 'outside') {
+        var imageCondition = <Image style={{marginBottom:5}} source={require('../../assets/icons/Conditions/Exterior.imageset/pic.png')}/>;
+        var textCondition = "Extérieur";
+      } else if (gameCondition == 'inside') {
+        var imageCondition = <Image style={{marginBottom:5}} source={require('../../assets/icons/Conditions/Interior.imageset/indoor.png')}/>;
+        var textCondition = "Intérieur";
+      }
+
+      if (gameSurface == 'hard') {
+        var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/DurTerrain.imageset/img_dur.png')}/>;
+        var textSurface = 'Dur';
+      } else if (gameSurface == 'grass') {
+        var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/GazonTerrain.imageset/img_gazon.png')}/>;
+        var textSurface = 'Gazon';
+      } else if (gameSurface == 'carpet') {
+        var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/MoquetteTerrain.imageset/img_moquette.png')}/>;
+        var textSurface = 'Moquette';
+      } else if (gameSurface == 'synthetic') {
+        var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/SynthTerrain.imageset/img_synth.png')}/>;
+        var textSurface = 'Synthétique';
+      } else if (gameSurface == 'clay') {
+        var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/TerreTerrain.imageset/img_terre.png')}/>;
+        var textSurface = 'Terre battue';
+      }
+
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
@@ -108,25 +154,55 @@ class GameViewContent extends React.Component {
           ) : null 
          }
 
-       
+         {
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'Avenir', paddingLeft:10}}> Le {moment(this.state.gameDate).format('LLLL')} </Text>
+          ) : null 
+         }
         
         {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> LIEU </Text>
           ) : null 
          }
 
+         {
+          this.state.fontAvenirLoaded ? (<View style={{marginBottom:15}}>
+            <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> {clubName} </Text>
+            <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> {clubAddress} </Text>
+            </View>
+          ) : null 
+         }
+
+         <View style={{alignItems:'center', marginBottom:15}}>
          <MapView
-            style={{ flex: 1, width:200, heigth:300 }}
-            initialRegion={{
-              latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-            }}
-          />
+         style={{width:300, height:150}}
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+        </View>
 
           {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
+          ) : null 
+         }
+
+         <View style={{flexDirection:'row', justifyContent:'flex-start', marginBottom:15}}>
+           <View style={{paddingLeft:20, alignItems:'center'}}>
+           {imageSurface}
+           <Text> {textSurface} </Text>
+           </View>
+
+           <View style={{paddingLeft:40, alignItems:'center'}}>
+           {imageCondition}
+           <Text> {textCondition} </Text>
+           </View>
+        </View>
+
+          {
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> Créateur de la partie </Text>
           ) : null 
          }
 
