@@ -6,6 +6,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { Parse } from 'parse/react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Modal from 'react-native-modalbox';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+
+import moment from 'moment';
+import 'moment/locale/fr';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
@@ -32,6 +36,7 @@ constructor(props) {
       fontAvenirLoaded: false,
       image:null,
       newPicture:false,
+      isDateTimePickerVisible:false,
       firstName:this.props.user.firstName,
       lastName:this.props.user.lastName,
       currentLevel:this.props.user.currentLevel,
@@ -40,11 +45,14 @@ constructor(props) {
       gender:this.props.user.gender,
       availability:this.props.user.availability,
       userId:this.props.user.userId,
-      picture:this.props.user.picture
+      picture:this.props.user.picture,
+      birthday:this.props.user.birthday
     };
   }
 
   async componentDidMount() {
+
+    moment.locale('fr');
 
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
@@ -116,17 +124,29 @@ constructor(props) {
                   }
         } else {
         Alert.alert('Veuillez compléter tous les champs');
-        }
-     
+        }  
   }
 
+  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
+  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+  _handleDatePicked = (birthday) => {
+    console.log('A birthday has been picked: ', birthday);
+    this.setState({ birthday: birthday });
+    this._hideDateTimePicker();
+  };
 
   render() {
 
     let { image } = this.state;
     let { picture } = this.state;
-    var profileImage;
+    var today = new Date();
+    var minimumToday = moment(new Date()).subtract(18, 'years');
+    console.log(minimumToday);
+    moment.locale('fr');
+    const minimumDate = moment().subtract(18, 'years').toDate();
+
 
     var level = [1,2,3,4,5,6,7,8,9,10];
     var defaultValueGender= this.state.gender;
@@ -147,14 +167,14 @@ constructor(props) {
     } 
 
        if (this.state.newPicture) {
-           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+picture}}/>
+           var profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+picture}}/>
           }
           else if (picture!='')
            {
-           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: picture}}/>
+           var profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: picture}}/>
            } 
         else {
-             profileImage = <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
+             var profileImage = <Image source={require('../../assets/icons/General/AddPhoto.imageset/placeholderPic.png')}/>
              }
 
 
@@ -246,6 +266,22 @@ constructor(props) {
           options={level}
           onSelect={(index, highestLevel) => this.setState({highestLevel})}
           />
+
+          <TouchableWithoutFeedback onPress={this._showDateTimePicker}>
+            <View style={styles.input}>
+              <Text style={{color:'black'}}>{ (this.state.birthday && moment(this.state.birthday).format('L')) || "Choisir une date d'anniversaire" }</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <DateTimePicker
+          isVisible={this.state.isDateTimePickerVisible}
+          onConfirm={this._handleDatePicked}
+          onCancel={this._hideDateTimePicker}
+          mode="date"
+          minimumDate={minimumDate}
+          cancelTextIOS="Annuler"
+          confirmTextIOS="Valider"
+          titleIOS="Choisir une date d'anniversaire"
+        />
 
           <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
           <Text style={styles.buttonValidate}>Valider</Text>
@@ -423,7 +459,8 @@ const styles = StyleSheet.create({
     overflow:'hidden', 
     borderRadius:5,
     marginTop:20,
-    paddingLeft:10
+    paddingLeft:10,
+    fontSize:14
   },
   modalDrop: {
     marginLeft:1,

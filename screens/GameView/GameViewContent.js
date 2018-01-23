@@ -33,16 +33,25 @@ class GameViewContent extends React.Component {
       fontAvenirNextLoaded:false,
       fontAvenirLoaded:false,
       gameDate:null,
-      latitude:null,
-      longitude:null,
+      latitude:0,
+      longitude:0,
       clubName:null,
       clubAddress:null,
       gameSurface:null,
-      gameCondition:null
+      gameCondition:null,
+      organiser:null,
+      gamePrice:null,
+      userFirstName:null,
+      userLastName:null,
+      userPicture:null,
+      userCurrentLevel:null,
+      userHighestLevel:null
     };
   }
 
-  async componentWillMount() {
+  componentWillMount() {
+
+   var user = Parse.User.current();
    moment.locale('fr');
    //var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
    var edit = this;
@@ -55,6 +64,17 @@ class GameViewContent extends React.Component {
         var gameSurface = game.get('surface');
         var gameCondition = game.get('condition');
         var gamePrice = game.get('price');
+        var organiser = game.get('organiser');
+
+        if (user.id == organiser) {
+
+        } else {
+          var userFirstName = user.get('firstName');
+          var userLastName = user.get('lastName')[0];
+          var userPicture = user.get('picture').url();
+          var userCurrentLevel = user.get('currentLevel');
+          var userHighestLevel = user.get('highestLevel');
+        }
         
         var queryClub = new Parse.Query("Club");
         queryClub.equalTo('objectId', game.get('club').id);
@@ -70,7 +90,14 @@ class GameViewContent extends React.Component {
               clubName:clubName,
               clubAddress:clubAddress,
               gameCondition:gameCondition,
-              gameSurface:gameSurface
+              gameSurface:gameSurface,
+              organiser:organiser,
+              gamePrice:gamePrice,
+              userFirstName:userFirstName,
+              userLastName:userLastName,
+              userPicture:userPicture,
+              userCurrentLevel:userCurrentLevel,
+              userHighestLevel:userHighestLevel,
             })
           }
         });
@@ -107,7 +134,6 @@ class GameViewContent extends React.Component {
   }
 
   render() {
-      console.log(this.state);
       const {latitude} = this.state;
       const {longitude} = this.state;
       const {gameDate} = this.state;
@@ -115,6 +141,8 @@ class GameViewContent extends React.Component {
       const {clubAddress} = this.state;
       const {gameCondition} = this.state;
       const {gameSurface} = this.state;
+      const {organiser} = this.state;
+      const user = Parse.User.current();
 
       if (gameCondition == 'outside') {
         var imageCondition = <Image style={{marginBottom:5}} source={require('../../assets/icons/Conditions/Exterior.imageset/pic.png')}/>;
@@ -141,6 +169,17 @@ class GameViewContent extends React.Component {
         var textSurface = 'Terre battue';
       }
 
+      if (user.id == organiser) {
+        var title = 'Participants';
+      } else {
+        var title = 'Créateur de la partie';
+        var userFirstName = this.state.userFirstName;
+        var userLastName = this.state.userLastName;
+        var userPicture = this.state.userPicture;
+        var userCurrentLevel = this.state.userCurrentLevel;
+        var userHighestLevel = this.state.userHighestLevel;
+      }
+
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
@@ -155,7 +194,10 @@ class GameViewContent extends React.Component {
          }
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'Avenir', paddingLeft:10}}> Le {moment(this.state.gameDate).format('LLLL')} </Text>
+          this.state.fontAvenirLoaded ? (<View style={{marginBottom:15}}>
+            <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> Le {moment(this.state.gameDate).format('LLLL')} </Text>
+             <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> Prix : {this.state.gamePrice} € </Text>
+            </View>
           ) : null 
          }
         
@@ -173,19 +215,25 @@ class GameViewContent extends React.Component {
          }
 
          <View style={{alignItems:'center', marginBottom:15}}>
-         <MapView
-         style={{width:300, height:150}}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        />
+           <MapView
+            style={{width:300, height:150}}
+            region={{
+              latitude: this.state.latitude,
+              longitude: this.state.longitude,
+              latitudeDelta:0.003,
+              longitudeDelta:0.003,
+            }}>
+              <MapView.Marker
+                coordinate={{
+                  latitude: this.state.latitude,
+                  longitude: this.state.longitude}}
+                image={require('../../assets/icons/AppSpecific/Pin.imageset/fill119.png')}
+              />
+           </MapView>
         </View>
 
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
           ) : null 
          }
 
@@ -202,9 +250,36 @@ class GameViewContent extends React.Component {
         </View>
 
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> Créateur de la partie </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> {title} </Text>
           ) : null 
          }
+
+         <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
+            <View style={{flexDirection:'row'}}>
+              <Image 
+              style={{width:30, height:30, borderRadius:15}} 
+              source={  ( this.state.userPicture!=null && { uri : this.state.userPicture } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
+              />
+              {
+              this.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', paddingTop:5, paddingLeft:10}}>
+                 <Text style={{fontFamily: 'AvenirNext'}}> {userFirstName} </Text>
+                 <Text style={{fontFamily: 'AvenirNext'}}> {userLastName}. </Text>
+                 <Text style={{fontFamily: 'AvenirNext'}}> (28 ans) </Text>
+               </View>
+              ) : null 
+             }
+            </View>
+            <View style={{flexDirection:'row'}}>
+             <Image style={{marginTop:8}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
+             {
+              this.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', paddingTop:5, paddingLeft:10}}>
+                 <Text style={{fontFamily: 'Avenir'}}> {userCurrentLevel} </Text>
+                 <Text style={{fontFamily: 'Avenir'}}> ({userHighestLevel}) </Text>
+               </View>
+              ) : null 
+             }
+            </View>
+        </View>
 
         
 

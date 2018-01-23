@@ -80,6 +80,7 @@ constructor(props) {
                 var filterStyle = users.get("filterStyle");
                 var filterFieldType = users.get("filterFieldType");
                 var picture = users.get("picture").url();
+                var birthday = users.get("birthday");
 
                 login.props.handleSubmit({
                   lastName:lastName,
@@ -90,7 +91,8 @@ constructor(props) {
                   highestLevel:highestLevel,
                   availability:availability,
                   userId:userId,
-                  picture: picture
+                  picture: picture,
+                  birthday:birthday
                 })
 
                 login.props.handleSubmitPreferences({
