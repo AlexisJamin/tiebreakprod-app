@@ -9,6 +9,8 @@ import { Parse } from 'parse/react-native';
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
+        console.log('value');
+        console.log(value);
         dispatch( {type: 'user', value: value} ) 
     },
         handleSubmitClub: function(value) { 
@@ -79,7 +81,11 @@ constructor(props) {
                 var filterGender = users.get("filterGender");
                 var filterStyle = users.get("filterStyle");
                 var filterFieldType = users.get("filterFieldType");
-                var picture = users.get("picture").url();
+                if (users.get("picture") != undefined) {
+                  var picture = users.get("picture").url();
+                } else {
+                  var picture = undefined;
+                }
                 var birthday = users.get("birthday");
 
                 login.props.handleSubmit({

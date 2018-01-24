@@ -10,6 +10,9 @@ import { Parse } from 'parse/react-native';
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
+import moment from 'moment';
+import 'moment/locale/fr';
+
 import ProfileViewContentClubs from './ProfileViewContentClubs';
 import ProfileViewContentClubsBullets from './ProfileViewContentClubsBullets';
 import ProfileViewContentDispo from './ProfileViewContentDispo';
@@ -58,7 +61,7 @@ constructor(props) {
   }
 
   async componentDidMount() {
-   
+
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
       'Avenir': require('../../assets/fonts/Avenir.ttf'),
@@ -358,6 +361,137 @@ constructor(props) {
 
   render() {
 
+    moment.locale('fr');
+    if (this.props.viewProfile.birthday != undefined) {
+      var age = moment().diff(this.props.viewProfile.birthday, 'years')+' ans';
+    } else {
+      var age = 'inc.';
+    }
+
+    if (this.props.viewProfile.currentLevel == undefined) {
+    var currentLevel = "inc.";
+  } else if (this.props.viewProfile.currentLevel == 0) {
+    var currentLevel = 'Débutant';
+  } else if (this.props.viewProfile.currentLevel == 1) {
+    var currentLevel = 'Intermédiaire';
+  } else if (this.props.viewProfile.currentLevel == 2) {
+    var currentLevel = 'Avancé';
+  } else if (this.props.viewProfile.currentLevel == 3) {
+    var currentLevel = '40';
+  } else if (this.props.viewProfile.currentLevel == 4) {
+    var currentLevel = '30/5';
+  } else if (this.props.viewProfile.currentLevel == 5) {
+    var currentLevel = '30/4';
+  } else if (this.props.viewProfile.currentLevel == 6) {
+    var currentLevel = '30/3';
+  } else if (this.props.viewProfile.currentLevel == 7) {
+    var currentLevel = '30/2';
+  } else if (this.props.viewProfile.currentLevel == 8) {
+    var currentLevel = '30/1';
+  } else if (this.props.viewProfile.currentLevel == 9) {
+    var currentLevel = '30';
+  } else if (this.props.viewProfile.currentLevel == 10) {
+    var currentLevel = '15/5';
+  } else if (this.props.viewProfile.currentLevel == 11) {
+    var currentLevel = '15/4';
+  } else if (this.props.viewProfile.currentLevel == 12) {
+    var currentLevel = '15/3';
+  } else if (this.props.viewProfile.currentLevel == 13) {
+    var currentLevel = '15/2';
+  } else if (this.props.viewProfile.currentLevel == 14) {
+    var currentLevel = '15/1';
+  } else if (this.props.viewProfile.currentLevel == 15) {
+    var currentLevel = '15';
+  } else if (this.props.viewProfile.currentLevel == 16) {
+    var currentLevel = '5/6';
+  } else if (this.props.viewProfile.currentLevel == 17) {
+    var currentLevel = '4/6';
+  } else if (this.props.viewProfile.currentLevel == 18) {
+    var currentLevel = '3/6';
+  } else if (this.props.viewProfile.currentLevel == 19) {
+    var currentLevel = '2/6';
+  } else if (this.props.viewProfile.currentLevel == 20) {
+    var currentLevel = '1/6';
+  } else if (this.props.viewProfile.currentLevel == 21) {
+    var currentLevel = '0';
+  } else if (this.props.viewProfile.currentLevel == 22) {
+    var currentLevel = '-2/6';
+  } else if (this.props.viewProfile.currentLevel == 23) {
+    var currentLevel = '-4/6';
+  } else if (this.props.viewProfile.currentLevel == 24) {
+    var currentLevel = '-15';
+  }
+
+  if (this.props.viewProfile.highestLevel == undefined) {
+    var highestLevel = "inc.";
+  } else if (this.props.viewProfile.highestLevel == 0) {
+    var highestLevel = 'Débutant';
+  } else if (this.props.viewProfile.highestLevel == 1) {
+    var highestLevel = 'Intermédiaire';
+  } else if (this.props.viewProfile.highestLevel == 2) {
+    var highestLevel = 'Avancé';
+  } else if (this.props.viewProfile.highestLevel == 3) {
+    var highestLevel = '40';
+  } else if (this.props.viewProfile.highestLevel == 4) {
+    var highestLevel = '30/5';
+  } else if (this.props.viewProfile.highestLevel == 5) {
+    var highestLevel = '30/4';
+  } else if (this.props.viewProfile.highestLevel == 6) {
+    var highestLevel = '30/3';
+  } else if (this.props.viewProfile.highestLevel == 7) {
+    var highestLevel = '30/2';
+  } else if (this.props.viewProfile.highestLevel == 8) {
+    var highestLevel = '30/1';
+  } else if (this.props.viewProfile.highestLevel == 9) {
+    var highestLevel = '30';
+  } else if (this.props.viewProfile.highestLevel == 10) {
+    var highestLevel = '15/5';
+  } else if (this.props.viewProfile.highestLevel == 11) {
+    var highestLevel = '15/4';
+  } else if (this.props.viewProfile.highestLevel == 12) {
+    var highestLevel = '15/3';
+  } else if (this.props.viewProfile.highestLevel == 13) {
+    var highestLevel = '15/2';
+  } else if (this.props.viewProfile.highestLevel == 14) {
+    var highestLevel = '15/1';
+  } else if (this.props.viewProfile.highestLevel == 15) {
+    var highestLevel = '15';
+  } else if (this.props.viewProfile.highestLevel == 16) {
+    var highestLevel = '5/6';
+  } else if (this.props.viewProfile.highestLevel == 17) {
+    var highestLevel = '4/6';
+  } else if (this.props.viewProfile.highestLevel == 18) {
+    var highestLevel = '3/6';
+  } else if (this.props.viewProfile.highestLevel == 19) {
+    var highestLevel = '2/6';
+  } else if (this.props.viewProfile.highestLevel == 20) {
+    var highestLevel = '1/6';
+  } else if (this.props.viewProfile.highestLevel == 21) {
+    var highestLevel = '0';
+  } else if (this.props.viewProfile.highestLevel == 22) {
+    var highestLevel = '-2/6';
+  } else if (this.props.viewProfile.highestLevel == 23) {
+    var highestLevel = '-4/6';
+  } else if (this.props.viewProfile.highestLevel == 24) {
+    var highestLevel = '-15';
+  }
+
+  if (this.props.viewProfile.gender == undefined) {
+    var gender = "inc.";
+  } else if (this.props.viewProfile.gender == 'male') {
+    var gender = 'Homme';
+  } else if (this.props.viewProfile.gender == 'female') {
+    var gender = 'Femme';
+  }
+
+  if (this.props.viewProfile.style == undefined) {
+    var style = "inc.";
+  } else if (this.props.viewProfile.style == 'right') {
+    var style = 'Droitier';
+  } else if (this.props.viewProfile.style == 'left') {
+    var style = 'Gaucher';
+  }
+
     var commonAvailabitities = [...this.props.viewProfile.availability];
     var commonAvailabititiesFiltered = [];
     
@@ -426,7 +560,8 @@ constructor(props) {
         <View>
 
           <View style={{
-            alignItems:'center'
+            alignItems:'center',
+            marginBottom:5
           }}>
           
                   {profileImage}
@@ -441,7 +576,7 @@ constructor(props) {
              ) : null 
             }
             {
-             this.state.fontAvenirLoaded ? (<Text style={styles.age}> (28 ans) </Text> 
+             this.state.fontAvenirLoaded ? (<Text style={styles.age}> ({age}) </Text> 
              ) : null 
             }
             </View>
@@ -470,21 +605,21 @@ constructor(props) {
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{this.props.viewProfile.currentLevel} ({this.props.viewProfile.highestLevel})</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{currentLevel} ({highestLevel})</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Style.imageset/shape.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.viewProfile.style}</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{style}</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Gender.imageset/group5.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.viewProfile.gender}</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{gender}</Text>) : null 
               }  
             </View>
 

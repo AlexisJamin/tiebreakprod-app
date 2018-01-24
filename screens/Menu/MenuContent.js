@@ -78,7 +78,7 @@ navigationCommunity(route, index) {
 
   render() {
 
-    if (this.props.user.picture!='')
+    if (this.props.user.picture!=undefined)
            {
            var profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
            } else {

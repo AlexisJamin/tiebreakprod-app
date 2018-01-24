@@ -30,9 +30,9 @@ class CommunityContent extends React.Component {
     this.onRefresh = this.onRefresh.bind(this);
     this.viewProfile = this.viewProfile.bind(this);
     this.state = {
-      data: null,
-      loading: true,
-      refreshing: false,
+      data:null,
+      loading:true,
+      refreshing:false,
       isFriend:false,
     };
   }
@@ -55,7 +55,6 @@ class CommunityContent extends React.Component {
     // User's location
     // Interested in locations near user.
     query.withinKilometers("geolocation", userGeoPoint, this.props.userPreferences.filterFieldType.range);
-    //query.near("geolocation", userGeoPoint);
     // Limit what could be a lot of points.
     query.limit(10);
     var userAvailability = this.props.user.availability;
@@ -263,6 +262,7 @@ class CommunityContent extends React.Component {
           var availability = user.get("availability");
           var picture = user.get("picture").url();
           var clubs = user.get("clubs");
+          var birthday = user.get("birthday");
           var id = user.id;
 
           view.props.handleSubmit({
@@ -279,7 +279,8 @@ class CommunityContent extends React.Component {
             friendRequestSent:false,
             friendRequestReceived:false,
             clubs: clubs,
-            id: id
+            id:id,
+            birthday:birthday
           })
     view.props.navigation.navigate("ProfileView");
         }

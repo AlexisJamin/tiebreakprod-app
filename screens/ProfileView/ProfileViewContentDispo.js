@@ -35,6 +35,22 @@ constructor() {
         hoursList.push(<ProfileViewContentDispoHours hours = {this.props.hours[i]} />)
         }
 
+        if (this.props.days == 'Mon') {
+          var days = 'Lun';
+        } else if (this.props.days == 'Tue') {
+          var days = 'Mar';
+        } else if (this.props.days == 'Wed') {
+          var days = 'Mer';
+        } else if (this.props.days == 'Thu') {
+          var days = 'Jeu';
+        } else if (this.props.days == 'Fri') {
+          var days = 'Ven';
+        } else if (this.props.days == 'Sat') {
+          var days = 'Sam';
+        } else if (this.props.days == 'Sun') {
+          var days = 'Dim';
+        }
+
 
     return (
 
@@ -48,7 +64,7 @@ constructor() {
 
                     <View style={{alignItems:'center', marginLeft:20}}>
                       <Image source={require('../../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', textAlign:'center', marginTop: 12}}>{this.props.days}</Text>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', textAlign:'center', marginTop: 12}}>{days}</Text>
                       </Image>
                     </View>
 

@@ -43,12 +43,11 @@ const styles = StyleSheet.create({
     borderColor:'rgb(42,129,82)', 
     borderRadius:3, 
     overflow:'hidden', 
-    paddingTop:5, 
-    paddingBottom: 5, 
+    paddingTop:6, 
     marginBottom:5,
-    marginRight: 10, 
-    color: 'white', 
-    backgroundColor: 'rgb(42,129,82)', 
+    marginRight:10, 
+    color:'white', 
+    backgroundColor:'rgb(42,129,82)', 
     textAlign:'center'
   }
 });

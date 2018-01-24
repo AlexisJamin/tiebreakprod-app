@@ -213,6 +213,7 @@ class MessengerContent extends React.Component {
           var availability = user.get("availability");
           var picture = user.get("picture").url();
           var clubs = user.get("clubs");
+          var birthday = user.get("birthday");
           var id = user.id;
 
           view.props.handleSubmit({
@@ -229,7 +230,8 @@ class MessengerContent extends React.Component {
             friendRequestSent:false,
             friendRequestReceived:false,
             clubs:clubs,
-            id:id
+            id:id,
+            birthday:birthday
           })
         view.refs.modal.close();
         view.props.navigation.navigate("ProfileView");

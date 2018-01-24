@@ -248,6 +248,7 @@ class CommunityFriends extends React.Component {
           var availability = user.get("availability");
           var picture = user.get("picture").url();
           var clubs = user.get("clubs");
+          var birthday = user.get("birthday");
           var id = user.id;
 
           view.props.handleSubmit({
@@ -263,8 +264,9 @@ class CommunityFriends extends React.Component {
             fromChat:false,
             friendRequestSent:false,
             friendRequestReceived:false,
-            clubs: clubs,
-            id: id
+            clubs:clubs,
+            id:id,
+            birthday:birthday
           })
     view.props.navigation.navigate("ProfileView");
         }

@@ -6,6 +6,9 @@ import Svg,{
 } from 'react-native-svg';
 import { connect } from 'react-redux';
 
+import moment from 'moment';
+import 'moment/locale/fr';
+
 import ProfileContentClubs from './ProfileContentClubs';
 import ProfileContentClubsBullets from './ProfileContentClubsBullets';
 import ProfileContentDispo from './ProfileContentDispo';
@@ -26,6 +29,7 @@ constructor(props) {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false
     };
+    console.log(this.props.user);
   }
 
   async componentDidMount() {
@@ -42,6 +46,14 @@ constructor(props) {
 
 
   render() {
+    moment.locale('fr');
+    if (this.props.user.birthday != undefined) {
+      var age = moment().diff(this.props.user.birthday, 'years')+' ans';
+    } else {
+      var age = 'à compléter';
+    }
+    
+
     if (this.props.userClub.length == 0) {
     var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
     } else {
@@ -75,12 +87,136 @@ constructor(props) {
     }
   }
   
-  if (this.props.user.picture!='')
+  if (this.props.user.picture!=undefined)
            {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
            } else {
              profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
              }
+
+  if (this.props.user.currentLevel == undefined) {
+    var currentLevel = "à compléter";
+  } else if (this.props.user.currentLevel == 0) {
+    var currentLevel = 'Débutant';
+  } else if (this.props.user.currentLevel == 1) {
+    var currentLevel = 'Intermédiaire';
+  } else if (this.props.user.currentLevel == 2) {
+    var currentLevel = 'Avancé';
+  } else if (this.props.user.currentLevel == 3) {
+    var currentLevel = '40';
+  } else if (this.props.user.currentLevel == 4) {
+    var currentLevel = '30/5';
+  } else if (this.props.user.currentLevel == 5) {
+    var currentLevel = '30/4';
+  } else if (this.props.user.currentLevel == 6) {
+    var currentLevel = '30/3';
+  } else if (this.props.user.currentLevel == 7) {
+    var currentLevel = '30/2';
+  } else if (this.props.user.currentLevel == 8) {
+    var currentLevel = '30/1';
+  } else if (this.props.user.currentLevel == 9) {
+    var currentLevel = '30';
+  } else if (this.props.user.currentLevel == 10) {
+    var currentLevel = '15/5';
+  } else if (this.props.user.currentLevel == 11) {
+    var currentLevel = '15/4';
+  } else if (this.props.user.currentLevel == 12) {
+    var currentLevel = '15/3';
+  } else if (this.props.user.currentLevel == 13) {
+    var currentLevel = '15/2';
+  } else if (this.props.user.currentLevel == 14) {
+    var currentLevel = '15/1';
+  } else if (this.props.user.currentLevel == 15) {
+    var currentLevel = '15';
+  } else if (this.props.user.currentLevel == 16) {
+    var currentLevel = '5/6';
+  } else if (this.props.user.currentLevel == 17) {
+    var currentLevel = '4/6';
+  } else if (this.props.user.currentLevel == 18) {
+    var currentLevel = '3/6';
+  } else if (this.props.user.currentLevel == 19) {
+    var currentLevel = '2/6';
+  } else if (this.props.user.currentLevel == 20) {
+    var currentLevel = '1/6';
+  } else if (this.props.user.currentLevel == 21) {
+    var currentLevel = '0';
+  } else if (this.props.user.currentLevel == 22) {
+    var currentLevel = '-2/6';
+  } else if (this.props.user.currentLevel == 23) {
+    var currentLevel = '-4/6';
+  } else if (this.props.user.currentLevel == 24) {
+    var currentLevel = '-15';
+  }
+
+  if (this.props.user.highestLevel == undefined) {
+    var highestLevel = "à compléter";
+  } else if (this.props.user.highestLevel == 0) {
+    var highestLevel = 'Débutant';
+  } else if (this.props.user.highestLevel == 1) {
+    var highestLevel = 'Intermédiaire';
+  } else if (this.props.user.highestLevel == 2) {
+    var highestLevel = 'Avancé';
+  } else if (this.props.user.highestLevel == 3) {
+    var highestLevel = '40';
+  } else if (this.props.user.highestLevel == 4) {
+    var highestLevel = '30/5';
+  } else if (this.props.user.highestLevel == 5) {
+    var highestLevel = '30/4';
+  } else if (this.props.user.highestLevel == 6) {
+    var highestLevel = '30/3';
+  } else if (this.props.user.highestLevel == 7) {
+    var highestLevel = '30/2';
+  } else if (this.props.user.highestLevel == 8) {
+    var highestLevel = '30/1';
+  } else if (this.props.user.highestLevel == 9) {
+    var highestLevel = '30';
+  } else if (this.props.user.highestLevel == 10) {
+    var highestLevel = '15/5';
+  } else if (this.props.user.highestLevel == 11) {
+    var highestLevel = '15/4';
+  } else if (this.props.user.highestLevel == 12) {
+    var highestLevel = '15/3';
+  } else if (this.props.user.highestLevel == 13) {
+    var highestLevel = '15/2';
+  } else if (this.props.user.highestLevel == 14) {
+    var highestLevel = '15/1';
+  } else if (this.props.user.highestLevel == 15) {
+    var highestLevel = '15';
+  } else if (this.props.user.highestLevel == 16) {
+    var highestLevel = '5/6';
+  } else if (this.props.user.highestLevel == 17) {
+    var highestLevel = '4/6';
+  } else if (this.props.user.highestLevel == 18) {
+    var highestLevel = '3/6';
+  } else if (this.props.user.highestLevel == 19) {
+    var highestLevel = '2/6';
+  } else if (this.props.user.highestLevel == 20) {
+    var highestLevel = '1/6';
+  } else if (this.props.user.highestLevel == 21) {
+    var highestLevel = '0';
+  } else if (this.props.user.highestLevel == 22) {
+    var highestLevel = '-2/6';
+  } else if (this.props.user.highestLevel == 23) {
+    var highestLevel = '-4/6';
+  } else if (this.props.user.highestLevel == 24) {
+    var highestLevel = '-15';
+  }
+
+  if (this.props.user.gender == undefined) {
+    var gender = "à compléter";
+  } else if (this.props.user.gender == 'male') {
+    var gender = 'Homme';
+  } else if (this.props.user.gender == 'female') {
+    var gender = 'Femme';
+  }
+
+  if (this.props.user.style == undefined) {
+    var style = "à compléter";
+  } else if (this.props.user.style == 'right') {
+    var style = 'Droitier';
+  } else if (this.props.user.style == 'left') {
+    var style = 'Gaucher';
+  }
 
     return (
 
@@ -108,7 +244,7 @@ constructor(props) {
              ) : null 
             }
             {
-             this.state.fontAvenirLoaded ? (<Text style={styles.age}> (28 ans) </Text> 
+             this.state.fontAvenirLoaded ? (<Text style={styles.age}> ({age}) </Text> 
              ) : null 
             }
             </View>
@@ -140,21 +276,21 @@ constructor(props) {
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{this.props.user.currentLevel} ({this.props.user.highestLevel})</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.level}>{currentLevel} ({highestLevel})</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Style.imageset/shape.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.user.style}</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{style}</Text>) : null 
               } 
             </View>
 
             <View style={{alignItems: 'center'}}>
               <Image source={require('../../assets/icons/Profile/Gender.imageset/group5.png')} />
               {
-              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{this.props.user.gender}</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.gender}>{gender}</Text>) : null 
               }  
             </View>
 
@@ -252,10 +388,11 @@ constructor(props) {
 
 
           <View style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'space-around',
-          top: 10
+          flex:1,
+          flexDirection:'column',
+          justifyContent:'space-around',
+          marginTop:10,
+          marginBottom:10
           }}>
                     {newUserDispo}
                     {dayList}

@@ -280,6 +280,7 @@ class Notifications extends React.Component {
               var availability = user.get("availability");
               var picture = user.get("picture").url();
               var clubs = user.get("clubs");
+              var birthday = user.get("birthday");
               var id = user.id;
 
               view.props.handleSubmit({
@@ -292,10 +293,11 @@ class Notifications extends React.Component {
                 availability:availability,
                 picture: picture,
                 isFriend: false,
-                friendRequestSent: false,
+                friendRequestSent:false,
                 friendRequestReceived:true,
-                clubs: clubs,
-                id: id
+                clubs:clubs,
+                id:id,
+                birthday:birthday
               })
             view.props.navigation.navigate("ProfileView");
             }
@@ -317,6 +319,7 @@ class Notifications extends React.Component {
               var availability = user.get("availability");
               var picture = user.get("picture").url();
               var clubs = user.get("clubs");
+              var birthday = user.get("birthday");
               var id = user.id;
 
               view.props.handleSubmit({
@@ -332,8 +335,9 @@ class Notifications extends React.Component {
                 isFriend:true,
                 friendRequestSent:false,
                 friendRequestReceived:false,
-                clubs: clubs,
-                id: id
+                clubs:clubs,
+                id:id,
+                birthday:birthday
               })
             view.props.navigation.navigate("ProfileView");
             }

@@ -82,7 +82,7 @@ class SignIn extends React.Component {
 
   user.set("geolocation", point);
   user.set("filterCondition", "indifferent");
-  user.set("filterAge", {"to":70,"from":15});
+  user.set("filterAge", {"to":70,"from":18});
   user.set("filterLevel", {"to":24,"from":0});
   user.set("filterGender", "indifferent");
   user.set("filterStyle", "indifferent");
@@ -98,18 +98,18 @@ class SignIn extends React.Component {
       signin.props.handleSubmit({
       lastName:signin.state.lastName,
       firstName:signin.state.firstName,
-      style:'à compléter',
-      gender:'à compléter',
-      currentLevel:'à compléter',
-      highestLevel:'à compléter',
+      style:undefined,
+      gender:undefined,
+      currentLevel:undefined,
+      highestLevel:undefined,
       availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
       userId:userId,
-      picture: ''
+      picture:undefined
     })
 
       signin.props.handleSubmitPreferences({
       filterCondition:"indifferent",
-      filterAge:{"to":70,"from":15},
+      filterAge:{"to":70,"from":18},
       filterLevel:{"to":24,"from":0},
       filterGender:"indifferent",
       filterStyle:"indifferent",

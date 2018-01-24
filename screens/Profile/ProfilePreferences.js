@@ -156,6 +156,144 @@ constructor(props) {
     let { filterStyle } = this.state;
     let { range } = this.state;
 
+    if (this.state.filterLevel[0] == 0) {
+    var niveauMin = 'Débutant';
+  } else if (this.state.filterLevel[0] == 1) {
+    var niveauMin = 'Intermédiaire';
+  } else if (this.state.filterLevel[0] == 2) {
+    var niveauMin = 'Avancé';
+  } else if (this.state.filterLevel[0] == 3) {
+    var niveauMin = '40';
+  } else if (this.state.filterLevel[0] == 4) {
+    var niveauMin = '30/5';
+  } else if (this.state.filterLevel[0] == 5) {
+    var niveauMin = '30/4';
+  } else if (this.state.filterLevel[0] == 6) {
+    var niveauMin = '30/3';
+  } else if (this.state.filterLevel[0] == 7) {
+    var niveauMin = '30/2';
+  } else if (this.state.filterLevel[0] == 8) {
+    var niveauMin = '30/1';
+  } else if (this.state.filterLevel[0] == 9) {
+    var niveauMin = '30';
+  } else if (this.state.filterLevel[0] == 10) {
+    var niveauMin = '15/5';
+  } else if (this.state.filterLevel[0] == 11) {
+    var niveauMin = '15/4';
+  } else if (this.state.filterLevel[0] == 12) {
+    var niveauMin = '15/3';
+  } else if (this.state.filterLevel[0] == 13) {
+    var niveauMin = '15/2';
+  } else if (this.state.filterLevel[0] == 14) {
+    var niveauMin = '15/1';
+  } else if (this.state.filterLevel[0] == 15) {
+    var niveauMin = '15';
+  } else if (this.state.filterLevel[0] == 16) {
+    var niveauMin = '5/6';
+  } else if (this.state.filterLevel[0] == 17) {
+    var niveauMin = '4/6';
+  } else if (this.state.filterLevel[0] == 18) {
+    var niveauMin = '3/6';
+  } else if (this.state.filterLevel[0] == 19) {
+    var niveauMin = '2/6';
+  } else if (this.state.filterLevel[0] == 20) {
+    var niveauMin = '1/6';
+  } else if (this.state.filterLevel[0] == 21) {
+    var niveauMin = '0';
+  } else if (this.state.filterLevel[0] == 22) {
+    var niveauMin = '-2/6';
+  } else if (this.state.filterLevel[0] == 23) {
+    var niveauMin = '-4/6';
+  } else if (this.state.filterLevel[0] == 24) {
+    var niveauMin = '-15';
+  }
+
+  if (this.state.filterLevel[1] == 0) {
+    var niveauMax = 'Débutant';
+  } else if (this.state.filterLevel[1] == 1) {
+    var niveauMax = 'Intermédiaire';
+  } else if (this.state.filterLevel[1] == 2) {
+    var niveauMax = 'Avancé';
+  } else if (this.state.filterLevel[1] == 3) {
+    var niveauMax = '40';
+  } else if (this.state.filterLevel[1] == 4) {
+    var niveauMax = '30/5';
+  } else if (this.state.filterLevel[1] == 5) {
+    var niveauMax = '30/4';
+  } else if (this.state.filterLevel[1] == 6) {
+    var niveauMax = '30/3';
+  } else if (this.state.filterLevel[1] == 7) {
+    var niveauMax = '30/2';
+  } else if (this.state.filterLevel[1] == 8) {
+    var niveauMax = '30/1';
+  } else if (this.state.filterLevel[1] == 9) {
+    var niveauMax = '30';
+  } else if (this.state.filterLevel[1] == 10) {
+    var niveauMax = '15/5';
+  } else if (this.state.filterLevel[1] == 11) {
+    var niveauMax = '15/4';
+  } else if (this.state.filterLevel[1] == 12) {
+    var niveauMax = '15/3';
+  } else if (this.state.filterLevel[1] == 13) {
+    var niveauMax = '15/2';
+  } else if (this.state.filterLevel[1] == 14) {
+    var niveauMax = '15/1';
+  } else if (this.state.filterLevel[1] == 15) {
+    var niveauMax = '15';
+  } else if (this.state.filterLevel[1] == 16) {
+    var niveauMax = '5/6';
+  } else if (this.state.filterLevel[1] == 17) {
+    var niveauMax = '4/6';
+  } else if (this.state.filterLevel[1] == 18) {
+    var niveauMax = '3/6';
+  } else if (this.state.filterLevel[1] == 19) {
+    var niveauMax = '2/6';
+  } else if (this.state.filterLevel[1] == 20) {
+    var niveauMax = '1/6';
+  } else if (this.state.filterLevel[1] == 21) {
+    var niveauMax = '0';
+  } else if (this.state.filterLevel[1] == 22) {
+    var niveauMax = '-2/6';
+  } else if (this.state.filterLevel[1] == 23) {
+    var niveauMax = '-4/6';
+  } else if (this.state.filterLevel[1] == 24) {
+    var niveauMax = '-15';
+  }
+
+    /*{
+      this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', marginBottom:30, paddingLeft:10}}> CALENDRIER </Text>
+      ) : null 
+     }
+
+     <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
+    {
+      this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', width:200}}>Synchroniser le calendrier du téléphone avec Tie Break </Text> 
+      ) : null 
+     }
+
+     <Switch
+     onTintColor='rgb(42,129,82)'
+     value={true}
+     />
+     </View>
+
+     {
+      this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'AvenirNext', textAlign:'left', marginBottom:30, paddingLeft:10}}> GEOLOCALISATION </Text>
+      ) : null 
+     }
+
+     <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
+    {
+      this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'Avenir', width:200}}>Autoriser Tie Break (nécessaire pour trouver des amis / parties / terrains ) </Text> 
+      ) : null 
+     }
+
+     <Switch
+     onTintColor='rgb(42,129,82)'
+     value={true}
+     />
+     </View> */
+
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
@@ -213,7 +351,7 @@ constructor(props) {
 
         <View style={{flexDirection:'row', justifyContent: 'center', marginBottom:30, marginTop:30}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau min : {this.state.filterLevel[0]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau min : {niveauMin} </Text> 
             ) : null 
          }
         {
@@ -221,7 +359,7 @@ constructor(props) {
             ) : null 
          }
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau max : {this.state.filterLevel[1]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau max : {niveauMax} </Text> 
             ) : null 
          }
         </View>
@@ -272,7 +410,7 @@ constructor(props) {
             values={[this.state.filterAge[0], this.state.filterAge[1]]}
             sliderLength={320}
             onValuesChange={(values) => this.setState({filterAge:values})}
-            min={15}
+            min={18}
             max={70}
             step={1}
             selectedStyle={{
@@ -292,40 +430,6 @@ constructor(props) {
           selectedTextStyle={styles.subtitle}
           containerStyle={styles.container}
           />
-
-          {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', marginBottom:30, paddingLeft:10}}> CALENDRIER </Text>
-          ) : null 
-         }
-
-         <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
-        {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', width:200}}>Synchroniser le calendrier du téléphone avec Tie Break </Text> 
-          ) : null 
-         }
-
-         <Switch
-         onTintColor='rgb(42,129,82)'
-         value={true}
-         />
-         </View>
-
-         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'AvenirNext', textAlign:'left', marginBottom:30, paddingLeft:10}}> GEOLOCALISATION </Text>
-          ) : null 
-         }
-
-         <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
-        {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'Avenir', width:200}}>Autoriser Tie Break (nécessaire pour trouver des amis / parties / terrains ) </Text> 
-          ) : null 
-         }
-
-         <Switch
-         onTintColor='rgb(42,129,82)'
-         value={true}
-         />
-         </View>
 
           </View>
 
