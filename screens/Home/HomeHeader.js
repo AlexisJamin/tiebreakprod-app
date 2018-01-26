@@ -3,13 +3,13 @@ import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-n
 import { Font } from 'expo';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
+import IconBadge from 'react-native-icon-badge';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 function mapStateToProps(store) {
-
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button, updateNotification: store.updateNotification }
 };
 
 function mapDispatchToProps(dispatch) {
@@ -25,32 +25,33 @@ class HomeHeader extends Component {
 	constructor() {
 		super();
 		this.state = {
-      fontLoaded:false
+      fontLoaded:false,
+      badgeCount:0
     };
 	}
+
+  componentWillReceiveProps(props) {
+    this.setState({badgeCount:props.updateNotification.notification})
+  }
+
+  componentWillMount() {
+    var edit = this;
+    var query = new Parse.Query("Notification");
+    query.equalTo('toUser', Parse.User.current());
+    query.equalTo('seen', false);
+    query.find({
+      success: function(notification) {
+        console.log(notification.length);
+        edit.setState({badgeCount:notification.length})
+      }
+    });
+  }
 
 	async componentDidMount() {
     await Font.loadAsync({
       'SevenOneEightUltra': require('../../assets/fonts/SevenOneEight-Ultra.ttf'),
     });
     this.setState({ fontLoaded:true });
-
-    var query = new Parse.Query("Notification");
-    var edit = this;
-    query.equalTo('toUser', Parse.User.current()); 
-    var subscription = query.subscribe();
-
-    subscription.on('open', () => {
-     console.log('subscription opened');
-    });
-
-    subscription.on('create', (notification) => {
-     console.log('notification created');
-    });
-
-    subscription.on('update', (notification) => {
-      console.log('notification updated');
-    });
   }
 
   navigationRoute(route, index) {
@@ -77,15 +78,36 @@ class HomeHeader extends Component {
         top:40
         }}>
 
-       		<TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.navigate('Menu')}>
+       		<TouchableWithoutFeedback style={{padding:50}} onPress={() => this.props.navigation.navigate('Menu')}>
           <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
           </TouchableWithoutFeedback>
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }
-       <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationRoute('Chat',0)}>
-       <Image source={require('../../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
-       </TouchableWithoutFeedback>
+       
+           <IconBadge
+            MainElement={
+              <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationRoute('Chat',0)}>
+              <Image source={require('../../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
+              </TouchableWithoutFeedback>
+            }
+            BadgeElement={
+              <Text style={{color:'#FFFFFF', fontSize:10, fontWeight:'bold'}}>{this.state.badgeCount}</Text>
+            }
+            IconBadgeStyle={
+              {width:22,
+              height:22,
+              borderRadius:22,
+              minWidth:22,
+              top:-15,
+              right:-15,
+              backgroundColor:'rgb(200,90,24)',
+              borderWidth:2,
+              borderColor:'white'}
+            }
+            Hidden={this.state.badgeCount==0}
+            />
+      
        
        </View>
        
@@ -99,11 +121,11 @@ export default connect(mapStateToProps, mapDispatchToProps) (HomeHeader);
 
 const styles = StyleSheet.create({
   title: {
-    color: 'white',
-    backgroundColor: 'rgba(0,0,0,0)',
-    fontFamily: 'SevenOneEightUltra',
-    fontSize: 15,
-    top: 3,
+    color:'white',
+    backgroundColor:'rgba(0,0,0,0)',
+    fontFamily:'SevenOneEightUltra',
+    fontSize:15,
+    top:3,
     textAlign:'center'
   }
 });

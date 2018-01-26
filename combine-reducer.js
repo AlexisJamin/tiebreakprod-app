@@ -7,5 +7,6 @@ import button from './button-reducer';
 import viewProfile from './viewProfile-reducer';
 import chat from './chat-reducer';
 import game from './game-reducer';
+import updateNotification from './updateNotification-reducer';
 
-export default combineReducers({user, userClub, userPreferences, button, viewProfile, chat, game});
+export default combineReducers({user, userClub, userPreferences, button, viewProfile, chat, game, updateNotification});

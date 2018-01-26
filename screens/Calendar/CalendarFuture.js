@@ -1,86 +1,114 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput } from 'react-native'
-import { List, ListItem } from 'react-native-elements'
+import React from 'react';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
+import { List, ListItem } from 'react-native-elements';
+import { Parse } from 'parse/react-native';
+import { connect } from 'react-redux';
 
+Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
-const data = [
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Amy Farha',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    dispo: '5',
-    geo: '2',
-    level: '15/2',
-    bestLevel: '15/1'
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    dispo: '3',
-    geo: '3',
-    level: 'Intermédiaire',
-    bestLevel: '15/1'
-  },
-]
+import moment from 'moment';
+import 'moment/locale/fr';
 
+function mapDispatchToProps(dispatch) {
+  return {
+      handleSubmitGame: function(value) { 
+          dispatch( {type: 'game', value: value} ) 
+      }
+  }
+};
 
-
-export default class CalendarFuture extends React.Component {
+class CalendarFuture extends React.Component {
 
   constructor(props) {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
+    this.viewGame = this.viewGame.bind(this);
     this.state = {
-      data: data,
+      data: [],
+      loading:true,
+      refreshing:false
     };
+  }
+
+  componentDidMount() {
+    var dataMerge = [];
+    var edit = this;
+    var date = new Date();
+    var user = Parse.User.current();
+    var query1 = new Parse.Query("Game");
+    query1.equalTo('organiser', user);
+    query1.greaterThan('date', date); 
+    query1.find({
+      success: function(game) {
+        if (game.length != 0) {
+          var gameCopy = [];
+          for (var i = 0; i < game.length; i++) {
+            gameCopy.push(JSON.parse(JSON.stringify(game[i])));
+          }
+
+          for (var i = 0; i < gameCopy.length; i++) {
+            if (gameCopy[i].partner == undefined) {
+              var partnerParam = {player:'en attente'};
+              Object.assign(gameCopy[i], partnerParam);
+              dataMerge.push(gameCopy[i]);
+              edit.setState({loading:false, data:dataMerge})
+            } else {
+              
+              var query = new Parse.Query("User");
+
+              (function(query, gameCopy, i, edit) { 
+              query.equalTo('objectId', gameCopy[i].partner.objectId); 
+              query.first({
+                success: function(partner) {
+                  var firstName = partner.get('firstName');
+                  var partnerParam = {player:firstName};
+                  Object.assign(gameCopy[i], partnerParam);
+                  dataMerge.push(gameCopy[i]);
+                  edit.setState({loading:false, data:dataMerge})
+                }
+              })
+              })(query, gameCopy, i, edit);
+            }
+          } 
+        } else {edit.setState({loading:false})}
+      }
+    });
+
+    var query2 = new Parse.Query("Game");
+    query2.greaterThan('date', date); 
+    query2.equalTo('partner', user); 
+    query2.find({
+      success: function(game) {
+        if (game.length != 0) {
+          var gameCopy = [];
+          for (var i = 0; i < game.length; i++) {
+            gameCopy.push(JSON.parse(JSON.stringify(game[i])));
+          }
+          for (var i = 0; i < gameCopy.length; i++) {
+              
+              var query = new Parse.Query("User");
+              
+              (function(query, gameCopy, i, edit) { 
+              query.equalTo('objectId', gameCopy[i].organiser.objectId); 
+              query.first({
+                success: function(partner) {
+                  var firstName = partner.get('firstName');
+                  var partnerParam = {player:firstName};
+                  Object.assign(gameCopy[i], partnerParam);
+                  dataMerge.push(gameCopy[i]);
+                  edit.setState({loading:false, data:dataMerge})
+                }
+              })
+              })(query, gameCopy, i, edit);
+
+            }
+        } else {edit.setState({loading:false})}
+      }
+    }); 
   }
 
   renderSeparator() {
@@ -110,6 +138,107 @@ export default class CalendarFuture extends React.Component {
     );
   };
 
+  renderEmpty() {
+    if (this.state.loading) return null;
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
+        <Text style={{marginTop:10}}> Aucune partie à venir</Text>
+      </View>
+    );
+  }
+
+  viewGame(gameId) {
+    this.props.handleSubmitGame({
+      gameId:gameId,
+    })
+    this.props.navigation.navigate("GameView");
+  }
+
+  onRefresh() {
+    console.log('refresh');
+    this.setState({refreshing:true, data:[]});
+
+    var dataMerge = [];
+    var edit = this;
+    var date = new Date();
+    var user = Parse.User.current();
+    var query1 = new Parse.Query("Game");
+    query1.equalTo('organiser', user);
+    query1.greaterThan('date', date); 
+    query1.find({
+      success: function(game) {
+        if (game.length != 0) {
+          var gameCopy = [];
+          for (var i = 0; i < game.length; i++) {
+            gameCopy.push(JSON.parse(JSON.stringify(game[i])));
+          }
+
+          for (var i = 0; i < gameCopy.length; i++) {
+            if (gameCopy[i].partner == undefined) {
+              var partnerParam = {player:'en attente'};
+              Object.assign(gameCopy[i], partnerParam);
+              dataMerge.push(gameCopy[i]);
+              edit.setState({refreshing:false, data:dataMerge})
+            } else {
+              
+              var query = new Parse.Query("User");
+
+              (function(query, gameCopy, i, edit) { 
+              query.equalTo('objectId', gameCopy[i].partner.objectId); 
+              query.first({
+                success: function(partner) {
+                  var firstName = partner.get('firstName');
+                  var partnerParam = {player:firstName};
+                  Object.assign(gameCopy[i], partnerParam);
+                  dataMerge.push(gameCopy[i]);
+                  edit.setState({refreshing:false, data:dataMerge})
+                }
+              })
+              })(query, gameCopy, i, edit);
+            }
+          } 
+        } else {edit.setState({refreshing:false})}
+      }
+    });
+
+    var query2 = new Parse.Query("Game");
+    query2.greaterThan('date', date); 
+    query2.equalTo('partner', user); 
+    query2.find({
+      success: function(game) {
+        if (game.length != 0) {
+          var gameCopy = [];
+          for (var i = 0; i < game.length; i++) {
+            gameCopy.push(JSON.parse(JSON.stringify(game[i])));
+          }
+          for (var i = 0; i < gameCopy.length; i++) {
+              
+              var query = new Parse.Query("User");
+              
+              (function(query, gameCopy, i, edit) { 
+              query.equalTo('objectId', gameCopy[i].organiser.objectId); 
+              query.first({
+                success: function(partner) {
+                  var firstName = partner.get('firstName');
+                  var partnerParam = {player:firstName};
+                  Object.assign(gameCopy[i], partnerParam);
+                  dataMerge.push(gameCopy[i]);
+                  edit.setState({refreshing:false, data:dataMerge})
+                }
+              })
+              })(query, gameCopy, i, edit);
+
+            }
+        } else {edit.setState({refreshing:false})}
+      }
+    }); 
+  }
 
 
 render () {
@@ -122,41 +251,33 @@ render () {
    >
       <FlatList
         data={this.state.data}
-        keyExtractor={item => item.name}
+        keyExtractor={item => item.objectId}
         ItemSeparatorComponent={this.renderSeparator}
         ListFooterComponent={this.renderFooter}
+        ListEmptyComponent={this.renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+        }
         renderItem={({ item }) => (
           <ListItem
-          avatarStyle={{width:50, height:50, borderRadius:25, borderWidth:1, borderColor:'white'}}
-          avatarContainerStyle={{top:12, marginLeft:10}}
-          titleContainerStyle={{marginLeft:20}}
-          containerStyle={{ borderBottomWidth: 0, height:90, justifyContent: 'center' }}
-          subtitleContainerStyle={{marginLeft:20, width:300}}
-          rightTitleNumberOfLines={3}
-          hideChevron='true'
-          avatar={{uri:item.avatar_url}}
-          title={
-            <View style={styles.titleView}>
-            <Text style={styles.ratingText}>{item.name}</Text>
-            </View>
-          }
+          avatarStyle={{width:40, height:40, borderRadius:20, borderWidth:1, borderColor:'white', overflow:'hidden', backgroundColor:'white'}}
+          avatarContainerStyle={{width:40, height:40, marginTop:7}}
+          avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
+          titleContainerStyle={{marginLeft:30}}
+          containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
+          subtitleContainerStyle={{marginLeft:30, width:300}}
+          avatar={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')}
+          title={<Text style={{fontSize:14}}>Le {moment(item.date.iso).format('LLLL')}</Text>}
           subtitle={
-            <View style={styles.subtitleView}>
-            <Text style={styles.ratingText}>{item.dispo} disponibilités en commun</Text>
-            <Text style={styles.ratingText}>{item.geo} km</Text>
+            <View>
+            <Text style={{fontSize:12, paddingTop:2}}>Club: {item.club.name}</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>Partenaire: {item.player} </Text>
             </View>
           }
-          rightTitle={
-            <View style={{
-              alignItems:'center',
-              top:12,
-              width:85,
-              height:40}}>
-              <Image source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} style={styles.ratingImage}/>
-                <Text style={styles.ratingLevel}>{item.level}</Text>
-                <Text style={styles.ratingLevel}>({item.bestLevel})</Text>
-            </View>
-          }
+          onPress={()=>{this.viewGame(item.objectId)}}
           />
         )}
       />
@@ -169,42 +290,4 @@ render () {
   }
 }
 
-styles = StyleSheet.create({
-  titleView: {
-    flexDirection: 'row',
-    paddingLeft: 10,
-    paddingTop: 5
-  },
-  searchBar: {
-  paddingLeft: 30,
-  fontSize: 16,
-  maxHeight: 50,
-  flex: .1,
-  borderWidth: 9,
-  borderColor: '#E4E4E4',
-},
-  subtitleView: {
-    flexDirection: 'column',
-    paddingLeft: 10,
-  },
-  imageView: {
-    width:65,
-    height:40,
-  },
-  ratingImage: {
-    height: 15,
-    width: 15,
-  },
-  titleText: {
-    paddingLeft: 10,
-    color: 'black'
-  },
-  ratingText: {
-    paddingLeft: 10,
-    color: 'black'
-  },
-  ratingLevel: {
-    color: 'black',
-    fontSize:'10'
-  }
-})
+export default connect(null, mapDispatchToProps) (CalendarFuture);

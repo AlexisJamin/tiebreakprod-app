@@ -135,8 +135,8 @@ constructor(props) {
           Parse.Cloud.run("createNotification", { 
             "userId": add.props.viewProfile.id,
             "message": "Souhaite devenir votre ami(e)",
-            "relationId": relation.id,
-            "type": 0,
+            "relationId":relation.id,
+            "type":0,
              })
           add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
@@ -256,10 +256,10 @@ constructor(props) {
         relation.save();
 
         Parse.Cloud.run("createNotification", { 
-            "userId": add.props.viewProfile.id,
-            "message": "A refusé votre demande d’amitié",
-            "relationId": relation.id,
-            "type": 2,
+            "userId":add.props.viewProfile.id,
+            "message":"A refusé votre demande d’amitié",
+            "relationId":relation.id,
+            "type":2,
              })
 
         add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:false, friendRequestRefused:true})

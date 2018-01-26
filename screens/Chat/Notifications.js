@@ -21,6 +21,9 @@ function mapDispatchToProps(dispatch) {
       },
       handleSubmitGame: function(value) { 
           dispatch( {type: 'game', value: value} ) 
+      },
+      handleSubmitUpdateNotification: function(value) { 
+          dispatch( {type: 'update', value: value} ) 
       }
   }
 };
@@ -38,6 +41,7 @@ class Notifications extends React.Component {
       data: null,
       loading: true,
       refreshing: false,
+      notification:null
     };
   }
 
@@ -47,10 +51,9 @@ class Notifications extends React.Component {
     var edit = this;
     query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
     query.descending("updatedAt");
-    query.limit(1);
+    query.limit(10);
     query.find({
       success: function(Notification) {
-        console.log(Notification);
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         if (Notification.length != 0) {
           var NotificationCopy = [];
@@ -101,6 +104,18 @@ class Notifications extends React.Component {
       },
       error: function(e) {
         console.log(e);
+      }
+    });
+
+    var query = new Parse.Query("Notification");
+    query.equalTo('toUser', Parse.User.current());
+    query.equalTo('seen', false);
+    query.find({
+      success: function(notification) {
+        edit.props.handleSubmitUpdateNotification({
+          notification:notification.length
+        })
+        edit.setState({notification:notification.length})
       }
     });
   }
@@ -233,6 +248,18 @@ class Notifications extends React.Component {
       }
     });
 
+    var query = new Parse.Query("Notification");
+    query.equalTo('toUser', Parse.User.current());
+    query.equalTo('seen', false);
+    query.find({
+      success: function(notification) {
+        edit.props.handleSubmitUpdateNotification({
+          notification:notification.length
+        })
+        edit.setState({notification:notification.length})
+      }
+    });
+
   }
 
   viewOnPress(id, userId, type, firstName) {
@@ -256,7 +283,10 @@ class Notifications extends React.Component {
         // The object was retrieved successfully.
         notification.set("seen", true);
         notification.save();
-        view.setState({data: NotificationCopy})
+        view.props.handleSubmitUpdateNotification({
+          notification:view.state.notification-1
+        })
+        view.setState({data: NotificationCopy, notification:view.state.notification-1})
       },
       error: function(error) {
         // The object was not retrieved successfully.

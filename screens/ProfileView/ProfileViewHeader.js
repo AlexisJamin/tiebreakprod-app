@@ -112,17 +112,13 @@ class ProfileViewHeader extends React.Component {
     relation.set("status", 1);
     relation.save(null, {
         success: function(relation) {
-          var notification = new Parse.Object("Notification");
-          notification.set("fromUser", Parse.User.current());
-          notification.set("toUser", otherUser);
-          notification.set("createdAt", Date());
-          notification.set("updatedAt", Date());
-          notification.set("type", 0);
-          notification.set("relation", { "__type": "Pointer", "className": "Relation", "objectId": relation.id });
-          notification.set("seen", false);
-          notification.save(null, {
-            success: function(notification) {
-              add.props.handleSubmit({
+          Parse.Cloud.run("createNotification", { 
+            "userId": add.props.viewProfile.id,
+            "message": "Souhaite devenir votre ami(e)",
+            "relationId":relation.id,
+            "type":0,
+             })
+          add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
                 firstName:add.props.viewProfile.firstName,
                 style:add.props.viewProfile.style,
@@ -135,14 +131,9 @@ class ProfileViewHeader extends React.Component {
                 id: add.props.viewProfile.id,
                 friendRequestSent:true,
                 friendRequestReceived:false,
-                isFriend:false
+                isFriend:false,
               })
-              add.setState({friendRequestSent: true})
-            },
-            error: function(error) {
-              console.log(error);
-            }
-          });
+              add.setState({friendRequestSent:true})
         },
         error: function(error) {
          console.log(error);

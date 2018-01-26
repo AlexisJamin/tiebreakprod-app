@@ -101,7 +101,7 @@ class CommunityFriends extends React.Component {
                   var commonDispoParam = {commonDispo: commonDispo};
                   Object.assign(friends[i], commonDispoParam);
                   }
-                  edit.setState({data: [...friends], loading1:false})
+                  edit.setState({data:friends, loading1:false})
                   console.log('loading1 terminé');
               }
             });
@@ -173,7 +173,7 @@ class CommunityFriends extends React.Component {
                   var commonDispoParam = {commonDispo: commonDispo};
                   Object.assign(friends[i], commonDispoParam);
                   }
-                  edit.setState({data: [...friends], loading2:false})
+                  edit.setState({data:friends, loading2:false})
                   console.log('loading2 terminé');
               }
             });

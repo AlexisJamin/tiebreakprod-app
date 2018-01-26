@@ -9,8 +9,6 @@ import { Parse } from 'parse/react-native';
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
-        console.log('value');
-        console.log(value);
         dispatch( {type: 'user', value: value} ) 
     },
         handleSubmitClub: function(value) { 
