@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { StyleSheet, View, Image, Alert, Text, TouchableWithoutFeedback, ScrollView, ActivityIndicator, RefreshControl, FlatList } from 'react-native';
 import { Font, MapView } from 'expo';
-import { ButtonGroup } from 'react-native-elements';
+import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
@@ -30,6 +30,12 @@ class GameViewContent extends React.Component {
     this._onPressAnswerButton = this._onPressAnswerButton.bind(this);
     this._onPressAnswerPositive = this._onPressAnswerPositive.bind(this);
     this._onPressDeleteGame = this._onPressDeleteGame.bind(this);
+    this._onPressConfirmDelete = this._onPressConfirmDelete.bind(this);
+    this._onPressChoosePartner = this._onPressChoosePartner.bind(this);
+    this._onPressConfirmPartner = this._onPressConfirmPartner.bind(this);
+    this.renderFooter = this.renderFooter.bind(this);
+    this.renderSeparator = this.renderSeparator.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
     this.state = {
       fontAvenirNextLoaded:false,
       fontAvenirLoaded:false,
@@ -40,11 +46,13 @@ class GameViewContent extends React.Component {
       clubAddress:null,
       gameSurface:null,
       gameCondition:null,
-      organiser:null,
       gamePrice:null,
       partner:null,
+      organiser:null,
       canceled:null,
       attendees:null,
+      data:null,
+      loading:true
     };
   }
 
@@ -83,14 +91,142 @@ class GameViewContent extends React.Component {
               clubAddress:clubAddress,
               gameCondition:gameCondition,
               gameSurface:gameSurface,
-              organiser:organiser,
+              organiser:organiser.id,
               gamePrice:gamePrice,
               partner:partner,
               canceled:canceled,
-              attendees:attendees,
+              attendees:attendees
             })
 
-            if (user.id == organiser.id )  {
+            // Checks if user is organiser
+            if (user.id == organiser.id)  {
+              console.log('user.id == organiser.id');
+
+              // Checks if there are attendees or partner
+              if ( (attendees != undefined && attendees.length>0) || partner!=undefined) {
+
+                // Checks if there are attendees and no partner
+                if ( (attendees != undefined) && (attendees.length>0) && (partner == undefined) ) {
+                  var attendeesContent = [];
+                  for (var i = 0; i < attendees.length; i++) {
+                    var queryUser = new Parse.Query("User");
+                    queryUser.equalTo('objectId', attendees[i].id);
+                    queryUser.first({
+                      success: function(attendee) {
+                        var objectId = attendee.get('objectId');
+                        var firstName = attendee.get('firstName');
+                        var lastName = attendee.get('lastName')[0];
+                        var birthday = attendee.get('birthday');
+                        var picture = attendee.get('picture').url();
+                        var currentLevel = attendee.get('currentLevel');
+                        var highestLevel = attendee.get('highestLevel');
+
+                        moment.locale('fr');
+                        if (birthday != undefined) {
+                          var age = moment().diff(birthday, 'years')+' ans';
+                        } else {
+                          var age = 'inc.';
+                        }
+
+                        attendeesContent.push({
+                          objectId:objectId,
+                          firstName:firstName,
+                          lastName:lastName,
+                          age:age,
+                          picture:picture
+                        })
+                        edit.setState({data:attendeesContent, loading:false})
+                      }
+                    });
+                  }
+                } else if ( partner!=undefined ) {
+                  console.log('partner!=undefined');
+                  partnerObject = [];
+
+                  var query = new Parse.Query("User");
+                      query.equalTo('objectId', partner.id); 
+                      query.first({
+                        success: function(user) {
+
+                          var objectId = user.get('objectId');
+                          var firstName = user.get('firstName');
+                          var lastName = user.get('lastName')[0];
+                          var picture = user.get('picture').url();
+                          var currentLevel = user.get('currentLevel');
+                          var highestLevel = user.get('highestLevel');
+                          var birthday = user.get('birthday');
+
+                          moment.locale('fr');
+                          if (birthday != undefined) {
+                            var age = moment().diff(birthday, 'years')+' ans';
+                          } else {
+                            var age = 'inc.';
+                          }
+
+                          partnerObject.push({
+                            objectId:objectId,
+                            firstName:firstName,
+                            lastName:lastName,
+                            age:age,
+                            picture:picture
+                          })
+
+                          edit.setState({data:partnerObject, loading:false})
+                        }
+                      });
+                }
+                
+              } else {
+                console.log('Pas de participants');
+                edit.setState({loading:false})
+              }
+            } else {
+              console.log('user.id != organiser.id');
+              organiserObject = [];
+
+              var query = new Parse.Query("User");
+                  query.equalTo('objectId', organiser.id); 
+                  query.first({
+                    success: function(user) {
+
+                      var objectId = user.get('objectId');
+                      var firstName = user.get('firstName');
+                      var lastName = user.get('lastName')[0];
+                      var picture = user.get('picture').url();
+                      var currentLevel = user.get('currentLevel');
+                      var highestLevel = user.get('highestLevel');
+                      var birthday = user.get('birthday');
+
+                      moment.locale('fr');
+                      if (birthday != undefined) {
+                        var age = moment().diff(birthday, 'years')+' ans';
+                      } else {
+                        var age = 'inc.';
+                      }
+
+                      organiserObject.push({
+                        objectId:objectId,
+                        firstName:firstName,
+                        lastName:lastName,
+                        age:age,
+                        picture:picture
+                      })
+
+                      edit.setState({data:organiserObject, loading:false})
+
+                    }
+                  });
+            }
+
+          }
+        });
+
+      }
+    });
+
+  }
+
+            /* if (user.id == organiser.id )  {
             console.log('user.id == organiser.id');
 
             var title = 'Participants';
@@ -222,7 +358,7 @@ class GameViewContent extends React.Component {
                       var attendeeHighestLevel = '-15';
                     }
 
-                    /*content.push(
+                    content.push(
                       <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
                         <View style={{flexDirection:'row'}}>
                           <Image 
@@ -249,12 +385,12 @@ class GameViewContent extends React.Component {
                          }
                         </View>
                     </View>
-                    ); */
+                    ); 
                   }
                 });
               }
 
-            } //else {var content = <Text style={{paddingLeft:10}}> Pas encore de participants. </Text>}
+            } else {var content = <Text style={{paddingLeft:10}}> Pas encore de participants. </Text>}
 
           } else {
 
@@ -394,7 +530,7 @@ class GameViewContent extends React.Component {
                     var highestLevel = '-15';
                   }
 
-                  /*var content = (
+                  var content = (
                     <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
                       <View style={{flexDirection:'row'}}>
                         <Image 
@@ -421,7 +557,7 @@ class GameViewContent extends React.Component {
                        }
                       </View>
                   </View>
-                    );*/
+                    );
 
                     }
                   });
@@ -429,8 +565,7 @@ class GameViewContent extends React.Component {
           }
         });
       }
-    });
-  }
+    }); */
 
   async componentDidMount() {
     await Font.loadAsync({
@@ -446,22 +581,173 @@ class GameViewContent extends React.Component {
 
   _onPressAnswerPositive() {
       var add = this;
+      var user = Parse.User.current();
+      if (this.state.attendees == undefined) {
+        var attendeesCopy = []
+        attendeesCopy.push({"__type":"Pointer","className":"_User","objectId":user.id});
+      } else {
+        var attendeesCopy = this.state.attendees.concat();
+        attendeesCopy.push({"__type":"Pointer","className":"_User","objectId":user.id});
+      }
+      var query = new Parse.Query("Game");
+      query.equalTo('objectId', this.props.game.gameId); 
+      query.first({
+        success: function(game) {
+          game.set('attendees', attendeesCopy);
+          game.save();
+          Parse.Cloud.run("createNotification", { 
+            "userId":add.state.organiser,
+            "message":"Aimerait participer à votre partie le "+moment(add.state.date).format('llll'),
+            "gameId":add.props.game.gameId,
+            "type":7,
+             })
+          add.setState({attendees:attendeesCopy})
+        }
+      });
   }
 
-  _onPressDeleteGame() {
+  _onPressConfirmDelete() {
       var add = this;
+      var user = Parse.User.current();
+      if (user.id == this.state.partner.id) {
+        var query = new Parse.Query("Game");
+        query.equalTo('objectId', this.props.game.gameId); 
+        query.first({
+          success: function(game) {
+            game.set('canceled', true);
+            game.save();
+            Parse.Cloud.run("createNotification", { 
+              "userId":add.state.organiser,
+              "message":"A annulé votre partie le "+moment(add.state.date).format('llll'),
+              "gameId":add.props.game.gameId,
+              "type":6,
+               })
+            add.setState({canceled:true})
+          }
+        });
+      } else if ( (user.id == this.state.organiser) && (this.state.partner != undefined) ) {
+        var query = new Parse.Query("Game");
+        query.equalTo('objectId', this.props.game.gameId); 
+        query.first({
+          success: function(game) {
+            game.set('canceled', true);
+            game.save();
+            Parse.Cloud.run("createNotification", { 
+              "userId":add.state.partner.id,
+              "message":"A annulé votre partie le "+moment(add.state.date).format('llll'),
+              "gameId":add.props.game.gameId,
+              "type":6,
+               })
+            add.setState({canceled:true})
+          }
+        });
+      } else if ( (user.id == this.state.organiser) && (this.state.partner == undefined) ) {
+        var query = new Parse.Query("Game");
+        query.equalTo('objectId', this.props.game.gameId); 
+        query.first({
+          success: function(game) {
+            game.set('canceled', true);
+            game.save();
+            add.setState({canceled:true})
+          }
+        });
+      }
+}
+
+  _onPressDeleteGame() {
+      Alert.alert(
+        'Vous confirmez vouloir annuler cette partie ?',
+        '',
+        [
+          {text: 'Non'},
+          {text: 'Oui', onPress: () => this._onPressConfirmDelete()},
+        ],
+        { cancelable: false }
+      ) 
   }
 
 
   _onPressAnswerButton() {
       Alert.alert(
         'Vous confirmez vouloir participer à cette partie ?',
+        '',
         [
           {text: 'Non'},
           {text: 'Oui', onPress: () => this._onPressAnswerPositive()},
         ],
         { cancelable: false }
       ) 
+  }
+
+  _onPressChoosePartner(id, firstName, lastName) {
+    const date = new Date();
+    const user = Parse.User.current();
+    if ( (this.state.organiser == user.id) && (this.state.partner == undefined) && (this.state.gameDate>date) ) {
+        Alert.alert(
+        'Vous confirmez vouloir jouer avec : '+firstName+' '+lastName+'.'+' ?',
+        '',
+        [
+          {text: 'Non'},
+          {text: 'Oui', onPress: (id) => this._onPressConfirmPartner(id)},
+        ],
+        { cancelable: false }
+      ) 
+    } 
+}
+
+  _onPressConfirmPartner(id) {
+    console.log('id');
+    console.log(id);
+    var query = new Parse.Query("Game");
+    query.equalTo('objectId', this.props.game.gameId); 
+    query.first({
+      success: function(game) {
+        game.set('partner', {"__type":"Pointer","className":"_User","objectId":id});
+        game.save();
+        Parse.Cloud.run("createNotification", { 
+          "userId":id,
+          "message":"A accepté votre proposition de partie le "+moment(add.state.date).format('llll'),
+          "gameId":add.props.game.gameId,
+          "type":4,
+           })
+        add.setState({canceled:true})
+      }
+    });
+  }
+
+ renderSeparator() {
+      return (<View
+        style={{
+          height: 1,
+          width: "100%",
+          backgroundColor: "#CED0CE",
+        }}
+      /> 
+      );
+  }
+
+  renderFooter() {
+    if (!this.state.loading) return null;
+    return (
+      <View
+        style={{
+          paddingVertical: 20,
+          borderTopWidth: 1,
+          borderColor: "#CED0CE"
+        }}
+      >
+        <ActivityIndicator animating size="large" />
+      </View>
+    );
+  }
+
+  renderEmpty() {
+    var date = new Date();
+    if (this.state.loading) return null;
+    if (!this.state.canceled && (this.state.gameDate>date) ) return (
+      <Text style={{paddingLeft:10}}> Pas encore de participants. </Text>
+    );
+    return null;
   }
 
   render() {
@@ -474,6 +760,14 @@ class GameViewContent extends React.Component {
       const {gameCondition} = this.state;
       const {gameSurface} = this.state;
       const {organiser} = this.state;
+      const {attendeesContent} = this.state;
+      const {attendees} = this.state;
+      const {organiserFirstName} = this.state;
+      const {organiserLastName} = this.state;
+      const {organiserPicture} = this.state;
+      const {organiserAge} = this.state;
+      const {canceled} = this.state;
+      const {partner} = this.state;
       const user = Parse.User.current();
       const date = new Date();
       var edit = this;
@@ -503,19 +797,112 @@ class GameViewContent extends React.Component {
         var textSurface = 'Terre battue';
       }
 
-      if (this.state.canceled) {
+      if ( organiser && (organiser == user.id) && (partner == undefined) && (gameDate>date) ) {
+        var title = "Participants à confirmer";
+        var hideChevron = false;
+      } else if ( organiser && (organiser == user.id) && (partner != undefined) ) {
+        var title = "Partenaire";
+        var hideChevron = true;
+      } else if ( organiser && (organiser != user.id) ) {
+        var title = "Créateur de la partie";
+        var hideChevron = true;
+      }
+
+      /*if ( organiser && (organiser == user.id) ) {
+
+        if (attendeesContent && attendeesContent != null) {
+          console.log('attendeesContent');
+          console.log(attendeesContent);
+          var content = [];
+          for (var i = 0; i < attendeesContent.length; i++) {
+            content.push(
+                <TouchableWithoutFeedback onPress={(i)=>{this._onPressChoosePartner(i)}}>
+                <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:20, paddingLeft:20, paddingRight:20}}>
+                    <View style={{flexDirection:'row'}}>
+                      <Image 
+                      style={{width:30, height:30, borderRadius:15}} 
+                      source={ { uri : attendeesContent[i].attendeePicture } || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
+                      />
+                      {
+                      edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, paddingLeft:10}}>
+                         <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {attendeesContent[i].attendeeFirstName} </Text>
+                         <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {attendeesContent[i].attendeeLastName}. </Text>
+                         <Text style={{fontFamily: 'Avenir'}}> ({attendeesContent[i].attendeeAge}) </Text>
+                       </View>
+                      ) : null 
+                     }
+                    </View>
+                    <View style={{flexDirection:'row'}}>
+                     <Image style={{marginTop:8, marginRight:0, marginLeft:5}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
+                     {
+                      edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, marginLeft:2}}>
+                         <Text style={{fontFamily: 'Avenir'}}> 0 </Text>
+                         <Text style={{fontFamily: 'Avenir'}}> (1) </Text>
+                       </View>
+                      ) : null 
+                     }
+                    </View>
+                </View>
+                </TouchableWithoutFeedback>
+              );
+          }
+        } else {
+          var content = (<Text style={{paddingLeft:10}}> Pas encore de participants. </Text>)
+        }
+
+      } else {
+
+        var content = (
+                    <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
+                      <View style={{flexDirection:'row'}}>
+                        <Image 
+                        style={{width:30, height:30, borderRadius:15}} 
+                        source={  ( organiserPicture!=null && { uri : organiserPicture } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
+                        />
+                        {
+                        edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, paddingLeft:10}}>
+                           <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {organiserFirstName} </Text>
+                           <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {organiserLastName}. </Text>
+                           <Text style={{fontFamily: 'Avenir'}}> ({organiserAge}) </Text>
+                         </View>
+                        ) : null 
+                       }
+                      </View>
+                      <View style={{flexDirection:'row'}}>
+                       <Image style={{marginTop:8, marginRight:0, marginLeft:5}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
+                       {
+                        edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, marginLeft:2}}>
+                           <Text style={{fontFamily: 'Avenir'}}> 0 </Text>
+                           <Text style={{fontFamily: 'Avenir'}}> (1) </Text>
+                         </View>
+                        ) : null 
+                       }
+                      </View>
+                  </View>
+                    );
+      } */
+
+      var contains = function(element) {
+          return element.objectId == user.id;
+        };
+
+      if ( attendees && (attendees != undefined) && (attendees.length > 0) ) {
+        var isAttendee = attendees.some(contains);
+        console.log('isAttendee');
+        console.log(isAttendee);
+      }
+
+      if (canceled) {
           var button = (
           <View style={{
             flexDirection:'column',
             justifyContent:'center',
             alignItems:'stretch'
              }}>
-            <TouchableWithoutFeedback>
             <Text style={styles.buttonLogIn}>Partie annulée</Text>
-            </TouchableWithoutFeedback>
           </View>
           );
-        } else if ( (organiser && (user.id == organiser.id) && (gameDate>date) ) || ( (this.state.partner!=undefined) && (user.id == this.state.partner.id) && (gameDate>date) ) ) {
+        } else if ( (organiser && (user.id == organiser) && (gameDate>date) ) || ( partner && (partner!=undefined) && (user.id == partner.id) && (gameDate>date) ) ) {
           var button = (
           <View style={{
             flexDirection:'column',
@@ -527,7 +914,7 @@ class GameViewContent extends React.Component {
             </TouchableWithoutFeedback>
           </View>
           );
-        } else if ( organiser && (this.state.partner!=undefined) && (user.id != organiser.id) && (user.id != this.state.partner.id) && (gameDate>date) ) {
+        } else if ( organiser && (partner==undefined) && (user.id != organiser) && !isAttendee && (gameDate>date)) {
           var button = (
           <View style={{
             flexDirection:'column',
@@ -539,11 +926,30 @@ class GameViewContent extends React.Component {
             </TouchableWithoutFeedback>
           </View>
           );
+        } else if ( organiser && (partner==undefined) && (user.id != organiser) && isAttendee && (gameDate>date)) {
+          var button = (
+          <View style={{
+            flexDirection:'column',
+            justifyContent:'center',
+            alignItems:'stretch'
+             }}>
+            <TouchableWithoutFeedback onPress={this._onPressAnswerButton}>
+            <Text style={styles.buttonLogIn}>En attente</Text>
+            </TouchableWithoutFeedback>
+          </View>
+          );
+        } else if ( organiser && (partner!=undefined) && (user.id != organiser) && (user.id != partner.id) && (gameDate>date) ) {
+          var button = (
+          <View style={{
+            flexDirection:'column',
+            justifyContent:'center',
+            alignItems:'stretch'
+             }}>
+            <Text style={styles.buttonLogIn}>Partie complète</Text>
+          </View>
+          );
         }
 
-
-
-      }
 
     return (
 
@@ -615,18 +1021,45 @@ class GameViewContent extends React.Component {
         </View>
 
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> {title} </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', paddingLeft:10, marginBottom:-10}}> {title} </Text>
           ) : null 
          }
 
-         {content}
+           <List
+           containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
+           >
+              <FlatList
+                data={this.state.data}
+                extraData={this.state}
+                keyExtractor={item => item.objectId}
+                ItemSeparatorComponent={this.renderSeparator}
+                ListFooterComponent={this.renderFooter}
+                ListEmptyComponent={this.renderEmpty}
+                renderItem={({ item }) => (
+                  <ListItem
+                  avatarStyle={{width:40, height:40, borderRadius:20, borderWidth:1, borderColor:'white', overflow:'hidden', backgroundColor:'white'}}
+                  avatarContainerStyle={{width:40, height:40}}
+                  avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
+                  titleContainerStyle={{marginLeft:10}}
+                  containerStyle={{ borderBottomWidth:0, height:60, justifyContent:'center'}}
+                  avatar={{ uri : item.picture }  || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
+                  title={<Text style={{fontSize:12, fontWeight:'bold'}}>{item.firstName} {item.lastName}. ({item.age})</Text>}
+                  subtitleNumberOfLines={1}
+                  subtitleContainerStyle={{marginLeft:10, width:300}}
+                  subtitle={<Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>}
+                  hideChevron={{hideChevron}}
+                  onPress={()=>{this._onPressChoosePartner(item.objectId, item.firstName, item.lastName)}}
+                  />
+                )}
+              />
+            </List>
 
         
           </View>
 
          </ScrollView>
           
-          {button}
+         {button}
 
        
         </View>
