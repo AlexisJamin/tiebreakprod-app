@@ -88,6 +88,118 @@ class CommunityFriends extends React.Component {
                     Object.assign(friends[i], distanceParam);
                   }
 
+                  for (var i = 0; i < friends.length; i++) {
+            
+                    if (friends[i].currentLevel == undefined) {
+                        friends[i].currentLevel = "inc.";
+                      } else if (friends[i].currentLevel == 0) {
+                        friends[i].currentLevel = 'Débutant';
+                      } else if (friends[i].currentLevel == 1) {
+                        friends[i].currentLevel = 'Intermédiaire';
+                      } else if (friends[i].currentLevel == 2) {
+                        friends[i].currentLevel = 'Avancé';
+                      } else if (friends[i].currentLevel == 3) {
+                        friends[i].currentLevel = '40';
+                      } else if (friends[i].currentLevel == 4) {
+                        friends[i].currentLevel = '30/5';
+                      } else if (friends[i].currentLevel == 5) {
+                        friends[i].currentLevel = '30/4';
+                      } else if (friends[i].currentLevel == 6) {
+                        friends[i].currentLevel = '30/3';
+                      } else if (friends[i].currentLevel == 7) {
+                        friends[i].currentLevel = '30/2';
+                      } else if (friends[i].currentLevel == 8) {
+                        friends[i].currentLevel = '30/1';
+                      } else if (friends[i].currentLevel == 9) {
+                        friends[i].currentLevel = '30';
+                      } else if (friends[i].currentLevel == 10) {
+                        friends[i].currentLevel = '15/5';
+                      } else if (friends[i].currentLevel == 11) {
+                        friends[i].currentLevel = '15/4';
+                      } else if (friends[i].currentLevel == 12) {
+                        friends[i].currentLevel = '15/3';
+                      } else if (friends[i].currentLevel == 13) {
+                        friends[i].currentLevel = '15/2';
+                      } else if (friends[i].currentLevel == 14) {
+                        friends[i].currentLevel = '15/1';
+                      } else if (friends[i].currentLevel == 15) {
+                        friends[i].currentLevel = '15';
+                      } else if (friends[i].currentLevel == 16) {
+                        friends[i].currentLevel = '5/6';
+                      } else if (friends[i].currentLevel == 17) {
+                        friends[i].currentLevel = '4/6';
+                      } else if (friends[i].currentLevel == 18) {
+                        friends[i].currentLevel = '3/6';
+                      } else if (friends[i].currentLevel == 19) {
+                        friends[i].currentLevel = '2/6';
+                      } else if (friends[i].currentLevel == 20) {
+                        friends[i].currentLevel = '1/6';
+                      } else if (friends[i].currentLevel == 21) {
+                        friends[i].currentLevel = '0';
+                      } else if (friends[i].currentLevel == 22) {
+                        friends[i].currentLevel = '-2/6';
+                      } else if (friends[i].currentLevel == 23) {
+                        friends[i].currentLevel = '-4/6';
+                      } else if (friends[i].currentLevel == 24) {
+                        friends[i].currentLevel = '-15';
+                      }
+
+                      if (friends[i].highestLevel == undefined) {
+                        friends[i].highestLevel = "inc.";
+                      } else if (friends[i].highestLevel == 0) {
+                        friends[i].highestLevel = 'Débutant';
+                      } else if (friends[i].highestLevel == 1) {
+                        friends[i].highestLevel = 'Intermédiaire';
+                      } else if (friends[i].highestLevel == 2) {
+                        friends[i].highestLevel = 'Avancé';
+                      } else if (friends[i].highestLevel == 3) {
+                        friends[i].highestLevel = '40';
+                      } else if (friends[i].highestLevel == 4) {
+                        friends[i].highestLevel = '30/5';
+                      } else if (friends[i].highestLevel == 5) {
+                        friends[i].highestLevel = '30/4';
+                      } else if (friends[i].highestLevel == 6) {
+                        friends[i].highestLevel = '30/3';
+                      } else if (friends[i].highestLevel == 7) {
+                        friends[i].highestLevel = '30/2';
+                      } else if (friends[i].highestLevel == 8) {
+                        friends[i].highestLevel = '30/1';
+                      } else if (friends[i].highestLevel == 9) {
+                        friends[i].highestLevel = '30';
+                      } else if (friends[i].highestLevel == 10) {
+                        friends[i].highestLevel = '15/5';
+                      } else if (friends[i].highestLevel == 11) {
+                        friends[i].highestLevel = '15/4';
+                      } else if (friends[i].highestLevel == 12) {
+                        friends[i].highestLevel = '15/3';
+                      } else if (friends[i].highestLevel == 13) {
+                        friends[i].highestLevel = '15/2';
+                      } else if (friends[i].highestLevel == 14) {
+                        friends[i].highestLevel = '15/1';
+                      } else if (friends[i].highestLevel == 15) {
+                        friends[i].highestLevel = '15';
+                      } else if (friends[i].highestLevel == 16) {
+                        friends[i].highestLevel = '5/6';
+                      } else if (friends[i].highestLevel == 17) {
+                        friends[i].highestLevel = '4/6';
+                      } else if (friends[i].highestLevel == 18) {
+                        friends[i].highestLevel = '3/6';
+                      } else if (friends[i].highestLevel == 19) {
+                        friends[i].highestLevel = '2/6';
+                      } else if (friends[i].highestLevel == 20) {
+                        friends[i].highestLevel = '1/6';
+                      } else if (friends[i].highestLevel == 21) {
+                        friends[i].highestLevel = '0';
+                      } else if (friends[i].highestLevel == 22) {
+                        friends[i].highestLevel = '-2/6';
+                      } else if (friends[i].highestLevel == 23) {
+                        friends[i].highestLevel = '-4/6';
+                      } else if (friends[i].highestLevel == 24) {
+                        friends[i].highestLevel = '-15';
+                      }
+
+                }
+
                   var commonDispo = 0;
                   for (var i = 0; i < friends.length; i++) {
                   commonDispo = 0;
@@ -160,6 +272,119 @@ class CommunityFriends extends React.Component {
                     var distanceParam = {distance: distance};
                     Object.assign(friends[i], distanceParam);
                   }
+
+                  for (var i = 0; i < friends.length; i++) {
+            
+                    if (friends[i].currentLevel == undefined) {
+                        friends[i].currentLevel = "inc.";
+                      } else if (friends[i].currentLevel == 0) {
+                        friends[i].currentLevel = 'Débutant';
+                      } else if (friends[i].currentLevel == 1) {
+                        friends[i].currentLevel = 'Intermédiaire';
+                      } else if (friends[i].currentLevel == 2) {
+                        friends[i].currentLevel = 'Avancé';
+                      } else if (friends[i].currentLevel == 3) {
+                        friends[i].currentLevel = '40';
+                      } else if (friends[i].currentLevel == 4) {
+                        friends[i].currentLevel = '30/5';
+                      } else if (friends[i].currentLevel == 5) {
+                        friends[i].currentLevel = '30/4';
+                      } else if (friends[i].currentLevel == 6) {
+                        friends[i].currentLevel = '30/3';
+                      } else if (friends[i].currentLevel == 7) {
+                        friends[i].currentLevel = '30/2';
+                      } else if (friends[i].currentLevel == 8) {
+                        friends[i].currentLevel = '30/1';
+                      } else if (friends[i].currentLevel == 9) {
+                        friends[i].currentLevel = '30';
+                      } else if (friends[i].currentLevel == 10) {
+                        friends[i].currentLevel = '15/5';
+                      } else if (friends[i].currentLevel == 11) {
+                        friends[i].currentLevel = '15/4';
+                      } else if (friends[i].currentLevel == 12) {
+                        friends[i].currentLevel = '15/3';
+                      } else if (friends[i].currentLevel == 13) {
+                        friends[i].currentLevel = '15/2';
+                      } else if (friends[i].currentLevel == 14) {
+                        friends[i].currentLevel = '15/1';
+                      } else if (friends[i].currentLevel == 15) {
+                        friends[i].currentLevel = '15';
+                      } else if (friends[i].currentLevel == 16) {
+                        friends[i].currentLevel = '5/6';
+                      } else if (friends[i].currentLevel == 17) {
+                        friends[i].currentLevel = '4/6';
+                      } else if (friends[i].currentLevel == 18) {
+                        friends[i].currentLevel = '3/6';
+                      } else if (friends[i].currentLevel == 19) {
+                        friends[i].currentLevel = '2/6';
+                      } else if (friends[i].currentLevel == 20) {
+                        friends[i].currentLevel = '1/6';
+                      } else if (friends[i].currentLevel == 21) {
+                        friends[i].currentLevel = '0';
+                      } else if (friends[i].currentLevel == 22) {
+                        friends[i].currentLevel = '-2/6';
+                      } else if (friends[i].currentLevel == 23) {
+                        friends[i].currentLevel = '-4/6';
+                      } else if (friends[i].currentLevel == 24) {
+                        friends[i].currentLevel = '-15';
+                      }
+
+                      if (friends[i].highestLevel == undefined) {
+                        friends[i].highestLevel = "inc.";
+                      } else if (friends[i].highestLevel == 0) {
+                        friends[i].highestLevel = 'Débutant';
+                      } else if (friends[i].highestLevel == 1) {
+                        friends[i].highestLevel = 'Intermédiaire';
+                      } else if (friends[i].highestLevel == 2) {
+                        friends[i].highestLevel = 'Avancé';
+                      } else if (friends[i].highestLevel == 3) {
+                        friends[i].highestLevel = '40';
+                      } else if (friends[i].highestLevel == 4) {
+                        friends[i].highestLevel = '30/5';
+                      } else if (friends[i].highestLevel == 5) {
+                        friends[i].highestLevel = '30/4';
+                      } else if (friends[i].highestLevel == 6) {
+                        friends[i].highestLevel = '30/3';
+                      } else if (friends[i].highestLevel == 7) {
+                        friends[i].highestLevel = '30/2';
+                      } else if (friends[i].highestLevel == 8) {
+                        friends[i].highestLevel = '30/1';
+                      } else if (friends[i].highestLevel == 9) {
+                        friends[i].highestLevel = '30';
+                      } else if (friends[i].highestLevel == 10) {
+                        friends[i].highestLevel = '15/5';
+                      } else if (friends[i].highestLevel == 11) {
+                        friends[i].highestLevel = '15/4';
+                      } else if (friends[i].highestLevel == 12) {
+                        friends[i].highestLevel = '15/3';
+                      } else if (friends[i].highestLevel == 13) {
+                        friends[i].highestLevel = '15/2';
+                      } else if (friends[i].highestLevel == 14) {
+                        friends[i].highestLevel = '15/1';
+                      } else if (friends[i].highestLevel == 15) {
+                        friends[i].highestLevel = '15';
+                      } else if (friends[i].highestLevel == 16) {
+                        friends[i].highestLevel = '5/6';
+                      } else if (friends[i].highestLevel == 17) {
+                        friends[i].highestLevel = '4/6';
+                      } else if (friends[i].highestLevel == 18) {
+                        friends[i].highestLevel = '3/6';
+                      } else if (friends[i].highestLevel == 19) {
+                        friends[i].highestLevel = '2/6';
+                      } else if (friends[i].highestLevel == 20) {
+                        friends[i].highestLevel = '1/6';
+                      } else if (friends[i].highestLevel == 21) {
+                        friends[i].highestLevel = '0';
+                      } else if (friends[i].highestLevel == 22) {
+                        friends[i].highestLevel = '-2/6';
+                      } else if (friends[i].highestLevel == 23) {
+                        friends[i].highestLevel = '-4/6';
+                      } else if (friends[i].highestLevel == 24) {
+                        friends[i].highestLevel = '-15';
+                      }
+
+                }
+                  
                   var commonDispo = 0;
                   for (var i = 0; i < friends.length; i++) {
                   commonDispo = 0;

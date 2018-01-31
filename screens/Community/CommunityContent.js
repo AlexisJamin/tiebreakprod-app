@@ -74,6 +74,118 @@ class CommunityContent extends React.Component {
           Object.assign(CommunityCopy[i], distanceParam);
         }
 
+        for (var i = 0; i < CommunityCopy.length; i++) {
+            
+            if (CommunityCopy[i].currentLevel == undefined) {
+                CommunityCopy[i].currentLevel = "inc.";
+              } else if (CommunityCopy[i].currentLevel == 0) {
+                CommunityCopy[i].currentLevel = 'Débutant';
+              } else if (CommunityCopy[i].currentLevel == 1) {
+                CommunityCopy[i].currentLevel = 'Intermédiaire';
+              } else if (CommunityCopy[i].currentLevel == 2) {
+                CommunityCopy[i].currentLevel = 'Avancé';
+              } else if (CommunityCopy[i].currentLevel == 3) {
+                CommunityCopy[i].currentLevel = '40';
+              } else if (CommunityCopy[i].currentLevel == 4) {
+                CommunityCopy[i].currentLevel = '30/5';
+              } else if (CommunityCopy[i].currentLevel == 5) {
+                CommunityCopy[i].currentLevel = '30/4';
+              } else if (CommunityCopy[i].currentLevel == 6) {
+                CommunityCopy[i].currentLevel = '30/3';
+              } else if (CommunityCopy[i].currentLevel == 7) {
+                CommunityCopy[i].currentLevel = '30/2';
+              } else if (CommunityCopy[i].currentLevel == 8) {
+                CommunityCopy[i].currentLevel = '30/1';
+              } else if (CommunityCopy[i].currentLevel == 9) {
+                CommunityCopy[i].currentLevel = '30';
+              } else if (CommunityCopy[i].currentLevel == 10) {
+                CommunityCopy[i].currentLevel = '15/5';
+              } else if (CommunityCopy[i].currentLevel == 11) {
+                CommunityCopy[i].currentLevel = '15/4';
+              } else if (CommunityCopy[i].currentLevel == 12) {
+                CommunityCopy[i].currentLevel = '15/3';
+              } else if (CommunityCopy[i].currentLevel == 13) {
+                CommunityCopy[i].currentLevel = '15/2';
+              } else if (CommunityCopy[i].currentLevel == 14) {
+                CommunityCopy[i].currentLevel = '15/1';
+              } else if (CommunityCopy[i].currentLevel == 15) {
+                CommunityCopy[i].currentLevel = '15';
+              } else if (CommunityCopy[i].currentLevel == 16) {
+                CommunityCopy[i].currentLevel = '5/6';
+              } else if (CommunityCopy[i].currentLevel == 17) {
+                CommunityCopy[i].currentLevel = '4/6';
+              } else if (CommunityCopy[i].currentLevel == 18) {
+                CommunityCopy[i].currentLevel = '3/6';
+              } else if (CommunityCopy[i].currentLevel == 19) {
+                CommunityCopy[i].currentLevel = '2/6';
+              } else if (CommunityCopy[i].currentLevel == 20) {
+                CommunityCopy[i].currentLevel = '1/6';
+              } else if (CommunityCopy[i].currentLevel == 21) {
+                CommunityCopy[i].currentLevel = '0';
+              } else if (CommunityCopy[i].currentLevel == 22) {
+                CommunityCopy[i].currentLevel = '-2/6';
+              } else if (CommunityCopy[i].currentLevel == 23) {
+                CommunityCopy[i].currentLevel = '-4/6';
+              } else if (CommunityCopy[i].currentLevel == 24) {
+                CommunityCopy[i].currentLevel = '-15';
+              }
+
+              if (CommunityCopy[i].highestLevel == undefined) {
+                CommunityCopy[i].highestLevel = "inc.";
+              } else if (CommunityCopy[i].highestLevel == 0) {
+                CommunityCopy[i].highestLevel = 'Débutant';
+              } else if (CommunityCopy[i].highestLevel == 1) {
+                CommunityCopy[i].highestLevel = 'Intermédiaire';
+              } else if (CommunityCopy[i].highestLevel == 2) {
+                CommunityCopy[i].highestLevel = 'Avancé';
+              } else if (CommunityCopy[i].highestLevel == 3) {
+                CommunityCopy[i].highestLevel = '40';
+              } else if (CommunityCopy[i].highestLevel == 4) {
+                CommunityCopy[i].highestLevel = '30/5';
+              } else if (CommunityCopy[i].highestLevel == 5) {
+                CommunityCopy[i].highestLevel = '30/4';
+              } else if (CommunityCopy[i].highestLevel == 6) {
+                CommunityCopy[i].highestLevel = '30/3';
+              } else if (CommunityCopy[i].highestLevel == 7) {
+                CommunityCopy[i].highestLevel = '30/2';
+              } else if (CommunityCopy[i].highestLevel == 8) {
+                CommunityCopy[i].highestLevel = '30/1';
+              } else if (CommunityCopy[i].highestLevel == 9) {
+                CommunityCopy[i].highestLevel = '30';
+              } else if (CommunityCopy[i].highestLevel == 10) {
+                CommunityCopy[i].highestLevel = '15/5';
+              } else if (CommunityCopy[i].highestLevel == 11) {
+                CommunityCopy[i].highestLevel = '15/4';
+              } else if (CommunityCopy[i].highestLevel == 12) {
+                CommunityCopy[i].highestLevel = '15/3';
+              } else if (CommunityCopy[i].highestLevel == 13) {
+                CommunityCopy[i].highestLevel = '15/2';
+              } else if (CommunityCopy[i].highestLevel == 14) {
+                CommunityCopy[i].highestLevel = '15/1';
+              } else if (CommunityCopy[i].highestLevel == 15) {
+                CommunityCopy[i].highestLevel = '15';
+              } else if (CommunityCopy[i].highestLevel == 16) {
+                CommunityCopy[i].highestLevel = '5/6';
+              } else if (CommunityCopy[i].highestLevel == 17) {
+                CommunityCopy[i].highestLevel = '4/6';
+              } else if (CommunityCopy[i].highestLevel == 18) {
+                CommunityCopy[i].highestLevel = '3/6';
+              } else if (CommunityCopy[i].highestLevel == 19) {
+                CommunityCopy[i].highestLevel = '2/6';
+              } else if (CommunityCopy[i].highestLevel == 20) {
+                CommunityCopy[i].highestLevel = '1/6';
+              } else if (CommunityCopy[i].highestLevel == 21) {
+                CommunityCopy[i].highestLevel = '0';
+              } else if (CommunityCopy[i].highestLevel == 22) {
+                CommunityCopy[i].highestLevel = '-2/6';
+              } else if (CommunityCopy[i].highestLevel == 23) {
+                CommunityCopy[i].highestLevel = '-4/6';
+              } else if (CommunityCopy[i].highestLevel == 24) {
+                CommunityCopy[i].highestLevel = '-15';
+              }
+
+        }
+
         var commonDispo = 0;
         for (var i = 0; i < CommunityCopy.length; i++) {
         commonDispo = 0;
@@ -185,6 +297,118 @@ class CommunityContent extends React.Component {
           var distance = Math.round(userGeoPoint.kilometersTo(CommunityCopy[i].geolocation));
           var distanceParam = {distance: distance};
           Object.assign(CommunityCopy[i], distanceParam);
+        }
+
+        for (var i = 0; i < CommunityCopy.length; i++) {
+            
+            if (CommunityCopy[i].currentLevel == undefined) {
+                CommunityCopy[i].currentLevel = "inc.";
+              } else if (CommunityCopy[i].currentLevel == 0) {
+                CommunityCopy[i].currentLevel = 'Débutant';
+              } else if (CommunityCopy[i].currentLevel == 1) {
+                CommunityCopy[i].currentLevel = 'Intermédiaire';
+              } else if (CommunityCopy[i].currentLevel == 2) {
+                CommunityCopy[i].currentLevel = 'Avancé';
+              } else if (CommunityCopy[i].currentLevel == 3) {
+                CommunityCopy[i].currentLevel = '40';
+              } else if (CommunityCopy[i].currentLevel == 4) {
+                CommunityCopy[i].currentLevel = '30/5';
+              } else if (CommunityCopy[i].currentLevel == 5) {
+                CommunityCopy[i].currentLevel = '30/4';
+              } else if (CommunityCopy[i].currentLevel == 6) {
+                CommunityCopy[i].currentLevel = '30/3';
+              } else if (CommunityCopy[i].currentLevel == 7) {
+                CommunityCopy[i].currentLevel = '30/2';
+              } else if (CommunityCopy[i].currentLevel == 8) {
+                CommunityCopy[i].currentLevel = '30/1';
+              } else if (CommunityCopy[i].currentLevel == 9) {
+                CommunityCopy[i].currentLevel = '30';
+              } else if (CommunityCopy[i].currentLevel == 10) {
+                CommunityCopy[i].currentLevel = '15/5';
+              } else if (CommunityCopy[i].currentLevel == 11) {
+                CommunityCopy[i].currentLevel = '15/4';
+              } else if (CommunityCopy[i].currentLevel == 12) {
+                CommunityCopy[i].currentLevel = '15/3';
+              } else if (CommunityCopy[i].currentLevel == 13) {
+                CommunityCopy[i].currentLevel = '15/2';
+              } else if (CommunityCopy[i].currentLevel == 14) {
+                CommunityCopy[i].currentLevel = '15/1';
+              } else if (CommunityCopy[i].currentLevel == 15) {
+                CommunityCopy[i].currentLevel = '15';
+              } else if (CommunityCopy[i].currentLevel == 16) {
+                CommunityCopy[i].currentLevel = '5/6';
+              } else if (CommunityCopy[i].currentLevel == 17) {
+                CommunityCopy[i].currentLevel = '4/6';
+              } else if (CommunityCopy[i].currentLevel == 18) {
+                CommunityCopy[i].currentLevel = '3/6';
+              } else if (CommunityCopy[i].currentLevel == 19) {
+                CommunityCopy[i].currentLevel = '2/6';
+              } else if (CommunityCopy[i].currentLevel == 20) {
+                CommunityCopy[i].currentLevel = '1/6';
+              } else if (CommunityCopy[i].currentLevel == 21) {
+                CommunityCopy[i].currentLevel = '0';
+              } else if (CommunityCopy[i].currentLevel == 22) {
+                CommunityCopy[i].currentLevel = '-2/6';
+              } else if (CommunityCopy[i].currentLevel == 23) {
+                CommunityCopy[i].currentLevel = '-4/6';
+              } else if (CommunityCopy[i].currentLevel == 24) {
+                CommunityCopy[i].currentLevel = '-15';
+              }
+
+              if (CommunityCopy[i].highestLevel == undefined) {
+                CommunityCopy[i].highestLevel = "inc.";
+              } else if (CommunityCopy[i].highestLevel == 0) {
+                CommunityCopy[i].highestLevel = 'Débutant';
+              } else if (CommunityCopy[i].highestLevel == 1) {
+                CommunityCopy[i].highestLevel = 'Intermédiaire';
+              } else if (CommunityCopy[i].highestLevel == 2) {
+                CommunityCopy[i].highestLevel = 'Avancé';
+              } else if (CommunityCopy[i].highestLevel == 3) {
+                CommunityCopy[i].highestLevel = '40';
+              } else if (CommunityCopy[i].highestLevel == 4) {
+                CommunityCopy[i].highestLevel = '30/5';
+              } else if (CommunityCopy[i].highestLevel == 5) {
+                CommunityCopy[i].highestLevel = '30/4';
+              } else if (CommunityCopy[i].highestLevel == 6) {
+                CommunityCopy[i].highestLevel = '30/3';
+              } else if (CommunityCopy[i].highestLevel == 7) {
+                CommunityCopy[i].highestLevel = '30/2';
+              } else if (CommunityCopy[i].highestLevel == 8) {
+                CommunityCopy[i].highestLevel = '30/1';
+              } else if (CommunityCopy[i].highestLevel == 9) {
+                CommunityCopy[i].highestLevel = '30';
+              } else if (CommunityCopy[i].highestLevel == 10) {
+                CommunityCopy[i].highestLevel = '15/5';
+              } else if (CommunityCopy[i].highestLevel == 11) {
+                CommunityCopy[i].highestLevel = '15/4';
+              } else if (CommunityCopy[i].highestLevel == 12) {
+                CommunityCopy[i].highestLevel = '15/3';
+              } else if (CommunityCopy[i].highestLevel == 13) {
+                CommunityCopy[i].highestLevel = '15/2';
+              } else if (CommunityCopy[i].highestLevel == 14) {
+                CommunityCopy[i].highestLevel = '15/1';
+              } else if (CommunityCopy[i].highestLevel == 15) {
+                CommunityCopy[i].highestLevel = '15';
+              } else if (CommunityCopy[i].highestLevel == 16) {
+                CommunityCopy[i].highestLevel = '5/6';
+              } else if (CommunityCopy[i].highestLevel == 17) {
+                CommunityCopy[i].highestLevel = '4/6';
+              } else if (CommunityCopy[i].highestLevel == 18) {
+                CommunityCopy[i].highestLevel = '3/6';
+              } else if (CommunityCopy[i].highestLevel == 19) {
+                CommunityCopy[i].highestLevel = '2/6';
+              } else if (CommunityCopy[i].highestLevel == 20) {
+                CommunityCopy[i].highestLevel = '1/6';
+              } else if (CommunityCopy[i].highestLevel == 21) {
+                CommunityCopy[i].highestLevel = '0';
+              } else if (CommunityCopy[i].highestLevel == 22) {
+                CommunityCopy[i].highestLevel = '-2/6';
+              } else if (CommunityCopy[i].highestLevel == 23) {
+                CommunityCopy[i].highestLevel = '-4/6';
+              } else if (CommunityCopy[i].highestLevel == 24) {
+                CommunityCopy[i].highestLevel = '-15';
+              }
+
         }
 
         var commonDispo = 0;
