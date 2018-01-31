@@ -425,7 +425,41 @@ class Notifications extends React.Component {
             view.props.navigation.navigate("GameView");
            }
           });
+      }
+
+      if (type == 4) {
+         console.log('type 4');
+         var user = Parse.User.current();
+         var Notification = Parse.Object.extend("Notification");
+         var query = new Parse.Query(Notification);
+         query.equalTo('objectId', id); 
+         query.first({
+           success: function(notification) {
+            var gameId = notification.get('game').id;
+            view.props.handleSubmitGame({
+              gameId:gameId,
+            })
+            view.props.navigation.navigate("GameView");
+           }
+          });
       } 
+
+      if (type == 6) {
+         console.log('type 6');
+         var user = Parse.User.current();
+         var Notification = Parse.Object.extend("Notification");
+         var query = new Parse.Query(Notification);
+         query.equalTo('objectId', id); 
+         query.first({
+           success: function(notification) {
+            var gameId = notification.get('game').id;
+            view.props.handleSubmitGame({
+              gameId:gameId,
+            })
+            view.props.navigation.navigate("GameView");
+           }
+          });
+      }
 
   }
 

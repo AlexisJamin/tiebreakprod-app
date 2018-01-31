@@ -41,6 +41,7 @@ class CalendarFuture extends React.Component {
     var user = Parse.User.current();
     var query1 = new Parse.Query("Game");
     query1.equalTo('organiser', user);
+    query1.notEqualTo('canceled', true);
     query1.greaterThan('date', date); 
     query1.find({
       success: function(game) {
@@ -80,6 +81,7 @@ class CalendarFuture extends React.Component {
 
     var query2 = new Parse.Query("Game");
     query2.greaterThan('date', date); 
+    query2.notEqualTo('canceled', true);
     query2.equalTo('partner', user); 
     query2.find({
       success: function(game) {
@@ -170,6 +172,7 @@ class CalendarFuture extends React.Component {
     var user = Parse.User.current();
     var query1 = new Parse.Query("Game");
     query1.equalTo('organiser', user);
+    query1.notEqualTo('canceled', true);
     query1.greaterThan('date', date); 
     query1.find({
       success: function(game) {
@@ -209,6 +212,7 @@ class CalendarFuture extends React.Component {
 
     var query2 = new Parse.Query("Game");
     query2.greaterThan('date', date); 
+    query2.notEqualTo('canceled', true);
     query2.equalTo('partner', user); 
     query2.find({
       success: function(game) {

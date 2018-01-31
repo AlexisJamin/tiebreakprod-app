@@ -106,14 +106,14 @@ class GameViewContent extends React.Component {
               if ( (attendees != undefined && attendees.length>0) || partner!=undefined) {
 
                 // Checks if there are attendees and no partner
-                if ( (attendees != undefined) && (attendees.length>0) && (partner == undefined) ) {
+                if ( (attendees != undefined) && (attendees.length>0) && (partner == undefined) && !canceled ) {
                   var attendeesContent = [];
                   for (var i = 0; i < attendees.length; i++) {
                     var queryUser = new Parse.Query("User");
                     queryUser.equalTo('objectId', attendees[i].id);
                     queryUser.first({
                       success: function(attendee) {
-                        var objectId = attendee.get('objectId');
+                        var objectId = attendee.id;
                         var firstName = attendee.get('firstName');
                         var lastName = attendee.get('lastName')[0];
                         var birthday = attendee.get('birthday');
@@ -128,12 +128,123 @@ class GameViewContent extends React.Component {
                           var age = 'inc.';
                         }
 
+                        if (currentLevel == undefined) {
+                          var currentLevel = "inc.";
+                        } else if (currentLevel == 0) {
+                          var currentLevel = 'Débutant';
+                        } else if (currentLevel == 1) {
+                          var currentLevel = 'Intermédiaire';
+                        } else if (currentLevel == 2) {
+                          var currentLevel = 'Avancé';
+                        } else if (currentLevel == 3) {
+                          var currentLevel = '40';
+                        } else if (currentLevel == 4) {
+                          var currentLevel = '30/5';
+                        } else if (currentLevel == 5) {
+                          var currentLevel = '30/4';
+                        } else if (currentLevel == 6) {
+                          var currentLevel = '30/3';
+                        } else if (currentLevel == 7) {
+                          var currentLevel = '30/2';
+                        } else if (currentLevel == 8) {
+                          var currentLevel = '30/1';
+                        } else if (currentLevel == 9) {
+                          var currentLevel = '30';
+                        } else if (currentLevel == 10) {
+                          var currentLevel = '15/5';
+                        } else if (currentLevel == 11) {
+                          var currentLevel = '15/4';
+                        } else if (currentLevel == 12) {
+                          var currentLevel = '15/3';
+                        } else if (currentLevel == 13) {
+                          var currentLevel = '15/2';
+                        } else if (currentLevel == 14) {
+                          var currentLevel = '15/1';
+                        } else if (currentLevel == 15) {
+                          var currentLevel = '15';
+                        } else if (currentLevel == 16) {
+                          var currentLevel = '5/6';
+                        } else if (currentLevel == 17) {
+                          var currentLevel = '4/6';
+                        } else if (currentLevel == 18) {
+                          var currentLevel = '3/6';
+                        } else if (currentLevel == 19) {
+                          var currentLevel = '2/6';
+                        } else if (currentLevel == 20) {
+                          var currentLevel = '1/6';
+                        } else if (currentLevel == 21) {
+                          var currentLevel = '0';
+                        } else if (currentLevel == 22) {
+                          var currentLevel = '-2/6';
+                        } else if (currentLevel == 23) {
+                          var currentLevel = '-4/6';
+                        } else if (currentLevel == 24) {
+                          var currentLevel = '-15';
+                        }
+
+                        if (highestLevel == undefined) {
+                          var highestLevel = "inc.";
+                        } else if (highestLevel == 0) {
+                          var highestLevel = 'Débutant';
+                        } else if (highestLevel == 1) {
+                          var highestLevel = 'Intermédiaire';
+                        } else if (highestLevel == 2) {
+                          var highestLevel = 'Avancé';
+                        } else if (highestLevel == 3) {
+                          var highestLevel = '40';
+                        } else if (highestLevel == 4) {
+                          var highestLevel = '30/5';
+                        } else if (highestLevel == 5) {
+                          var highestLevel = '30/4';
+                        } else if (highestLevel == 6) {
+                          var highestLevel = '30/3';
+                        } else if (highestLevel == 7) {
+                          var highestLevel = '30/2';
+                        } else if (highestLevel == 8) {
+                          var highestLevel = '30/1';
+                        } else if (highestLevel == 9) {
+                          var highestLevel = '30';
+                        } else if (highestLevel == 10) {
+                          var highestLevel = '15/5';
+                        } else if (highestLevel == 11) {
+                          var highestLevel = '15/4';
+                        } else if (highestLevel == 12) {
+                          var highestLevel = '15/3';
+                        } else if (highestLevel == 13) {
+                          var highestLevel = '15/2';
+                        } else if (highestLevel == 14) {
+                          var highestLevel = '15/1';
+                        } else if (highestLevel == 15) {
+                          var highestLevel = '15';
+                        } else if (highestLevel == 16) {
+                          var highestLevel = '5/6';
+                        } else if (highestLevel == 17) {
+                          var highestLevel = '4/6';
+                        } else if (highestLevel == 18) {
+                          var highestLevel = '3/6';
+                        } else if (highestLevel == 19) {
+                          var highestLevel = '2/6';
+                        } else if (highestLevel == 20) {
+                          var highestLevel = '1/6';
+                        } else if (highestLevel == 21) {
+                          var highestLevel = '0';
+                        } else if (highestLevel == 22) {
+                          var highestLevel = '-2/6';
+                        } else if (highestLevel == 23) {
+                          var highestLevel = '-4/6';
+                        } else if (highestLevel == 24) {
+                          var highestLevel = '-15';
+                        }
+
+
                         attendeesContent.push({
                           objectId:objectId,
                           firstName:firstName,
                           lastName:lastName,
                           age:age,
-                          picture:picture
+                          picture:picture,
+                          currentLevel:currentLevel,
+                          highestLevel:highestLevel
                         })
                         edit.setState({data:attendeesContent, loading:false})
                       }
@@ -146,15 +257,15 @@ class GameViewContent extends React.Component {
                   var query = new Parse.Query("User");
                       query.equalTo('objectId', partner.id); 
                       query.first({
-                        success: function(user) {
+                        success: function(users) {
 
-                          var objectId = user.get('objectId');
-                          var firstName = user.get('firstName');
-                          var lastName = user.get('lastName')[0];
-                          var picture = user.get('picture').url();
-                          var currentLevel = user.get('currentLevel');
-                          var highestLevel = user.get('highestLevel');
-                          var birthday = user.get('birthday');
+                          var objectId = users.id;
+                          var firstName = users.get('firstName');
+                          var lastName = users.get('lastName')[0];
+                          var picture = users.get('picture').url();
+                          var currentLevel = users.get('currentLevel');
+                          var highestLevel = users.get('highestLevel');
+                          var birthday = users.get('birthday');
 
                           moment.locale('fr');
                           if (birthday != undefined) {
@@ -163,18 +274,129 @@ class GameViewContent extends React.Component {
                             var age = 'inc.';
                           }
 
+                          if (currentLevel == undefined) {
+                            var currentLevel = "inc.";
+                          } else if (currentLevel == 0) {
+                            var currentLevel = 'Débutant';
+                          } else if (currentLevel == 1) {
+                            var currentLevel = 'Intermédiaire';
+                          } else if (currentLevel == 2) {
+                            var currentLevel = 'Avancé';
+                          } else if (currentLevel == 3) {
+                            var currentLevel = '40';
+                          } else if (currentLevel == 4) {
+                            var currentLevel = '30/5';
+                          } else if (currentLevel == 5) {
+                            var currentLevel = '30/4';
+                          } else if (currentLevel == 6) {
+                            var currentLevel = '30/3';
+                          } else if (currentLevel == 7) {
+                            var currentLevel = '30/2';
+                          } else if (currentLevel == 8) {
+                            var currentLevel = '30/1';
+                          } else if (currentLevel == 9) {
+                            var currentLevel = '30';
+                          } else if (currentLevel == 10) {
+                            var currentLevel = '15/5';
+                          } else if (currentLevel == 11) {
+                            var currentLevel = '15/4';
+                          } else if (currentLevel == 12) {
+                            var currentLevel = '15/3';
+                          } else if (currentLevel == 13) {
+                            var currentLevel = '15/2';
+                          } else if (currentLevel == 14) {
+                            var currentLevel = '15/1';
+                          } else if (currentLevel == 15) {
+                            var currentLevel = '15';
+                          } else if (currentLevel == 16) {
+                            var currentLevel = '5/6';
+                          } else if (currentLevel == 17) {
+                            var currentLevel = '4/6';
+                          } else if (currentLevel == 18) {
+                            var currentLevel = '3/6';
+                          } else if (currentLevel == 19) {
+                            var currentLevel = '2/6';
+                          } else if (currentLevel == 20) {
+                            var currentLevel = '1/6';
+                          } else if (currentLevel == 21) {
+                            var currentLevel = '0';
+                          } else if (currentLevel == 22) {
+                            var currentLevel = '-2/6';
+                          } else if (currentLevel == 23) {
+                            var currentLevel = '-4/6';
+                          } else if (currentLevel == 24) {
+                            var currentLevel = '-15';
+                          }
+
+                          if (highestLevel == undefined) {
+                            var highestLevel = "inc.";
+                          } else if (highestLevel == 0) {
+                            var highestLevel = 'Débutant';
+                          } else if (highestLevel == 1) {
+                            var highestLevel = 'Intermédiaire';
+                          } else if (highestLevel == 2) {
+                            var highestLevel = 'Avancé';
+                          } else if (highestLevel == 3) {
+                            var highestLevel = '40';
+                          } else if (highestLevel == 4) {
+                            var highestLevel = '30/5';
+                          } else if (highestLevel == 5) {
+                            var highestLevel = '30/4';
+                          } else if (highestLevel == 6) {
+                            var highestLevel = '30/3';
+                          } else if (highestLevel == 7) {
+                            var highestLevel = '30/2';
+                          } else if (highestLevel == 8) {
+                            var highestLevel = '30/1';
+                          } else if (highestLevel == 9) {
+                            var highestLevel = '30';
+                          } else if (highestLevel == 10) {
+                            var highestLevel = '15/5';
+                          } else if (highestLevel == 11) {
+                            var highestLevel = '15/4';
+                          } else if (highestLevel == 12) {
+                            var highestLevel = '15/3';
+                          } else if (highestLevel == 13) {
+                            var highestLevel = '15/2';
+                          } else if (highestLevel == 14) {
+                            var highestLevel = '15/1';
+                          } else if (highestLevel == 15) {
+                            var highestLevel = '15';
+                          } else if (highestLevel == 16) {
+                            var highestLevel = '5/6';
+                          } else if (highestLevel == 17) {
+                            var highestLevel = '4/6';
+                          } else if (highestLevel == 18) {
+                            var highestLevel = '3/6';
+                          } else if (highestLevel == 19) {
+                            var highestLevel = '2/6';
+                          } else if (highestLevel == 20) {
+                            var highestLevel = '1/6';
+                          } else if (highestLevel == 21) {
+                            var highestLevel = '0';
+                          } else if (highestLevel == 22) {
+                            var highestLevel = '-2/6';
+                          } else if (highestLevel == 23) {
+                            var highestLevel = '-4/6';
+                          } else if (highestLevel == 24) {
+                            var highestLevel = '-15';
+                          }
+
                           partnerObject.push({
                             objectId:objectId,
                             firstName:firstName,
                             lastName:lastName,
                             age:age,
-                            picture:picture
+                            picture:picture,
+                            currentLevel:currentLevel,
+                            highestLevel:highestLevel
                           })
 
                           edit.setState({data:partnerObject, loading:false})
                         }
                       });
-                }
+
+                } else {edit.setState({loading:false})}
                 
               } else {
                 console.log('Pas de participants');
@@ -204,12 +426,123 @@ class GameViewContent extends React.Component {
                         var age = 'inc.';
                       }
 
+                      if (currentLevel == undefined) {
+                        var currentLevel = "inc.";
+                      } else if (currentLevel == 0) {
+                        var currentLevel = 'Débutant';
+                      } else if (currentLevel == 1) {
+                        var currentLevel = 'Intermédiaire';
+                      } else if (currentLevel == 2) {
+                        var currentLevel = 'Avancé';
+                      } else if (currentLevel == 3) {
+                        var currentLevel = '40';
+                      } else if (currentLevel == 4) {
+                        var currentLevel = '30/5';
+                      } else if (currentLevel == 5) {
+                        var currentLevel = '30/4';
+                      } else if (currentLevel == 6) {
+                        var currentLevel = '30/3';
+                      } else if (currentLevel == 7) {
+                        var currentLevel = '30/2';
+                      } else if (currentLevel == 8) {
+                        var currentLevel = '30/1';
+                      } else if (currentLevel == 9) {
+                        var currentLevel = '30';
+                      } else if (currentLevel == 10) {
+                        var currentLevel = '15/5';
+                      } else if (currentLevel == 11) {
+                        var currentLevel = '15/4';
+                      } else if (currentLevel == 12) {
+                        var currentLevel = '15/3';
+                      } else if (currentLevel == 13) {
+                        var currentLevel = '15/2';
+                      } else if (currentLevel == 14) {
+                        var currentLevel = '15/1';
+                      } else if (currentLevel == 15) {
+                        var currentLevel = '15';
+                      } else if (currentLevel == 16) {
+                        var currentLevel = '5/6';
+                      } else if (currentLevel == 17) {
+                        var currentLevel = '4/6';
+                      } else if (currentLevel == 18) {
+                        var currentLevel = '3/6';
+                      } else if (currentLevel == 19) {
+                        var currentLevel = '2/6';
+                      } else if (currentLevel == 20) {
+                        var currentLevel = '1/6';
+                      } else if (currentLevel == 21) {
+                        var currentLevel = '0';
+                      } else if (currentLevel == 22) {
+                        var currentLevel = '-2/6';
+                      } else if (currentLevel == 23) {
+                        var currentLevel = '-4/6';
+                      } else if (currentLevel == 24) {
+                        var currentLevel = '-15';
+                      }
+
+                      if (highestLevel == undefined) {
+                        var highestLevel = "inc.";
+                      } else if (highestLevel == 0) {
+                        var highestLevel = 'Débutant';
+                      } else if (highestLevel == 1) {
+                        var highestLevel = 'Intermédiaire';
+                      } else if (highestLevel == 2) {
+                        var highestLevel = 'Avancé';
+                      } else if (highestLevel == 3) {
+                        var highestLevel = '40';
+                      } else if (highestLevel == 4) {
+                        var highestLevel = '30/5';
+                      } else if (highestLevel == 5) {
+                        var highestLevel = '30/4';
+                      } else if (highestLevel == 6) {
+                        var highestLevel = '30/3';
+                      } else if (highestLevel == 7) {
+                        var highestLevel = '30/2';
+                      } else if (highestLevel == 8) {
+                        var highestLevel = '30/1';
+                      } else if (highestLevel == 9) {
+                        var highestLevel = '30';
+                      } else if (highestLevel == 10) {
+                        var highestLevel = '15/5';
+                      } else if (highestLevel == 11) {
+                        var highestLevel = '15/4';
+                      } else if (highestLevel == 12) {
+                        var highestLevel = '15/3';
+                      } else if (highestLevel == 13) {
+                        var highestLevel = '15/2';
+                      } else if (highestLevel == 14) {
+                        var highestLevel = '15/1';
+                      } else if (highestLevel == 15) {
+                        var highestLevel = '15';
+                      } else if (highestLevel == 16) {
+                        var highestLevel = '5/6';
+                      } else if (highestLevel == 17) {
+                        var highestLevel = '4/6';
+                      } else if (highestLevel == 18) {
+                        var highestLevel = '3/6';
+                      } else if (highestLevel == 19) {
+                        var highestLevel = '2/6';
+                      } else if (highestLevel == 20) {
+                        var highestLevel = '1/6';
+                      } else if (highestLevel == 21) {
+                        var highestLevel = '0';
+                      } else if (highestLevel == 22) {
+                        var highestLevel = '-2/6';
+                      } else if (highestLevel == 23) {
+                        var highestLevel = '-4/6';
+                      } else if (highestLevel == 24) {
+                        var highestLevel = '-15';
+                      }
+
+
                       organiserObject.push({
                         objectId:objectId,
                         firstName:firstName,
                         lastName:lastName,
                         age:age,
-                        picture:picture
+                        picture:picture,
+                        currentLevel:currentLevel,
+                        highestLevel:highestLevel
                       })
 
                       edit.setState({data:organiserObject, loading:false})
@@ -225,347 +558,6 @@ class GameViewContent extends React.Component {
     });
 
   }
-
-            /* if (user.id == organiser.id )  {
-            console.log('user.id == organiser.id');
-
-            var title = 'Participants';
-
-            if (attendees>0) {
-              var content = [];
-              for (var i = 0; i < attendees.length; i++) {
-                var query = new Parse.Query("User");
-                query.equalTo('objectId', attendees[i].objectId);
-                queryClub.first({
-                  success: function(attendee) {
-                    var attendeeFirstName = attendee.get('firstName');
-                    var attendeeLastName = attendee.get('lastName');
-                    var attendeeBirthday = attendee.get('birthday');
-                    var attendeePicture = attendee.get('picture');
-
-                    moment.locale('fr');
-                    if (attendeeBirthday != undefined) {
-                      var age = moment().diff(attendeeBirthday, 'years')+' ans';
-                    } else {
-                      var age = 'inc.';
-                    }
-
-                    if (attendee.get('currentLevel') == undefined) {
-                      var attendeeCurrentLevel = "inc.";
-                    } else if (attendee.get('currentLevel') == 0) {
-                      var attendeeCurrentLevel = 'Débutant';
-                    } else if (attendee.get('currentLevel') == 1) {
-                      var attendeeCurrentLevel = 'Intermédiaire';
-                    } else if (attendee.get('currentLevel') == 2) {
-                      var attendeeCurrentLevel = 'Avancé';
-                    } else if (attendee.get('currentLevel') == 3) {
-                      var attendeeCurrentLevel = '40';
-                    } else if (attendee.get('currentLevel') == 4) {
-                      var attendeeCurrentLevel = '30/5';
-                    } else if (attendee.get('currentLevel') == 5) {
-                      var attendeeCurrentLevel = '30/4';
-                    } else if (attendee.get('currentLevel') == 6) {
-                      var attendeeCurrentLevel = '30/3';
-                    } else if (attendee.get('currentLevel') == 7) {
-                      var attendeeCurrentLevel = '30/2';
-                    } else if (attendee.get('currentLevel') == 8) {
-                      var attendeeCurrentLevel = '30/1';
-                    } else if (attendee.get('currentLevel') == 9) {
-                      var attendeeCurrentLevel = '30';
-                    } else if (attendee.get('currentLevel') == 10) {
-                      var attendeeCurrentLevel = '15/5';
-                    } else if (attendee.get('currentLevel') == 11) {
-                      var attendeeCurrentLevel = '15/4';
-                    } else if (attendee.get('currentLevel') == 12) {
-                      var attendeeCurrentLevel = '15/3';
-                    } else if (attendee.get('currentLevel') == 13) {
-                      var attendeeCurrentLevel = '15/2';
-                    } else if (attendee.get('currentLevel') == 14) {
-                      var attendeeCurrentLevel = '15/1';
-                    } else if (attendee.get('currentLevel') == 15) {
-                      var attendeeCurrentLevel = '15';
-                    } else if (attendee.get('currentLevel') == 16) {
-                      var attendeeCurrentLevel = '5/6';
-                    } else if (attendee.get('currentLevel') == 17) {
-                      var attendeeCurrentLevel = '4/6';
-                    } else if (attendee.get('currentLevel') == 18) {
-                      var attendeeCurrentLevel = '3/6';
-                    } else if (attendee.get('currentLevel') == 19) {
-                      var attendeeCurrentLevel = '2/6';
-                    } else if (attendee.get('currentLevel') == 20) {
-                      var attendeeCurrentLevel = '1/6';
-                    } else if (attendee.get('currentLevel') == 21) {
-                      var attendeeCurrentLevel = '0';
-                    } else if (attendee.get('currentLevel') == 22) {
-                      var attendeeCurrentLevel = '-2/6';
-                    } else if (attendee.get('currentLevel') == 23) {
-                      var attendeeCurrentLevel = '-4/6';
-                    } else if (attendee.get('currentLevel') == 24) {
-                      var attendeeCurrentLevel = '-15';
-                    }
-
-                    if (attendee.get('highestLevel') == undefined) {
-                      var attendeeHighestLevel = "inc.";
-                    } else if (attendee.get('highestLevel') == 0) {
-                      var attendeeHighestLevel = 'Débutant';
-                    } else if (attendee.get('highestLevel') == 1) {
-                      var attendeeHighestLevel = 'Intermédiaire';
-                    } else if (attendee.get('highestLevel') == 2) {
-                      var attendeeHighestLevel = 'Avancé';
-                    } else if (attendee.get('highestLevel') == 3) {
-                      var attendeeHighestLevel = '40';
-                    } else if (attendee.get('highestLevel') == 4) {
-                      var attendeeHighestLevel = '30/5';
-                    } else if (attendee.get('highestLevel') == 5) {
-                      var attendeeHighestLevel = '30/4';
-                    } else if (attendee.get('highestLevel') == 6) {
-                      var attendeeHighestLevel = '30/3';
-                    } else if (attendee.get('highestLevel') == 7) {
-                      var attendeeHighestLevel = '30/2';
-                    } else if (attendee.get('highestLevel') == 8) {
-                      var attendeeHighestLevel = '30/1';
-                    } else if (attendee.get('highestLevel') == 9) {
-                      var attendeeHighestLevel = '30';
-                    } else if (attendee.get('highestLevel') == 10) {
-                      var attendeeHighestLevel = '15/5';
-                    } else if (attendee.get('highestLevel') == 11) {
-                      var attendeeHighestLevel = '15/4';
-                    } else if (attendee.get('highestLevel') == 12) {
-                      var attendeeHighestLevel = '15/3';
-                    } else if (attendee.get('highestLevel') == 13) {
-                      var attendeeHighestLevel = '15/2';
-                    } else if (attendee.get('highestLevel') == 14) {
-                      var attendeeHighestLevel = '15/1';
-                    } else if (attendee.get('highestLevel') == 15) {
-                      var attendeeHighestLevel = '15';
-                    } else if (attendee.get('highestLevel') == 16) {
-                      var attendeeHighestLevel = '5/6';
-                    } else if (attendee.get('highestLevel') == 17) {
-                      var attendeeHighestLevel = '4/6';
-                    } else if (attendee.get('highestLevel') == 18) {
-                      var attendeeHighestLevel = '3/6';
-                    } else if (attendee.get('highestLevel') == 19) {
-                      var attendeeHighestLevel = '2/6';
-                    } else if (attendee.get('highestLevel') == 20) {
-                      var attendeeHighestLevel = '1/6';
-                    } else if (attendee.get('highestLevel') == 21) {
-                      var attendeeHighestLevel = '0';
-                    } else if (attendee.get('highestLevel') == 22) {
-                      var attendeeHighestLevel = '-2/6';
-                    } else if (attendee.get('highestLevel') == 23) {
-                      var attendeeHighestLevel = '-4/6';
-                    } else if (attendee.get('highestLevel') == 24) {
-                      var attendeeHighestLevel = '-15';
-                    }
-
-                    content.push(
-                      <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
-                        <View style={{flexDirection:'row'}}>
-                          <Image 
-                          style={{width:30, height:30, borderRadius:15}} 
-                          source={  ( attendeePicture!=null && { uri : attendeePicture } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
-                          />
-                          {
-                          edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', paddingTop:7, paddingLeft:10}}>
-                             <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {attendeeFirstName} </Text>
-                             <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {attendeeLastName}. </Text>
-                             <Text style={{fontFamily: 'Avenir'}}> ({age}) </Text>
-                           </View>
-                          ) : null 
-                         }
-                        </View>
-                        <View style={{flexDirection:'row'}}>
-                         <Image style={{marginTop:8, marginRight:0, marginLeft:5}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
-                         {
-                          edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', paddingTop:7, marginLeft:2}}>
-                             <Text style={{fontFamily: 'Avenir'}}> {attendeeCurrentLevel} </Text>
-                             <Text style={{fontFamily: 'Avenir'}}> ({attendeeHighestLevel}) </Text>
-                           </View>
-                          ) : null 
-                         }
-                        </View>
-                    </View>
-                    ); 
-                  }
-                });
-              }
-
-            } else {var content = <Text style={{paddingLeft:10}}> Pas encore de participants. </Text>}
-
-          } else {
-
-              console.log('PAS user.id == organiser');
-
-              var title = 'Créateur de la partie';
-
-              var query = new Parse.Query("User");
-                  query.equalTo('objectId', organiser.id); 
-                  query.first({
-                    success: function(user) {
-                    console.log('success !=organiser');
-                    var userFirstName = user.get('firstName');
-                    var userLastName = user.get('lastName')[0];
-                    var userPicture = user.get('picture').url();
-                    var currentLevel = user.get('currentLevel');
-                    var highestLevel = user.get('highestLevel');
-                    var birthday = user.get('birthday');
-                    console.log('userFirstName');
-                    console.log(userFirstName);
-
-                    moment.locale('fr');
-                    if (birthday != undefined) {
-                      var age = moment().diff(birthday, 'years')+' ans';
-                    } else {
-                      var age = 'inc.';
-                    }
-
-                    console.log('age');
-                    console.log(age);
-
-                     if (currentLevel == undefined) {
-                    var currentLevel = "inc.";
-                  } else if (currentLevel == 0) {
-                    var currentLevel = 'Débutant';
-                  } else if (currentLevel == 1) {
-                    var currentLevel = 'Intermédiaire';
-                  } else if (currentLevel == 2) {
-                    var currentLevel = 'Avancé';
-                  } else if (currentLevel == 3) {
-                    var currentLevel = '40';
-                  } else if (currentLevel == 4) {
-                    var currentLevel = '30/5';
-                  } else if (currentLevel == 5) {
-                    var currentLevel = '30/4';
-                  } else if (currentLevel == 6) {
-                    var currentLevel = '30/3';
-                  } else if (currentLevel == 7) {
-                    var currentLevel = '30/2';
-                  } else if (currentLevel == 8) {
-                    var currentLevel = '30/1';
-                  } else if (currentLevel == 9) {
-                    var currentLevel = '30';
-                  } else if (currentLevel == 10) {
-                    var currentLevel = '15/5';
-                  } else if (currentLevel == 11) {
-                    var currentLevel = '15/4';
-                  } else if (currentLevel == 12) {
-                    var currentLevel = '15/3';
-                  } else if (currentLevel == 13) {
-                    var currentLevel = '15/2';
-                  } else if (currentLevel == 14) {
-                    var currentLevel = '15/1';
-                  } else if (currentLevel == 15) {
-                    var currentLevel = '15';
-                  } else if (currentLevel == 16) {
-                    var currentLevel = '5/6';
-                  } else if (currentLevel == 17) {
-                    var currentLevel = '4/6';
-                  } else if (currentLevel == 18) {
-                    var currentLevel = '3/6';
-                  } else if (currentLevel == 19) {
-                    var currentLevel = '2/6';
-                  } else if (currentLevel == 20) {
-                    var currentLevel = '1/6';
-                  } else if (currentLevel == 21) {
-                    var currentLevel = '0';
-                  } else if (currentLevel == 22) {
-                    var currentLevel = '-2/6';
-                  } else if (currentLevel == 23) {
-                    var currentLevel = '-4/6';
-                  } else if (currentLevel == 24) {
-                    var currentLevel = '-15';
-                  }
-
-                  if (highestLevel == undefined) {
-                    var highestLevel = "inc.";
-                  } else if (highestLevel == 0) {
-                    var highestLevel = 'Débutant';
-                  } else if (highestLevel == 1) {
-                    var highestLevel = 'Intermédiaire';
-                  } else if (highestLevel == 2) {
-                    var highestLevel = 'Avancé';
-                  } else if (highestLevel == 3) {
-                    var highestLevel = '40';
-                  } else if (highestLevel == 4) {
-                    var highestLevel = '30/5';
-                  } else if (highestLevel == 5) {
-                    var highestLevel = '30/4';
-                  } else if (highestLevel == 6) {
-                    var highestLevel = '30/3';
-                  } else if (highestLevel == 7) {
-                    var highestLevel = '30/2';
-                  } else if (highestLevel == 8) {
-                    var highestLevel = '30/1';
-                  } else if (highestLevel == 9) {
-                    var highestLevel = '30';
-                  } else if (highestLevel == 10) {
-                    var highestLevel = '15/5';
-                  } else if (highestLevel == 11) {
-                    var highestLevel = '15/4';
-                  } else if (highestLevel == 12) {
-                    var highestLevel = '15/3';
-                  } else if (highestLevel == 13) {
-                    var highestLevel = '15/2';
-                  } else if (highestLevel == 14) {
-                    var highestLevel = '15/1';
-                  } else if (highestLevel == 15) {
-                    var highestLevel = '15';
-                  } else if (highestLevel == 16) {
-                    var highestLevel = '5/6';
-                  } else if (highestLevel == 17) {
-                    var highestLevel = '4/6';
-                  } else if (highestLevel == 18) {
-                    var highestLevel = '3/6';
-                  } else if (highestLevel == 19) {
-                    var highestLevel = '2/6';
-                  } else if (highestLevel == 20) {
-                    var highestLevel = '1/6';
-                  } else if (highestLevel == 21) {
-                    var highestLevel = '0';
-                  } else if (highestLevel == 22) {
-                    var highestLevel = '-2/6';
-                  } else if (highestLevel == 23) {
-                    var highestLevel = '-4/6';
-                  } else if (highestLevel == 24) {
-                    var highestLevel = '-15';
-                  }
-
-                  var content = (
-                    <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
-                      <View style={{flexDirection:'row'}}>
-                        <Image 
-                        style={{width:30, height:30, borderRadius:15}} 
-                        source={  ( userPicture!=null && { uri : userPicture } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
-                        />
-                        {
-                        edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, paddingLeft:10}}>
-                           <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {userFirstName} </Text>
-                           <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {userLastName}. </Text>
-                           <Text style={{fontFamily: 'Avenir'}}> ({age}) </Text>
-                         </View>
-                        ) : null 
-                       }
-                      </View>
-                      <View style={{flexDirection:'row'}}>
-                       <Image style={{marginTop:8, marginRight:0, marginLeft:5}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
-                       {
-                        edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, marginLeft:2}}>
-                           <Text style={{fontFamily: 'Avenir'}}> {currentLevel} </Text>
-                           <Text style={{fontFamily: 'Avenir'}}> ({highestLevel}) </Text>
-                         </View>
-                        ) : null 
-                       }
-                      </View>
-                  </View>
-                    );
-
-                    }
-                  });
-
-          }
-        });
-      }
-    }); */
 
   async componentDidMount() {
     await Font.loadAsync({
@@ -609,7 +601,8 @@ class GameViewContent extends React.Component {
   _onPressConfirmDelete() {
       var add = this;
       var user = Parse.User.current();
-      if (user.id == this.state.partner.id) {
+      if ( this.state.partner && (user.id == this.state.partner.id) ) {
+        console.log("1");
         var query = new Parse.Query("Game");
         query.equalTo('objectId', this.props.game.gameId); 
         query.first({
@@ -626,6 +619,7 @@ class GameViewContent extends React.Component {
           }
         });
       } else if ( (user.id == this.state.organiser) && (this.state.partner != undefined) ) {
+        console.log("2");
         var query = new Parse.Query("Game");
         query.equalTo('objectId', this.props.game.gameId); 
         query.first({
@@ -642,13 +636,15 @@ class GameViewContent extends React.Component {
           }
         });
       } else if ( (user.id == this.state.organiser) && (this.state.partner == undefined) ) {
+        console.log("3");
         var query = new Parse.Query("Game");
         query.equalTo('objectId', this.props.game.gameId); 
         query.first({
           success: function(game) {
             game.set('canceled', true);
+            game.set('attendees', []);
             game.save();
-            add.setState({canceled:true})
+            add.setState({canceled:true, attendees:null, data:null})
           }
         });
       }
@@ -688,7 +684,7 @@ class GameViewContent extends React.Component {
         '',
         [
           {text: 'Non'},
-          {text: 'Oui', onPress: (id) => this._onPressConfirmPartner(id)},
+          {text: 'Oui', onPress: () => this._onPressConfirmPartner(id)},
         ],
         { cancelable: false }
       ) 
@@ -696,13 +692,13 @@ class GameViewContent extends React.Component {
 }
 
   _onPressConfirmPartner(id) {
-    console.log('id');
-    console.log(id);
+    var add = this;
     var query = new Parse.Query("Game");
     query.equalTo('objectId', this.props.game.gameId); 
     query.first({
       success: function(game) {
         game.set('partner', {"__type":"Pointer","className":"_User","objectId":id});
+        game.set('attendees', []);
         game.save();
         Parse.Cloud.run("createNotification", { 
           "userId":id,
@@ -710,7 +706,151 @@ class GameViewContent extends React.Component {
           "gameId":add.props.game.gameId,
           "type":4,
            })
-        add.setState({canceled:true})
+
+        partnerObject = [];
+
+        var query = new Parse.Query("User");
+        query.equalTo('objectId', id); 
+        query.first({
+          success: function(users) {
+
+            var objectId = users.id;
+            var firstName = users.get('firstName');
+            var lastName = users.get('lastName')[0];
+            var picture = users.get('picture').url();
+            var currentLevel = users.get('currentLevel');
+            var highestLevel = users.get('highestLevel');
+            var birthday = users.get('birthday');
+
+            moment.locale('fr');
+            if (birthday != undefined) {
+              var age = moment().diff(birthday, 'years')+' ans';
+            } else {
+              var age = 'inc.';
+            }
+
+            if (currentLevel == undefined) {
+              var currentLevel = "inc.";
+            } else if (currentLevel == 0) {
+              var currentLevel = 'Débutant';
+            } else if (currentLevel == 1) {
+              var currentLevel = 'Intermédiaire';
+            } else if (currentLevel == 2) {
+              var currentLevel = 'Avancé';
+            } else if (currentLevel == 3) {
+              var currentLevel = '40';
+            } else if (currentLevel == 4) {
+              var currentLevel = '30/5';
+            } else if (currentLevel == 5) {
+              var currentLevel = '30/4';
+            } else if (currentLevel == 6) {
+              var currentLevel = '30/3';
+            } else if (currentLevel == 7) {
+              var currentLevel = '30/2';
+            } else if (currentLevel == 8) {
+              var currentLevel = '30/1';
+            } else if (currentLevel == 9) {
+              var currentLevel = '30';
+            } else if (currentLevel == 10) {
+              var currentLevel = '15/5';
+            } else if (currentLevel == 11) {
+              var currentLevel = '15/4';
+            } else if (currentLevel == 12) {
+              var currentLevel = '15/3';
+            } else if (currentLevel == 13) {
+              var currentLevel = '15/2';
+            } else if (currentLevel == 14) {
+              var currentLevel = '15/1';
+            } else if (currentLevel == 15) {
+              var currentLevel = '15';
+            } else if (currentLevel == 16) {
+              var currentLevel = '5/6';
+            } else if (currentLevel == 17) {
+              var currentLevel = '4/6';
+            } else if (currentLevel == 18) {
+              var currentLevel = '3/6';
+            } else if (currentLevel == 19) {
+              var currentLevel = '2/6';
+            } else if (currentLevel == 20) {
+              var currentLevel = '1/6';
+            } else if (currentLevel == 21) {
+              var currentLevel = '0';
+            } else if (currentLevel == 22) {
+              var currentLevel = '-2/6';
+            } else if (currentLevel == 23) {
+              var currentLevel = '-4/6';
+            } else if (currentLevel == 24) {
+              var currentLevel = '-15';
+            }
+
+            if (highestLevel == undefined) {
+              var highestLevel = "inc.";
+            } else if (highestLevel == 0) {
+              var highestLevel = 'Débutant';
+            } else if (highestLevel == 1) {
+              var highestLevel = 'Intermédiaire';
+            } else if (highestLevel == 2) {
+              var highestLevel = 'Avancé';
+            } else if (highestLevel == 3) {
+              var highestLevel = '40';
+            } else if (highestLevel == 4) {
+              var highestLevel = '30/5';
+            } else if (highestLevel == 5) {
+              var highestLevel = '30/4';
+            } else if (highestLevel == 6) {
+              var highestLevel = '30/3';
+            } else if (highestLevel == 7) {
+              var highestLevel = '30/2';
+            } else if (highestLevel == 8) {
+              var highestLevel = '30/1';
+            } else if (highestLevel == 9) {
+              var highestLevel = '30';
+            } else if (highestLevel == 10) {
+              var highestLevel = '15/5';
+            } else if (highestLevel == 11) {
+              var highestLevel = '15/4';
+            } else if (highestLevel == 12) {
+              var highestLevel = '15/3';
+            } else if (highestLevel == 13) {
+              var highestLevel = '15/2';
+            } else if (highestLevel == 14) {
+              var highestLevel = '15/1';
+            } else if (highestLevel == 15) {
+              var highestLevel = '15';
+            } else if (highestLevel == 16) {
+              var highestLevel = '5/6';
+            } else if (highestLevel == 17) {
+              var highestLevel = '4/6';
+            } else if (highestLevel == 18) {
+              var highestLevel = '3/6';
+            } else if (highestLevel == 19) {
+              var highestLevel = '2/6';
+            } else if (highestLevel == 20) {
+              var highestLevel = '1/6';
+            } else if (highestLevel == 21) {
+              var highestLevel = '0';
+            } else if (highestLevel == 22) {
+              var highestLevel = '-2/6';
+            } else if (highestLevel == 23) {
+              var highestLevel = '-4/6';
+            } else if (highestLevel == 24) {
+              var highestLevel = '-15';
+            }
+
+
+            partnerObject.push({
+              objectId:objectId,
+              firstName:firstName,
+              lastName:lastName,
+              age:age,
+              picture:picture,
+              currentLevel:currentLevel,
+              highestLevel:highestLevel
+            })
+
+            add.setState({partner:{"__type":"Pointer","className":"_User","objectId":id}, attendees:null, data:partnerObject})
+          }
+        });
       }
     });
   }
@@ -797,7 +937,7 @@ class GameViewContent extends React.Component {
         var textSurface = 'Terre battue';
       }
 
-      if ( organiser && (organiser == user.id) && (partner == undefined) && (gameDate>date) ) {
+      if ( organiser && (organiser == user.id) && (partner == undefined) && (gameDate>date) && !canceled ) {
         var title = "Participants à confirmer";
         var hideChevron = false;
       } else if ( organiser && (organiser == user.id) && (partner != undefined) ) {
@@ -807,80 +947,6 @@ class GameViewContent extends React.Component {
         var title = "Créateur de la partie";
         var hideChevron = true;
       }
-
-      /*if ( organiser && (organiser == user.id) ) {
-
-        if (attendeesContent && attendeesContent != null) {
-          console.log('attendeesContent');
-          console.log(attendeesContent);
-          var content = [];
-          for (var i = 0; i < attendeesContent.length; i++) {
-            content.push(
-                <TouchableWithoutFeedback onPress={(i)=>{this._onPressChoosePartner(i)}}>
-                <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:20, paddingLeft:20, paddingRight:20}}>
-                    <View style={{flexDirection:'row'}}>
-                      <Image 
-                      style={{width:30, height:30, borderRadius:15}} 
-                      source={ { uri : attendeesContent[i].attendeePicture } || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
-                      />
-                      {
-                      edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, paddingLeft:10}}>
-                         <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {attendeesContent[i].attendeeFirstName} </Text>
-                         <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {attendeesContent[i].attendeeLastName}. </Text>
-                         <Text style={{fontFamily: 'Avenir'}}> ({attendeesContent[i].attendeeAge}) </Text>
-                       </View>
-                      ) : null 
-                     }
-                    </View>
-                    <View style={{flexDirection:'row'}}>
-                     <Image style={{marginTop:8, marginRight:0, marginLeft:5}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
-                     {
-                      edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, marginLeft:2}}>
-                         <Text style={{fontFamily: 'Avenir'}}> 0 </Text>
-                         <Text style={{fontFamily: 'Avenir'}}> (1) </Text>
-                       </View>
-                      ) : null 
-                     }
-                    </View>
-                </View>
-                </TouchableWithoutFeedback>
-              );
-          }
-        } else {
-          var content = (<Text style={{paddingLeft:10}}> Pas encore de participants. </Text>)
-        }
-
-      } else {
-
-        var content = (
-                    <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:15, paddingLeft:20, paddingRight:20}}>
-                      <View style={{flexDirection:'row'}}>
-                        <Image 
-                        style={{width:30, height:30, borderRadius:15}} 
-                        source={  ( organiserPicture!=null && { uri : organiserPicture } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
-                        />
-                        {
-                        edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, paddingLeft:10}}>
-                           <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {organiserFirstName} </Text>
-                           <Text style={{fontFamily: 'Avenir', fontWeight:'bold'}}> {organiserLastName}. </Text>
-                           <Text style={{fontFamily: 'Avenir'}}> ({organiserAge}) </Text>
-                         </View>
-                        ) : null 
-                       }
-                      </View>
-                      <View style={{flexDirection:'row'}}>
-                       <Image style={{marginTop:8, marginRight:0, marginLeft:5}} source={require('../../assets/icons/Profile/Level.imageset/icRank.png')} />
-                       {
-                        edit.state.fontAvenirLoaded ? (<View style={{flexDirection:'row', marginTop:7, marginLeft:2}}>
-                           <Text style={{fontFamily: 'Avenir'}}> 0 </Text>
-                           <Text style={{fontFamily: 'Avenir'}}> (1) </Text>
-                         </View>
-                        ) : null 
-                       }
-                      </View>
-                  </View>
-                    );
-      } */
 
       var contains = function(element) {
           return element.objectId == user.id;
@@ -1040,12 +1106,12 @@ class GameViewContent extends React.Component {
                   avatarStyle={{width:40, height:40, borderRadius:20, borderWidth:1, borderColor:'white', overflow:'hidden', backgroundColor:'white'}}
                   avatarContainerStyle={{width:40, height:40}}
                   avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
-                  titleContainerStyle={{marginLeft:10}}
+                  titleContainerStyle={{marginLeft:15, marginTop:3}}
                   containerStyle={{ borderBottomWidth:0, height:60, justifyContent:'center'}}
                   avatar={{ uri : item.picture }  || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
                   title={<Text style={{fontSize:12, fontWeight:'bold'}}>{item.firstName} {item.lastName}. ({item.age})</Text>}
                   subtitleNumberOfLines={1}
-                  subtitleContainerStyle={{marginLeft:10, width:300}}
+                  subtitleContainerStyle={{marginLeft:15, width:300}}
                   subtitle={<Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>}
                   hideChevron={{hideChevron}}
                   onPress={()=>{this._onPressChoosePartner(item.objectId, item.firstName, item.lastName)}}
