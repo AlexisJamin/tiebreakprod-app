@@ -65,6 +65,7 @@ class Community extends React.Component {
           placeholder='Rechercher un joueur (prénom)'
           underlineColorAndroid='rgba(0,0,0,0)'
           blurOnSubmit={false}
+          autoCapitalize='sentences'
           onChangeText={(player) => this._searchPlayer(player)}
           onSubmitEditing={Keyboard.dismiss}
           />

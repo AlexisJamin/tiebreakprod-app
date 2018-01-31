@@ -55,12 +55,14 @@ class CreateGameContent extends React.Component {
       success: function(users) {
         // The object was retrieved successfully.
         console.log('success clubList');
-        clubList = users.get("clubs");
-        for (var i = 0; i < clubList.length; i++) {
-          clubListName.push(users.get("clubs")[i].get('name'));
-          clubListId.push(users.get("clubs")[i].id);
-        }
-        edit.setState({ clubListId : clubListId, clubListName : clubListName})
+        var clubList = users.get("clubs");
+        if (clubList!=undefined && clubList.length>0) {
+          for (var i = 0; i < clubList.length; i++) {
+            clubListName.push(users.get("clubs")[i].get('name'));
+            clubListId.push(users.get("clubs")[i].id);
+            }
+          edit.setState({ clubListId : clubListId, clubListName : clubListName})
+        } else { edit.setState({ clubListId: [], clubListName: [] })}
 
       },
       error: function(object, error) {
@@ -192,9 +194,16 @@ class CreateGameContent extends React.Component {
   render() {
 
     const conditions = ['Intérieur', 'Extérieur'];
-    const surfaces = ['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique']
+    const surfaces = ['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique'];
+    const { clubListId } = this.state;
     const clubs = this.state.clubListName;
     const minimumDate = new Date();
+
+    if (clubListId && (clubListId.length==0) ) {
+      var warning = (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10, color:'red'}}> Aucun club dans votre profil. </Text>);
+    } else if (clubListId && (clubListId.length>0)) {
+      var warning = null;
+    }
 
     return (
 
@@ -236,6 +245,8 @@ class CreateGameContent extends React.Component {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Lieu </Text>
           ) : null 
          }
+
+         {warning}
 
          <View style={{alignItems:'center', justifyContent:'center'}}>
 
@@ -299,7 +310,7 @@ class CreateGameContent extends React.Component {
             returnKeyType='done'
             autoCapitalize='none'
             autoCorrect={false}
-            secureTextEntry={true}
+            secureTextEntry={false}
             placeholder='Sans frais'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(price) => this.setState({price})}

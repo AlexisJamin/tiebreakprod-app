@@ -108,7 +108,7 @@ navigationCommunity(route, index) {
           </TouchableWithoutFeedback>
         </View>
           
-          <View style={{paddingTop: 20}}>
+          <View style={{marginTop: 20}}>
             {
         this.state.fontAvenirNextLoaded ? (
           <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationProfile('Profile',0)}>
@@ -117,11 +117,11 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{paddingTop: 15}}>
+          <View style={{marginTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{paddingTop: 10}}>
+           <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
           <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationCalendar('Calendar',0)} >
@@ -131,11 +131,11 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{paddingTop: 15}}>
+          <View style={{marginTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{paddingTop: 10}}>
+           <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
           <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationCommunity('Community',0)}>
@@ -144,11 +144,11 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{paddingTop: 15}}>
+          <View style={{marginTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{paddingTop: 10}}>
+           <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
           <TouchableWithoutFeedback style={{padding:50}} onPress={()=>{Share.open(shareOptions)}}>
@@ -157,21 +157,21 @@ navigationCommunity(route, index) {
           }
           </View>
 
-          <View style={{paddingTop: 15}}>
+          <View style={{marginTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{paddingTop: 10}}>
+           <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> À PROPOS </Text>) : null 
           }
           </View>
 
-          <View style={{paddingTop: 15}}>
+          <View style={{marginTop: 15}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
           </View>
 
-           <View style={{paddingTop: 10}}>
+           <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> CONTACT </Text>) : null 
           }

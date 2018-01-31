@@ -11,7 +11,8 @@
     "icon": "./assets/icons/AppIcon.appiconset/Icon-v2.png",
     "splash": {
       "image": "./assets/icons/Welcome/Splash.imageset/group.png",
-      "resizeMode": "stretch"
+      "resizeMode": "contain",
+      "backgroundColor": "#01503c"
     },
     "packagerOpts": {
       "assetExts": ["ttf", "mp4"]
