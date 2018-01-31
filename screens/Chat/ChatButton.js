@@ -5,34 +5,17 @@ import { Font } from 'expo';
 import { connect } from 'react-redux';
 
 function mapStateToProps(store) {
-
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
-};
-
-function mapDispatchToProps(dispatch) {
-  return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
-    },
-        handleSubmitClub: function(value) { 
-        dispatch( {type: 'userClub', value: value} ) 
-    },
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    },
-    handleSubmitButton: function(value) { 
-        dispatch( {type: 'button', value: value} ) 
-    }
-  }
+  return { button: store.button }
 };
 
 class ChatButton extends React.Component {
 
-  constructor () {
-    super();
+  constructor (props) {
+    super(props);
     this.updateIndex = this.updateIndex.bind(this)
     this.state = {
-      fontLoaded: false
+      fontLoaded: false,
+      selectedIndex:0,
     }
   }  
 
@@ -44,12 +27,7 @@ class ChatButton extends React.Component {
   }
 
   updateIndex (selectedIndex) {
-     this.props.handleSubmitButton({
-        ChatButtonIndex:selectedIndex,
-        CommunityButtonIndex:this.props.button.CommunityButtonIndex,
-        CalendarButtonIndex:this.props.button.CalendarButtonIndex,
-        ProfileButtonIndex:this.props.button.ProfileButtonIndex
-      })
+    this.setState({selectedIndex});
     if (selectedIndex==0) {
       this.props.navigation.navigate("Notifications");
       console.log("clic sur bouton notifs");
@@ -62,7 +40,7 @@ class ChatButton extends React.Component {
   render() {
 
     const buttons = ['Notifications', 'Chat']
-    const selectedIndex = this.props.button.ChatButtonIndex;
+    const { selectedIndex } = this.state;
 
     return (
 
@@ -80,7 +58,7 @@ class ChatButton extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (ChatButton);
+export default connect(mapStateToProps, null) (ChatButton);
 
 const styles = StyleSheet.create({
   title: {

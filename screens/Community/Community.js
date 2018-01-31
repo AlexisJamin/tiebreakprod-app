@@ -7,6 +7,15 @@ import CommunityButton from './CommunityButton';
 import CommunityContent from './CommunityContent';
 import CommunityFriends from './CommunityFriends';
 
+import { connect } from 'react-redux';
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'searchPlayer', value: value} ) 
+    }
+  }
+};
 
 const CommunityNavigator = TabNavigator(
 {
@@ -20,13 +29,17 @@ const CommunityNavigator = TabNavigator(
   },
 );
 
-export default class Community extends React.Component {
+class Community extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      player:''
-    };
+    this._searchPlayer = this._searchPlayer.bind(this);
+  }
+
+  _searchPlayer(player) {
+    console.log('player');
+    console.log(player);
+    this.props.handleSubmit({player:player});
   }
 
   render() {
@@ -48,12 +61,11 @@ export default class Community extends React.Component {
           style={styles.searchBar}
           keyboardType="default"
           returnKeyType='done'
-          autoCapitalize='none'
           autoCorrect={false}
-          placeholder='rechercher un joueur'
+          placeholder='Rechercher un joueur (prénom)'
           underlineColorAndroid='rgba(0,0,0,0)'
           blurOnSubmit={false}
-          onChangeText={(player) => this.setState({player})}
+          onChangeText={(player) => this._searchPlayer(player)}
           onSubmitEditing={Keyboard.dismiss}
           />
           </View>
@@ -74,6 +86,8 @@ export default class Community extends React.Component {
 }
 
 Community.router = CommunityNavigator.router;
+
+export default connect(null, mapDispatchToProps) (Community);
 
 styles = StyleSheet.create({
   searchBar: {

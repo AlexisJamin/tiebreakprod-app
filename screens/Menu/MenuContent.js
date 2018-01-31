@@ -103,8 +103,8 @@ navigationCommunity(route, index) {
           <View style={{paddingTop: 20}}>
             {
         this.state.fontAvenirNextLoaded ? (
-          <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)}>
-          <Text style={{padding:30}} style={styles.title}> MON PROFIL </Text>
+          <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationProfile('Profile',0)}>
+          <Text style={styles.title}> MON PROFIL </Text>
           </TouchableWithoutFeedback>) : null 
           }
           </View>
@@ -116,7 +116,7 @@ navigationCommunity(route, index) {
            <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationCalendar('Calendar',0)} >
+          <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationCalendar('Calendar',0)} >
           <Text style={styles.subtitle}> MON CALENDRIER </Text>
           </TouchableWithoutFeedback>
           ) : null 
@@ -130,8 +130,8 @@ navigationCommunity(route, index) {
            <View style={{paddingTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:30}} onPress={()=> this.navigationCommunity('Community',1)}>
-          <Text style={styles.subtitle}> MES AMIS </Text>
+          <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationCommunity('Community',0)}>
+          <Text style={styles.subtitle}> MES COMMUNAUTÉS </Text>
           </TouchableWithoutFeedback>) : null 
           }
           </View>

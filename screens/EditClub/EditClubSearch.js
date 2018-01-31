@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, TextInput, Keyboard, FlatList } from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, TextInput, Keyboard, FlatList, ActivityIndicator } from 'react-native';
 import { Font } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -29,14 +29,17 @@ constructor(props) {
     super(props);
     this.renderSeparator = this.renderSeparator.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this._onChangeText = this._onChangeText.bind(this);
     this.addClub = this.addClub.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
-      club:'',
+      loading:true,
       selectedClubId:'',
       selectedClubName:'',
-      data:''
+      data:null,
+      dataCopy:null,
     };
   }
 
@@ -59,25 +62,27 @@ constructor(props) {
     // Interested in locations near user.
     query.near("geopoint", userGeoPoint);
     // Limit what could be a lot of points.
-    //query.limit(5);
+    query.limit(30);
     // Final list of objects
     query.find({
       success: function(Club) {
-        // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-        var ClubCopy = JSON.parse(JSON.stringify(Club));
-        // sorts clubs already in user's club list
-        // calculate distance between user and the clubs
-        for (var i = 0; i < ClubCopy.length; i++) {
-          var distance = Math.round(userGeoPoint.kilometersTo(ClubCopy[i].geopoint));
-          var distanceParam = {distance: distance};
-          Object.assign(ClubCopy[i], distanceParam);
-        }
-        var ClubCopyFiltered = ClubCopy.filter(function (o1) {
-            return !edit.props.userClub.some(function (o2) {
-                return o1.objectId === o2.id; 
-           });
-        });
-        edit.setState({ data: ClubCopyFiltered });
+        if (Club.length != 0) {
+          // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+          var ClubCopy = JSON.parse(JSON.stringify(Club));
+          // sorts clubs already in user's club list
+          // calculate distance between user and the clubs
+          for (var i = 0; i < ClubCopy.length; i++) {
+            var distance = Math.round(userGeoPoint.kilometersTo(ClubCopy[i].geopoint));
+            var distanceParam = {distance: distance};
+            Object.assign(ClubCopy[i], distanceParam);
+          }
+          var ClubCopyFiltered = ClubCopy.filter(function (o1) {
+              return !edit.props.userClub.some(function (o2) {
+                  return o1.objectId === o2.id; 
+             });
+          });
+          edit.setState({ data: ClubCopyFiltered, dataCopy: ClubCopyFiltered, loading:false });
+        } else {edit.setState({ data: null, loading:false })}
       }
     });
   }
@@ -107,9 +112,71 @@ constructor(props) {
     );
   }
 
+  renderEmpty() {
+    if (this.state.loading) return null;
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
+        <Text style={{marginTop:10, marginBottom:5}}> Aucun résultat.</Text>
+        <Text style={{marginTop:10}}> Pour ajouter votre club,</Text>
+        <Text style={{marginTop:10}}> envoyez-nous un email à : </Text>
+        <Text style={{marginTop:10}}> contact@tie-break.fr </Text>
+        <Text style={{marginTop:10}}> (effectué dans la journée !) </Text>
+      </View>
+    );
+  }
+
+  _onChangeText(tag) {
+
+    var edit = this;
+
+    if (tag.length==0) {
+      this.setState({data:this.state.dataCopy})
+    }
+
+    if (tag.length>2) {
+
+      this.setState({loading:true})
+
+      console.log('tag.length>2');
+      var Club = Parse.Object.extend("Club");
+      var user = Parse.User.current();
+      var userGeoPoint = user.get("geolocation");
+      var query = new Parse.Query(Club);
+      query.startsWith("tags", tag);
+      query.find({
+      success: function(Club) {
+        if (Club.length != 0) {
+          console.log(Club.length);
+          // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+          var ClubCopy = JSON.parse(JSON.stringify(Club));
+          // sorts clubs already in user's club list
+          // calculate distance between user and the clubs
+          for (var i = 0; i < ClubCopy.length; i++) {
+            var distance = Math.round(userGeoPoint.kilometersTo(ClubCopy[i].geopoint));
+            var distanceParam = {distance: distance};
+            Object.assign(ClubCopy[i], distanceParam);
+          }
+          var ClubCopyFiltered = ClubCopy.filter(function (o1) {
+              return !edit.props.userClub.some(function (o2) {
+                  return o1.objectId === o2.id; 
+             });
+          });
+          edit.setState({ data: ClubCopyFiltered, loading:false });
+          console.log('setState ok');
+        } else {edit.setState({ data: null, loading:false })}
+      }
+      });
+    }
+
+}
+
   addClub(id, name) {
-    console.log('clic sur club');
-    console.log(name);
     this.setState({selectedClubId:id, selectedClubName: name});
     this.props.handleSubmitClub({id:id, name:name});
     this.props.navigation.goBack();
@@ -133,7 +200,7 @@ constructor(props) {
             placeholder='rechercher un club'
             underlineColorAndroid='rgba(0,0,0,0)'
             blurOnSubmit={false}
-            onChangeText={(club) => this.setState({club})}
+            onChangeText={(tag) => this._onChangeText(tag)}
             onSubmitEditing={Keyboard.dismiss}
           />
       </View>
@@ -148,6 +215,7 @@ constructor(props) {
             keyExtractor={data => data.objectId}
             ItemSeparatorComponent={this.renderSeparator}
             ListFooterComponent={this.renderFooter}
+            ListEmptyComponent={this.renderEmpty}
             renderItem={({ item }) => (
               <ListItem
               titleContainerStyle={{marginLeft:20}}
