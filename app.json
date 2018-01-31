@@ -8,10 +8,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
-    "icon": "",
-    "loading": {
-      "icon": "./assets/icons/AppIcon.appiconset/Icon-v2.png",
-      "hideExponentText": false
+    "icon": "./assets/icons/AppIcon.appiconset/Icon-v2.png",
+    "splash": {
+      "image": "./assets/icons/Welcome/Splash.imageset/group.png",
+      "resizeMode": "stretch"
     },
     "packagerOpts": {
       "assetExts": ["ttf", "mp4"]

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Font } from 'expo';
+import Share, {ShareSheet, Button} from 'react-native-share';
 import { connect } from 'react-redux';
 
 function mapDispatchToProps(dispatch) {
@@ -78,6 +79,13 @@ navigationCommunity(route, index) {
 
   render() {
 
+    var shareOptions = {
+      title: "Tie Break",
+      message: "Rejoins-moi sur Tie Break pour faire un tennis !",
+      url: "http://www.tie-break.fr",
+      subject: "Application Tie Break" //  for email
+    };
+
     if (this.props.user.picture!=undefined)
            {
            var profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
@@ -142,7 +150,10 @@ navigationCommunity(route, index) {
 
            <View style={{paddingTop: 10}}>
             {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> INVITER DES AMIS </Text>) : null 
+        this.state.fontAvenirLoaded ? (
+          <TouchableWithoutFeedback style={{padding:50}} onPress={()=>{Share.open(shareOptions)}}>
+          <Text style={styles.subtitle}> INVITER DES AMIS </Text>
+          </TouchableWithoutFeedback>) : null 
           }
           </View>
 
