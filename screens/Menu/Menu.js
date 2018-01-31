@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, Alert } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 import { Parse } from 'parse/react-native'
 
@@ -14,9 +14,23 @@ export default class Home extends React.Component {
   constructor() {
     super();
     this._onPressLogOutButton = this._onPressLogOutButton.bind(this);
+    this._onPressConfirmLogOut = this._onPressConfirmLogOut.bind(this);
   }
 
-  _onPressLogOutButton() {
+    _onPressLogOutButton() {
+
+      Alert.alert(
+        'Vous confirmez vouloir vous déconnecter ?',
+        '',
+        [
+          {text: 'Non'},
+          {text: 'Oui', onPress: () => this._onPressConfirmLogOut()},
+        ],
+        { cancelable: false }
+      ) 
+  }
+
+  _onPressConfirmLogOut() {
     console.log("déconnecté !");
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
