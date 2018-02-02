@@ -164,11 +164,11 @@ class ProfileViewHeader extends React.Component {
 
     var header= null;
     if (this.state.isFriend && !this.props.viewProfile.fromChat) {
-      header= (<TouchableWithoutFeedback style={{padding:50}} onPress={this.goToChat}>
+      header= (<TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={this.goToChat}>
        <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
        </TouchableWithoutFeedback>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
-      header=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} style={{padding:50}}>
+      header=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} hitSlop={{top: 50, left: 50, bottom: 50, right: 50}}>
        <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
        </TouchableWithoutFeedback>);
     } else {
@@ -187,7 +187,7 @@ class ProfileViewHeader extends React.Component {
         top: 40
         }}>
 
-     		<TouchableWithoutFeedback style={{padding:50}} onPress={() => this.props.navigation.goBack()}>
+     		<TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={() => this.props.navigation.goBack()}>
         <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
         </TouchableWithoutFeedback>
 

@@ -47,15 +47,16 @@ class MessengerHeader extends Component {
           justifyContent: 'space-around',
           top: 40
         }}>
-              <TouchableWithoutFeedback style={{padding:50}} onPress={() => this.props.navigation.goBack()}>
+              <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={() => this.props.navigation.goBack()}>
              <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
              </TouchableWithoutFeedback>
                {
                 this.state.fontLoaded ? ( <Text style={styles.title}>{this.props.chat.firstName}</Text> ) : null 
                }
               
-              <TouchableWithoutFeedback 
-              style={{padding:50, top:7}} 
+              <TouchableWithoutFeedback
+              hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} 
+              style={{top:7}} 
               onPress={() => this.props.handleSubmit({
                 firstName:this.props.chat.firstName,
                 id:this.props.chat.id,

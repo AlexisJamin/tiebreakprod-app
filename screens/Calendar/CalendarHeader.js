@@ -29,7 +29,7 @@ export default class CalendarHeader extends Component {
           justifyContent: 'space-around',
           top: 40,
         }}>
-            <TouchableWithoutFeedback style={{padding:50}} onPress={() => this.props.navigation.goBack()}>
+            <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={() => this.props.navigation.goBack()}>
              <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
              </TouchableWithoutFeedback>
        
