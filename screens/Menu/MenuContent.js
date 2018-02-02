@@ -111,7 +111,7 @@ navigationCommunity(route, index) {
           <View style={{marginTop: 20}}>
             {
         this.state.fontAvenirNextLoaded ? (
-          <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationProfile('Profile',0)}>
+          <TouchableWithoutFeedback hitSlop={{top: 30, left: 30, bottom: 30, right: 30}} onPress={()=> this.navigationProfile('Profile',0)}>
           <Text style={styles.title}> MON PROFIL </Text>
           </TouchableWithoutFeedback>) : null 
           }
@@ -124,7 +124,7 @@ navigationCommunity(route, index) {
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationCalendar('Calendar',0)} >
+          <TouchableWithoutFeedback hitSlop={{top: 30, left: 30, bottom: 30, right: 30}} onPress={()=> this.navigationCalendar('Calendar',0)} >
           <Text style={styles.subtitle}> MON CALENDRIER </Text>
           </TouchableWithoutFeedback>
           ) : null 
@@ -138,7 +138,7 @@ navigationCommunity(route, index) {
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:50}} onPress={()=> this.navigationCommunity('Community',0)}>
+          <TouchableWithoutFeedback hitSlop={{top: 30, left: 30, bottom: 30, right: 30}} onPress={()=> this.navigationCommunity('Community',0)}>
           <Text style={styles.subtitle}> MES COMMUNAUTÉS </Text>
           </TouchableWithoutFeedback>) : null 
           }
@@ -151,7 +151,7 @@ navigationCommunity(route, index) {
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback style={{padding:50}} onPress={()=>{Share.open(shareOptions)}}>
+          <TouchableWithoutFeedback hitSlop={{top: 30, left: 30, bottom: 30, right: 30}} onPress={()=>{Share.open(shareOptions)}}>
           <Text style={styles.subtitle}> INVITER DES AMIS </Text>
           </TouchableWithoutFeedback>) : null 
           }

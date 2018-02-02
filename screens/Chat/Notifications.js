@@ -262,39 +262,40 @@ class Notifications extends React.Component {
 
   }
 
-  viewOnPress(id, userId, type, firstName) {
-    console.log("type");
-    console.log(type);
+  viewOnPress(id, userId, type, firstName, seen) {
     var view = this;
-    // allows to change background color when seen
-    var NotificationCopy = [...this.state.data];
-    function findIndexType(element) {
-      return element.objectId == id;
-    }
-    var index = NotificationCopy.findIndex(findIndexType);
-    console.log(index);
-    NotificationCopy[index].seen = true;
-    
-    var Notification = Parse.Object.extend("Notification");
-    var query = new Parse.Query(Notification);
-    query.equalTo('objectId', id); 
-    query.first({
-      success: function(notification) {
-        // The object was retrieved successfully.
-        notification.set("seen", true);
-        notification.save();
-        view.props.handleSubmitUpdateNotification({
-          notification:view.state.notification-1
-        })
-        view.setState({data: NotificationCopy, notification:view.state.notification-1})
-      },
-      error: function(error) {
-        // The object was not retrieved successfully.
-        // error is a Parse.Error with an error code and message.
-        console.log(error);
-      }
-    });
 
+    // allows to change background color when seen
+    if (!seen) {
+      
+      var NotificationCopy = [...this.state.data];
+      function findIndexType(element) {
+        return element.objectId == id;
+      }
+      var index = NotificationCopy.findIndex(findIndexType);
+      NotificationCopy[index].seen = true;
+      
+      var Notification = Parse.Object.extend("Notification");
+      var query = new Parse.Query(Notification);
+      query.equalTo('objectId', id); 
+      query.first({
+        success: function(notification) {
+          // The object was retrieved successfully.
+          notification.set("seen", true);
+          notification.save();
+          view.props.handleSubmitUpdateNotification({
+            notification:view.state.notification-1
+          })
+          view.setState({data: NotificationCopy, notification:view.state.notification-1})
+        },
+        error: function(error) {
+          // The object was not retrieved successfully.
+          // error is a Parse.Error with an error code and message.
+          console.log(error);
+        }
+      });
+    }
+    
      if (type == 0) {
          var User = Parse.Object.extend("User");
          var query = new Parse.Query(User);
@@ -498,7 +499,7 @@ render () {
           subtitleContainerStyle={{marginLeft:30, width:300}}
           subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'bold'}}>{item.typeName} </Text>}
           hideChevron={true}
-          onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type, item.fromUserFirstName)}}
+          onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type, item.fromUserFirstName, item.seen)}}
           />
         )}
       />
