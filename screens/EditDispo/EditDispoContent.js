@@ -125,7 +125,7 @@ constructor(props) {
   render() {
 
     var dayList = [];
-    var days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    var days = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
     const { selectedIndex8h } = this.state;
     const { selectedIndex9h } = this.state;
     const { selectedIndex10h } = this.state;

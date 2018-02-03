@@ -11,18 +11,10 @@ function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, chat: store.chat }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'chat', value: value} ) 
-    }
-  }
-};
-
 class MessengerHeader extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       fontLoaded: false
     };
@@ -43,28 +35,18 @@ class MessengerHeader extends Component {
        
          <View style={{
           flex:1,
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          top: 40
+          flexDirection:'row',
+          justifyContent:'space-around',
+          top:40
         }}>
-              <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={() => this.props.navigation.goBack()}>
+              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.goBack()}>
              <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
              </TouchableWithoutFeedback>
                {
                 this.state.fontLoaded ? ( <Text style={styles.title}>{this.props.chat.firstName}</Text> ) : null 
                }
               
-              <TouchableWithoutFeedback
-              hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} 
-              style={{top:7}} 
-              onPress={() => this.props.handleSubmit({
-                firstName:this.props.chat.firstName,
-                id:this.props.chat.id,
-                userId:this.props.chat.userId,
-                onPress:true,
-              })}>
-             <Image style={{top:7}} source={require('../../assets/icons/General/More.imageset/icMore.png')} /> 
-             </TouchableWithoutFeedback>
+              <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
         
          </View>
       </Image>
@@ -74,7 +56,7 @@ class MessengerHeader extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (MessengerHeader);
+export default connect(mapStateToProps, null) (MessengerHeader);
 
 const styles = StyleSheet.create({
   title: {
@@ -82,7 +64,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'Avenir',
     fontSize: 15,
-    top: 3,
     textAlign:'center'
   }
 });

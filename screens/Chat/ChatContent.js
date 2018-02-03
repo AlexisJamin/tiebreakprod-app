@@ -43,6 +43,8 @@ class ChatContent extends React.Component {
     query.descending("updatedAt");
     query.find({
       success: function(Conversation) {
+        console.log('Conversation.length');
+        console.log(Conversation.length);
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         if (Conversation.length != 0) {
           var ConversationCopy = [];
@@ -52,12 +54,16 @@ class ChatContent extends React.Component {
 
           for (var i = 0; i < ConversationCopy.length; i++) {
 
+            console.log('Conversation query2');
+            console.log('ConversationCopy[i].lastMessage.objectId');
+            console.log(ConversationCopy[i].lastMessage.objectId);
             // enables to see lastMessage
             var query2 = new Parse.Query("Message");
             (function(query, conversation, i, edit) { 
               query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
               query.first({
                 success: function(Message) {
+                  console.log('Conversation Message'+i);
                 // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
                     var MessageCopy = JSON.parse(JSON.stringify(Message));
                     var messageParam = {message : MessageCopy.message};
@@ -66,14 +72,16 @@ class ChatContent extends React.Component {
                   }
               });
            })(query2, ConversationCopy, i, edit);
+           console.log('Conversation query2 stop');
          
             var roomUsersCopy = ConversationCopy[i].roomUsers.concat();
             var roomUsersFiltered = roomUsersCopy.filter(userId => userId != user.id);
 
+            console.log('Conversation query3');
             // enables to see user
             var query3 = new Parse.Query(Parse.User);
             (function(query, conversation, i, edit) { 
-              query.get(roomUsersFiltered[i],{
+              query.get(roomUsersFiltered[0],{
                 success: function(users) {
                   var id = users.id;
                   var lastName = users.get("lastName");
@@ -85,9 +93,9 @@ class ChatContent extends React.Component {
                 }
               });
            })(query3, ConversationCopy, i, edit);
+           console.log('Conversation query3 stop');
          }
-        } 
-        else {edit.setState({loading:false})}
+        } else {edit.setState({loading:false})}
       },
       error: function(e) {
         console.log(e);
@@ -191,7 +199,7 @@ renderSeparator() {
                 query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
                 query.first({
                   success: function(Message) {
-                  // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+                  // don't understand why but can't access to the Objects contained in the Parse Array "Message". Works with JSON.parse(JSON.stringify()).
                       var MessageCopy = JSON.parse(JSON.stringify(Message));
                       var messageParam = {message : MessageCopy.message};
                       Object.assign(conversation[i], messageParam);
@@ -206,7 +214,7 @@ renderSeparator() {
               // enables to see user
               var query3 = new Parse.Query(Parse.User);
               (function(query, conversation, i, edit) { 
-                query.get(roomUsersFiltered[i],{
+                query.get(roomUsersFiltered[0],{
                   success: function(users) {
                     var id = users.id;
                     var lastName = users.get("lastName");
@@ -219,8 +227,7 @@ renderSeparator() {
                 });
              })(query3, ConversationCopy, i, edit);
            }
-          } 
-          else {edit.setState({refreshing:false})}
+          } else {edit.setState({refreshing:false})}
         },
         error: function(e) {
           console.log(e);
@@ -229,6 +236,8 @@ renderSeparator() {
     }
 
   goToChat(id, firstName, userId) {
+    console.log('id');
+    console.log(id);
     this.props.handleSubmit({
       firstName:firstName,
       id:id,

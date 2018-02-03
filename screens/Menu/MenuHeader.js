@@ -35,7 +35,7 @@ export default class MenuHeader extends Component {
 
        		 <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
           
-          <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={() => this.props.navigation.goBack()}>
+          <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.goBack()}>
           <Image source={require('../../assets/icons/Menu/Home.imageset/ic_white_ball_header.png')} />
           </TouchableWithoutFeedback>
        

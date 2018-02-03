@@ -110,7 +110,7 @@ navigationCommunity(route, index) {
           <View style={{marginTop: 20}}>
             {
         this.state.fontAvenirNextLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={()=> this.navigationProfile('Profile',0)}>
+          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationProfile('Profile',0)}>
           <Text style={styles.title}> MON PROFIL </Text>
           </TouchableWithoutFeedback>) : null 
           }
@@ -123,7 +123,7 @@ navigationCommunity(route, index) {
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={()=> this.navigationCalendar('Calendar',0)} >
+          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCalendar('Calendar',0)} >
           <Text style={styles.subtitle}> MON CALENDRIER </Text>
           </TouchableWithoutFeedback>
           ) : null 
@@ -137,7 +137,7 @@ navigationCommunity(route, index) {
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={()=> this.navigationCommunity('Community',0)}>
+          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCommunity('Community',0)}>
           <Text style={styles.subtitle}> MES COMMUNAUTÉS </Text>
           </TouchableWithoutFeedback>) : null 
           }
@@ -150,7 +150,7 @@ navigationCommunity(route, index) {
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={()=>{Share.share(shareOptions)}}>
+          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=>{Share.share(shareOptions)}}>
           <Text style={styles.subtitle}> INVITER DES AMIS </Text>
           </TouchableWithoutFeedback>) : null 
           }

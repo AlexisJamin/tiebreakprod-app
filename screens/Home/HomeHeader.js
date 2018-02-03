@@ -78,7 +78,7 @@ class HomeHeader extends Component {
         top:40
         }}>
 
-       		<TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={() => this.props.navigation.navigate('Menu')}>
+       		<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('Menu')}>
           <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
           </TouchableWithoutFeedback>
        {
@@ -87,7 +87,7 @@ class HomeHeader extends Component {
        
            <IconBadge
             MainElement={
-              <TouchableWithoutFeedback hitSlop={{top: 50, left: 50, bottom: 50, right: 50}} onPress={()=> this.navigationRoute('Chat',0)}>
+              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={()=> this.navigationRoute('Chat',0)}>
               <Image source={require('../../assets/icons/Menu/Messages.imageset/icMessageBig.png')} />
               </TouchableWithoutFeedback>
             }

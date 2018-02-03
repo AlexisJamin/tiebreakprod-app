@@ -30,16 +30,10 @@ class MessengerContent extends React.Component {
     this.onPressViewProfile = this.onPressViewProfile.bind(this);
     this.onPressMute = this.onPressMute.bind(this);
     this.MuteFriend = this.MuteFriend.bind(this);
+    this.onPressAvatar = this.onPressAvatar.bind(this);
     this.state = {
       messages: [],
     };
-  }
-
-  componentWillReceiveProps(props) {
-    console.log('props reçues !!!');
-    if (props.chat.onPress) {
-      this.refs.modal.open();
-    }
   }
 
   componentWillMount() {
@@ -50,6 +44,7 @@ class MessengerContent extends React.Component {
       name:user.get('firstName'),
       avatar:user.get('picture').url(),
     })
+
     var query = new Parse.Query("Conversation");
     var edit = this;
     query.equalTo('objectId', this.props.chat.id); 
@@ -245,7 +240,7 @@ class MessengerContent extends React.Component {
 onPressMute() {
   console.log('onPressMute');
   Alert.alert(
-    'Bloquer'+this.props.chat.firstName+'?',
+    'Voulez-vous bloquer '+this.props.chat.firstName+' définitivement ?',
     'Cette action est irréversible',
     [
       {text: 'Oui', onPress: () => this.MuteFriend()},
@@ -301,6 +296,14 @@ MuteFriend() {
   });
 }
 
+onPressAvatar(friend) {
+    console.log(friend);
+    var user = Parse.User.current();
+    if (friend._id != user.id) {
+      this.refs.modal.open();
+    }
+  }
+
 render () {
   return (
 
@@ -315,6 +318,7 @@ render () {
         placeholder={'Écrivez votre message...'}
         renderBubble={this.renderBubble}
         showUserAvatar={true}
+        onPressAvatar={(friend)=> this.onPressAvatar(friend)}
         onSend={(messages) => this.onSend(messages)}
       />
 
@@ -362,8 +366,8 @@ const styles = StyleSheet.create({
     bottom:12
   },
   modalText: {
-    color: "black",
-    fontSize: 20,
+    color:"black",
+    fontSize:20,
     width:"100%",
     textAlign:'center'
   },
