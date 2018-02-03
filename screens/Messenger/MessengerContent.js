@@ -266,8 +266,7 @@ MuteFriend() {
   relation1.first({
     success: function(relation) {
       var conversation = new Parse.Query("Conversation");
-      conversation.equalTo('roomUsers', user.id); 
-      conversation.equalTo('roomUsers', add.props.chat.userId); 
+      conversation.containsAll('roomUsers', [user.id, add.props.chat.userId]); 
       conversation.first({
         success: function(conversation) {
           conversation.destroy();
@@ -287,8 +286,7 @@ MuteFriend() {
   relation2.first({
     success: function(relation) {
       var conversation = new Parse.Query("Conversation");
-      conversation.equalTo('roomUsers', user.id); 
-      conversation.equalTo('roomUsers', add.props.chat.userId); 
+      conversation.containsAll('roomUsers', [user.id, add.props.chat.userId]); 
       conversation.first({
         success: function(conversation) {
           conversation.destroy();

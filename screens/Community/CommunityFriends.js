@@ -92,9 +92,11 @@ class CommunityFriends extends React.Component {
                       clubs:clubs
                     });
                     for (var i = 0; i < friends.length; i++) {
+                      if (friends[i].geolocation != undefined) {
                       var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
                       var distanceParam = {distance: distance};
                       Object.assign(friends[i], distanceParam);
+                      }
                     }
 
                     for (var i = 0; i < friends.length; i++) {
@@ -278,9 +280,11 @@ class CommunityFriends extends React.Component {
                       clubs:clubs
                     });
                     for (var i = 0; i < friends.length; i++) {
+                      if (friends[i].geolocation != undefined) {
                       var distance = Math.round(userGeoPoint.kilometersTo(friends[i].geolocation));
                       var distanceParam = {distance: distance};
                       Object.assign(friends[i], distanceParam);
+                      }
                     }
 
                     for (var i = 0; i < friends.length; i++) {

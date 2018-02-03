@@ -144,11 +144,15 @@ class ProfileViewHeader extends React.Component {
   goToChat() {
     var user = Parse.User.current();
     var go = this;
+    console.log('user.id');
+    console.log(user.id);
+    console.log('this.props.viewProfile.id');
     console.log(this.props.viewProfile.id);
     var conversation = new Parse.Query("Conversation");
     conversation.containsAll('roomUsers', [user.id, this.props.viewProfile.id]); 
     conversation.first({
       success: function(conversation) {
+        console.log('conversation.id');
         console.log(conversation.id);
         go.props.handleSubmitChat({
           id:conversation.id,

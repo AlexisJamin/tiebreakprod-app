@@ -237,7 +237,6 @@ constructor(props) {
             onChangeText={(username) => this.setState({username})}
             value={this.state.username}
             blurOnSubmit={false}
-            onSubmitEditing={() => this.refs.password.setFocus()}
             />
             <TextInput 
             ref='password'

@@ -59,15 +59,21 @@ class CommunityContent extends React.Component {
         success: function(Community) {
           // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
           if (Community.length != 0) {
+
+          console.log('Community');
+          console.log(Community);
+
           var CommunityCopy = [];
           for (var i = 0; i < Community.length; i++) {
             CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
           }
 
           for (var i = 0; i < CommunityCopy.length; i++) {
+            if (CommunityCopy[i].geolocation != undefined) {
             var distance = Math.round(userGeoPoint.kilometersTo(CommunityCopy[i].geolocation));
             var distanceParam = {distance: distance};
             Object.assign(CommunityCopy[i], distanceParam);
+            }
           }
 
           for (var i = 0; i < CommunityCopy.length; i++) {

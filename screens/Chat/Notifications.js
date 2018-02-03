@@ -379,8 +379,7 @@ class Notifications extends React.Component {
         console.log('type 8');
          var user = Parse.User.current();
          var conversation = new Parse.Query("Conversation");
-         conversation.equalTo('roomUsers', user.id); 
-         conversation.equalTo('roomUsers', userId); 
+         conversation.containsAll('roomUsers', [user.id, userId]); 
          conversation.first({
           success: function(conversation) {
               // The object was retrieved successfully.

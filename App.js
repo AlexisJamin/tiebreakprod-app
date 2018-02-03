@@ -78,6 +78,7 @@ _loadResourcesAsync = async () => {
       Asset.loadAsync([
         require('./assets/icons/AppSpecific/Logo.imageset/logoBlack.png'),
         require('./assets/icons/AppSpecific/Header.imageset/header_bg.png'),
+        require('./assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png'),
         require('./assets/icons/Menu/Profile.imageset/icProfile.png'),
         require('./assets/icons/Menu/Messages.imageset/icMessageBig.png'),
         require('./assets/icons/AppSpecific/Footer.imageset/group3.png'),
