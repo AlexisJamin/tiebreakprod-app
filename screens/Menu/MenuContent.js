@@ -117,7 +117,9 @@ navigationCommunity(route, index) {
           </View>
 
           <View style={{marginTop: 15}}>
+            <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCalendar('Calendar',0)} >
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
+            </TouchableWithoutFeedback>
           </View>
 
            <View style={{marginTop: 10}}>
@@ -131,7 +133,9 @@ navigationCommunity(route, index) {
           </View>
 
           <View style={{marginTop: 15}}>
+            <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCommunity('Community',0)}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
+            </TouchableWithoutFeedback>
           </View>
 
            <View style={{marginTop: 10}}>
@@ -144,7 +148,9 @@ navigationCommunity(route, index) {
           </View>
 
           <View style={{marginTop: 15}}>
+            <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=>{Share.share(shareOptions)}}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
+            </TouchableWithoutFeedback>
           </View>
 
            <View style={{marginTop: 10}}>

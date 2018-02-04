@@ -89,9 +89,15 @@ constructor(props) {
   
   if (this.props.user.picture!=undefined)
            {
-           profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
+           profileImage = (
+            <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+            <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
+            </TouchableWithoutFeedback>)
            } else {
-             profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
+             profileImage = (
+              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+              <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
+              </TouchableWithoutFeedback>)
              }
 
   if (this.props.user.currentLevel == undefined) {
@@ -235,21 +241,24 @@ constructor(props) {
 
               </View>
 
-          <View style={{flex:1, justifyContent: 'space-around', flexDirection: 'row'}}>
+          <View style={{flex:1, justifyContent: 'center', flexDirection: 'row'}}>
             
-            <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-            <View style={{flexDirection:'column', alignItems:'center'}}>
             {
-             this.state.fontAvenirNextLoaded ? (<Text style={styles.name}> {this.props.user.firstName} {this.props.user.lastName[0]}. </Text> 
+             this.state.fontAvenirNextLoaded ? (
+               <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+              <Text style={styles.name}> {this.props.user.firstName} {this.props.user.lastName[0]}. </Text> 
+              </TouchableWithoutFeedback>
              ) : null 
             }
             {
-             this.state.fontAvenirLoaded ? (<Text style={styles.age}> ({age}) </Text> 
+             this.state.fontAvenirLoaded ? (
+              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+              <Text style={styles.age}> ({age}) </Text> 
+              </TouchableWithoutFeedback>
              ) : null 
             }
-            </View>
             <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
-            <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+            <Image style={{marginTop:4, marginLeft:8}} source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
             </TouchableWithoutFeedback>
           
           </View>
@@ -315,15 +324,16 @@ constructor(props) {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-around'
+          justifyContent: 'center'
         }}>
-
-               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES CLUBS</Text>) : null 
+              this.state.fontAvenirLoaded ? (
+                <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditClub')} >
+                <Text style={styles.name}>MES CLUBS</Text>
+                </TouchableWithoutFeedback>) : null 
               }   
             <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditClub')} >
-             <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+             <Image style={{marginTop:4, marginLeft:8}} source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
              </TouchableWithoutFeedback>
 
           </View>
@@ -373,15 +383,17 @@ constructor(props) {
           <View style={{
           flex: 1,
           flexDirection: 'row',
-          justifyContent: 'space-around'
+          justifyContent: 'center'
         }}>
 
-               <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>MES DISPONIBILITÉS</Text>) : null 
+              this.state.fontAvenirLoaded ? (
+                <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditDispo')} >
+                <Text style={styles.name}>MES DISPONIBILITÉS</Text>
+                </TouchableWithoutFeedback>) : null 
               }   
             <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditDispo')} >
-            <Image source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
+            <Image style={{marginTop:4, marginLeft:8}} source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
             </TouchableWithoutFeedback>
 
           </View>
@@ -427,7 +439,7 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0,0,0,0)',
     fontFamily:'Avenir',
     fontSize: 13,
-    marginTop: 2,
+    marginTop:3,
     alignItem:'center', 
     justifyContent: 'center'
   },

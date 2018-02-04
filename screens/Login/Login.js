@@ -237,9 +237,11 @@ constructor(props) {
             onChangeText={(username) => this.setState({username})}
             value={this.state.username}
             blurOnSubmit={false}
+            onSubmitEditing={() => {this.refs.password.focus()}}
             />
+
             <TextInput 
-            ref='password'
+            ref={'password'}
             style={styles.input} 
             keyboardType="default"
             returnKeyType='done'

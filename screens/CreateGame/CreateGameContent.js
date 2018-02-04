@@ -38,7 +38,9 @@ class CreateGameContent extends React.Component {
       clubListName:null,
       surface:null,
       date:null,
-      price:0
+      price:0,
+      friends1:null,
+      friends2:null,
     };
   }
 
@@ -70,6 +72,41 @@ class CreateGameContent extends React.Component {
         // error is a Parse.Error with an error code and message.
       }
     });
+
+    var query1 = new Parse.Query('Relation');
+    query1.equalTo('status', 3);
+    query1.equalTo('fromUser', Parse.User.current());  
+    query1.find({
+      success: function(Friends) {
+        console.log('query 1');
+        if (Friends.length != 0) {
+          edit.setState({friends1:true})
+        }
+        else {edit.setState({friends1:false})}
+        console.log('loading1 terminé');
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    })
+
+    var query2 = new Parse.Query('Relation');
+    query2.equalTo('status', 3);
+    query2.equalTo('toUser', Parse.User.current());  
+    query2.find({
+      success: function(Friends) {
+        console.log('query 2');
+        if (Friends.length != 0) {
+          edit.setState({friends2:true})
+       } 
+       else {edit.setState({friends2:false})}
+        console.log('loading2 terminé');
+      },
+      error: function(e) {
+        console.log(e);
+      }
+    });
+
   }
 
   async componentDidMount() {
@@ -166,16 +203,17 @@ class CreateGameContent extends React.Component {
   _onPressValidateButton() {
     if (this.state.surface != null && this.state.selectedConditionIndex != null && this.state.date != null && this.state.selectedClubIndex != null) {
 
-      Alert.alert(
-        'Vous confirmez avoir réservé un terrain le :',
-        moment(this.state.date).format('llll')+' ?',
-        [
-          {text: 'Non'},
-          {text: 'Oui', onPress: () => this._onPressAnswerPositive()},
-        ],
-        { cancelable: false }
-      )
-
+      if (this.state.friends1 || this.state.friends2) {
+          Alert.alert(
+          'Vous confirmez avoir réservé un terrain le :',
+          moment(this.state.date).format('llll')+' ?',
+          [
+            {text: 'Non'},
+            {text: 'Oui', onPress: () => this._onPressAnswerPositive()},
+          ],
+          { cancelable: false }
+        )
+      } else {Alert.alert("Vous n'avez pas encore d'ami(e)s à inviter.");}
     } else {
       Alert.alert('Veuillez compléter tous les champs');
     }

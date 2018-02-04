@@ -90,7 +90,7 @@ class Notifications extends React.Component {
                 success: function(users) {
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
-                  var picture = users.get("picture").url();
+                  var picture = users.get("picture");
                   var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
                   Object.assign(notification[i], fromUserParam);
                   edit.setState({ data: notification, loading:false });
@@ -231,7 +231,7 @@ class Notifications extends React.Component {
                 success: function(users) {
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
-                  var picture = users.get("picture").url();
+                  var picture = users.get("picture");
                   var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
                   Object.assign(notification[i], fromUserParam);
                   edit.setState({ data: notification, refreshing:false });
@@ -493,7 +493,7 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:30}}
           containerStyle={[styles.container, !item.seen && styles.background]}
-          avatar={{ uri : item.fromUserPicture } || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
+          avatar={ ( item.fromUserPicture && { uri : item.fromUserPicture.url() } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
           title={<Text style={{fontSize:15, fontWeight:'bold'}}>{item.fromUserFirstName} {item.fromUserLastName}.</Text>}
           subtitleContainerStyle={{marginLeft:30, width:300}}
           subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'bold'}}>{item.typeName} </Text>}

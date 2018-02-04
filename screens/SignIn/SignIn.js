@@ -366,10 +366,10 @@ class SignIn extends React.Component {
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.lastName.focus()}}
+            onSubmitEditing={() => {this.refs.lastName.focus()}}
             />
           <TextInput 
-            ref='lastName'
+            ref={'lastName'}
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
@@ -378,10 +378,10 @@ class SignIn extends React.Component {
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.username.focus()}}
+            onSubmitEditing={() => {this.refs.username.focus()}}
             />
           <TextInput
-            ref='username' 
+            ref={'username'} 
             style={styles.input} 
             keyboardType="email-address"
             returnKeyType='next'
@@ -391,10 +391,10 @@ class SignIn extends React.Component {
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.password.focus()}}
+            onSubmitEditing={() => {this.refs.password.focus()}}
             />
           <TextInput 
-            ref='password'
+            ref={'password'}
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
@@ -405,10 +405,10 @@ class SignIn extends React.Component {
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(password) => this.setState({password})}
             blurOnSubmit={false}
-            onSubmitEditing={(event) => {this.refs.confirmPassword.focus()}}
+            onSubmitEditing={() => {this.refs.confirmPassword.focus()}}
             />
           <TextInput 
-            ref='confirmPassword'
+            ref={'confirmPassword'}
             style={styles.input} 
             keyboardType="default"
             returnKeyType='done'

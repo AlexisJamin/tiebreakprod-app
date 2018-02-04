@@ -60,9 +60,6 @@ class CommunityContent extends React.Component {
           // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
           if (Community.length != 0) {
 
-          console.log('Community');
-          console.log(Community);
-
           var CommunityCopy = [];
           for (var i = 0; i < Community.length; i++) {
             CommunityCopy.push(JSON.parse(JSON.stringify(Community[i])));
