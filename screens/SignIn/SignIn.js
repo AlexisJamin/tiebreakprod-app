@@ -16,7 +16,7 @@ function mapDispatchToProps(dispatch) {
         dispatch( {type: 'user', value: value} ) 
     },
         handleSubmitClub: function(value) { 
-        dispatch( {type: 'userClub', value: value} ) 
+        dispatch( {type: 'signIn', value: value} ) 
     },
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
@@ -123,6 +123,8 @@ class SignIn extends React.Component {
       ProfileButtonIndex:null
     })
 
+      signin.props.handleSubmitClub({toto:'toto'})
+
       signin.props.navigation.navigate("Swiper")
   },
   error: function(user, error) {
@@ -217,6 +219,8 @@ class SignIn extends React.Component {
                   CalendarButtonIndex:null,
                   ProfileButtonIndex:null
                 })
+
+                signin.props.handleSubmitClub({toto:'toto'})
 
                 signin.props.navigation.navigate("Swiper")
                 }, function(error) {

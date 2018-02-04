@@ -528,11 +528,11 @@ constructor(props) {
 
   var deleteAddFriend= null;
     if (this.state.isFriend) {
-      deleteAddFriend=(<TouchableWithoutFeedback onPress={this._onPressDeleteFriend} style={{padding:30}}>
+      deleteAddFriend=(<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={this._onPressDeleteFriend} style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> Supprimer le lien d'amitié </Text>
        </TouchableWithoutFeedback>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
-      deleteAddFriend=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} style={{padding:30}}>
+      deleteAddFriend=(<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={this._onPressAddFriend} style={{padding:30}}>
        <Text style={{textDecorationLine:'underline'}}> Ajouter comme ami(e) </Text>
        </TouchableWithoutFeedback>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent) {

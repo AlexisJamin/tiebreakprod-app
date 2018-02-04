@@ -1,4 +1,7 @@
 export default function userClub(store=[], action) {
+  if (action.type == 'signIn') {
+    return store=[];
+  } 
   if (action.type == 'userClub') {
   	var copyStore = store.concat();
   	copyStore.push(action.value);
