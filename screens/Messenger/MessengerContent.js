@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert, Platform } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Modal from 'react-native-modalbox';
 import { Parse } from 'parse/react-native';
 import { connect } from 'react-redux';
@@ -151,16 +152,19 @@ class MessengerContent extends React.Component {
             Conversation.save();
 
             Parse.Cloud.run("createNotification", { 
-            "userId": send.props.chat.userId,
-            "message": "vous a envoyé un message",
-            "conversationId": Conversation.id,
-            "type": 8,
+            "userId":send.props.chat.userId,
+            "message":"vous a envoyé un message",
+            "conversationId":Conversation.id,
+            "type":8,
              })
             
             }
         });
 
 
+      }, error: function(message, error) {
+        console.log(message);
+        console.log(error);
       }
     });
   }
@@ -305,6 +309,13 @@ onPressAvatar(friend) {
   }
 
 render () {
+
+    if (Platform.OS === 'android') {
+      var KeyboardSpacer = (<KeyboardSpacer/>);
+    } else {
+      var KeyboardSpacer = null;
+    }
+
   return (
 
     <View style={{flex:1}}>
@@ -321,6 +332,7 @@ render () {
         onPressAvatar={(friend)=> this.onPressAvatar(friend)}
         onSend={(messages) => this.onSend(messages)}
       />
+      {KeyboardSpacer}
 
       <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
           

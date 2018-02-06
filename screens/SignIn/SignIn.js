@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, KeyboardAvoidingView } from 'react-native';
 import { Facebook, Font, Constants, ImagePicker, registerRootComponent, Location, Permissions } from 'expo';
 import Modal from 'react-native-modalbox';
-import { NavigationActions } from 'react-navigation';
-import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
@@ -33,6 +32,7 @@ class SignIn extends React.Component {
     super(props);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
+    //this._getLocationAsync = this._getLocationAsync.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -44,10 +44,19 @@ class SignIn extends React.Component {
       password:'',
       confirmPassword:'',
       picture:'',
-      location:null
+      location:null,
+      status:null
     };
-    this._getLocationAsync();
   }
+
+  async componentWillMount() {
+     if (Platform.OS === 'android' && !Constants.isDevice) {
+      Alert.alert('isDevice'); 
+    } else {
+      this._getLocationAsync();
+      console.log('_getLocationAsync ok');
+    }
+}
 
   async componentDidMount() {
     await Font.loadAsync({
@@ -70,8 +79,15 @@ class SignIn extends React.Component {
 
   var signin = this;
 
+  console.log('this.state.location');
+  console.log(this.state.location);
+
   var user = new Parse.User();
-  var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
+
+  if (this.state.location) {
+    var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
+  }
+  
 
   user.set("username", this.state.username);
   user.set("password", this.state.password);
@@ -80,7 +96,9 @@ class SignIn extends React.Component {
   user.set("email", this.state.username);
   user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
-  user.set("geolocation", point);
+  if (this.state.location) {
+    user.set("geolocation", point);
+  }
   user.set("filterCondition", "indifferent");
   user.set("filterAge", {"to":70,"from":18});
   user.set("filterLevel", {"to":24,"from":0});
@@ -140,6 +158,9 @@ class SignIn extends React.Component {
     
     var signin = this;
     var user = new Parse.User();
+
+    console.log('this.state.location');
+    console.log(this.state.location);
       
       // Verify if all inputs are completed & two passwords are equals and email is good format
 
@@ -158,7 +179,7 @@ class SignIn extends React.Component {
 
             if (signin.state.picture.length>0) {
 
-            var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
+            //var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
 
             user.set("username", this.state.username);
             user.set("password", this.state.password);
@@ -167,7 +188,7 @@ class SignIn extends React.Component {
             user.set("email", this.state.username);
             user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
-            user.set("geolocation", point);
+            //user.set("geolocation", point);
             user.set("filterCondition", "indifferent");
             user.set("filterAge", {"to":70,"from":15});
             user.set("filterLevel", {"to":24,"from":0});
@@ -191,6 +212,8 @@ class SignIn extends React.Component {
                 // The file has been saved to Parse.
                 user.set("picture", picture);
                 user.save();
+
+                console.log("save ok");
 
                 signin.props.handleSubmit({
                 lastName:signin.state.lastName,
@@ -302,14 +325,21 @@ class SignIn extends React.Component {
   };
 
   _getLocationAsync = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    let status = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
      console.log('Permission to access location was denied');
     }
-
+    console.log('status');
+    console.log(status);
+    console.log('_getLocationAsync inside');
+    let service = await Location.getProviderStatusAsync();
+    console.log('service');
+    console.log(service);
     let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+    console.log('location');
     console.log(location);
-    this.setState({ location });
+    this.setState({ location: location });
+    console.log('setState ok');
   };
 
 
@@ -333,7 +363,7 @@ class SignIn extends React.Component {
         backgroundColor:'white'
       }}>
 
-          <KeyboardAwareScrollView>
+          <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={100}>
 
           <View style={{
            flexDirection: 'row',
@@ -364,12 +394,11 @@ class SignIn extends React.Component {
           <TextInput 
             style={styles.input} 
             keyboardType="default"
-            returnKeyType='next'
+            returnKeyType={'next'}
             autoCorrect={false}
             placeholder='Prénom'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
-            blurOnSubmit={false}
             onSubmitEditing={() => {this.refs.lastName.focus()}}
             />
           <TextInput 
@@ -381,7 +410,6 @@ class SignIn extends React.Component {
             placeholder='Nom'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
-            blurOnSubmit={false}
             onSubmitEditing={() => {this.refs.username.focus()}}
             />
           <TextInput
@@ -394,7 +422,6 @@ class SignIn extends React.Component {
             placeholder='Email'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
-            blurOnSubmit={false}
             onSubmitEditing={() => {this.refs.password.focus()}}
             />
           <TextInput 
@@ -408,7 +435,6 @@ class SignIn extends React.Component {
             placeholder='Mot de passe'
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(password) => this.setState({password})}
-            blurOnSubmit={false}
             onSubmitEditing={() => {this.refs.confirmPassword.focus()}}
             />
           <TextInput 

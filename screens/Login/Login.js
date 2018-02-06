@@ -218,7 +218,7 @@ constructor(props) {
 
       </View>
 
-      <KeyboardAwareScrollView style={{alignItems:'center', backgroundColor:'transparent'}}>
+      <KeyboardAwareScrollView enableOnAndroid={true} style={{alignItems:'center', backgroundColor:'transparent'}}>
 
           <View style={{alignItems:'center', marginTop: 80, marginBottom: 40}}>
             <Image source={require('../../assets/icons/AppSpecific/Logo.imageset/logoBlack.png')}/>
@@ -236,7 +236,6 @@ constructor(props) {
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             value={this.state.username}
-            blurOnSubmit={false}
             onSubmitEditing={() => {this.refs.password.focus()}}
             />
 

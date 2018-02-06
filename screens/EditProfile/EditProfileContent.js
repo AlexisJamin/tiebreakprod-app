@@ -311,7 +311,7 @@ constructor(props) {
         backgroundColor:'transparent'
       }}>
 
-          <KeyboardAwareScrollView>
+          <KeyboardAwareScrollView enableOnAndroid={true}>
 
           <View style={{
            flexDirection: 'row',
@@ -336,7 +336,6 @@ constructor(props) {
             defaultValue={this.state.firstName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
-            blurOnSubmit={false}
             onSubmitEditing={(event) => {this.refs.lastName.focus();
             }}
             />
@@ -349,7 +348,6 @@ constructor(props) {
             value={this.state.lastName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}
-            blurOnSubmit={false}
             onSubmitEditing={Keyboard.dismiss}
             />
 
