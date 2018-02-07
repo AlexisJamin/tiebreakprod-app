@@ -219,7 +219,10 @@ renderSeparator() {
                     var id = users.id;
                     var lastName = users.get("lastName");
                     var firstName = users.get("firstName");
-                    var picture = users.get("picture").url();
+                    var picture = users.get("picture");
+                    if (picture != undefined) {
+                      var picture = picture.url()
+                    }
                     var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id};
                     Object.assign(conversation[i], fromUserParam);
                     edit.setState({ data: conversation, refreshing:false });
@@ -244,6 +247,7 @@ renderSeparator() {
       userId:userId,
     })
     this.props.navigation.navigate("Messenger");
+    console.log('goToChat');
 }
 
 render () {

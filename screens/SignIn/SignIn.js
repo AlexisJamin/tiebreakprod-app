@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, KeyboardAvoidingView } from 'react-native';
-import { Facebook, Font, Constants, ImagePicker, registerRootComponent, Location, Permissions } from 'expo';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform } from 'react-native';
+import { Facebook, Font, Constants, ImagePicker, registerRootComponent, Location, Permissions, IntentLauncherAndroid } from 'expo';
 import Modal from 'react-native-modalbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
@@ -44,8 +44,7 @@ class SignIn extends React.Component {
       password:'',
       confirmPassword:'',
       picture:'',
-      location:null,
-      status:null
+      location:null
     };
   }
 
@@ -324,22 +323,53 @@ class SignIn extends React.Component {
     }
   };
 
-  _getLocationAsync = async () => {
-    let status = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-     console.log('Permission to access location was denied');
-    }
-    console.log('status');
-    console.log(status);
-    console.log('_getLocationAsync inside');
-    let service = await Location.getProviderStatusAsync();
-    console.log('service');
-    console.log(service);
+  _getIntentLauncherAndroidAsync = async () => {
+    await IntentLauncherAndroid.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
     let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
     console.log('location');
     console.log(location);
     this.setState({ location: location });
     console.log('setState ok');
+  };
+
+  _getLocationAsync = async () => {
+    let {status} = await Permissions.askAsync(Permissions.LOCATION);
+    let service = await Location.getProviderStatusAsync();
+    console.log('status');
+    console.log(status);
+    console.log('service');
+    console.log(service);
+
+    if (status != 'granted') {
+     console.log('Permission to access location was denied');
+     Alert.alert(
+          "Vous n'avez pas autorisé Tie Break à accéder à votre localisation. Allez dans Réglages > Confidentialité pour l'activer.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
+     this.setState({ location: undefined });
+    } else if (!service.locationServicesEnabled) {
+      if (Platform.OS === 'android') {
+        Alert.alert(
+          "La localisation est désactivée sur votre mobile.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains.",
+          [
+            {text: 'Activer', onPress : () => this._getIntentLauncherAndroidAsync()},
+            {text: 'Non', onPress : () => this.setState({ location: undefined }), style:'cancel'},
+          ],
+          { cancelable: false }
+          );
+      } else {
+        Alert.alert(
+          "La localisation est désactivée sur votre mobile. Allez dans Réglages > Confidentialité pour l'activer.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
+        this.setState({ location: undefined });
+      }
+    } else if (service.locationServicesEnabled) {
+        let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+        console.log('location');
+        console.log(location);
+        this.setState({ location: location });
+        console.log('setState ok');
+      }
   };
 
 

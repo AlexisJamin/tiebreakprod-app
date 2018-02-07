@@ -33,6 +33,7 @@ class CommunityFriends extends React.Component {
       dataCopy:[],
       loading1: true,
       loading2: true,
+      location: null,
     };
   }
 
@@ -77,7 +78,7 @@ class CommunityFriends extends React.Component {
                     var availability = users.get("availability");
                     var geolocation = users.get("geolocation");
                     var clubs = users.get("clubs");
-                    var picture = users.get("picture").url();
+                    var picture = users.get("picture");
                     friends.push({
                       lastName:lastName,
                       firstName:firstName,
@@ -265,7 +266,7 @@ class CommunityFriends extends React.Component {
                     var availability = users.get("availability");
                     var geolocation = users.get("geolocation");
                     var clubs = users.get("clubs");
-                    var picture = users.get("picture").url();
+                    var picture = users.get("picture");
                     friends.push({
                       lastName:lastName,
                       firstName:firstName,
@@ -432,6 +433,9 @@ class CommunityFriends extends React.Component {
 
   componentDidMount() {
 
+    if (this.state.location == undefined) {
+      this.setState({ data:null, loading1:false, loading2:false})
+    }
     var friends = [];
     var edit = this;
     var user = Parse.User.current();
@@ -463,7 +467,7 @@ class CommunityFriends extends React.Component {
                   var availability = users.get("availability");
                   var geolocation = users.get("geolocation");
                   var clubs = users.get("clubs");
-                  var picture = users.get("picture").url();
+                  var picture = users.get("picture");
                   friends.push({
                     lastName:lastName,
                     firstName:firstName,
@@ -648,7 +652,7 @@ class CommunityFriends extends React.Component {
                   var availability = users.get("availability");
                   var geolocation = users.get("geolocation");
                   var clubs = users.get("clubs");
-                  var picture = users.get("picture").url();
+                  var picture = users.get("picture");
                   friends.push({
                     lastName:lastName,
                     firstName:firstName,
@@ -866,7 +870,10 @@ class CommunityFriends extends React.Component {
           var currentLevel = user.get("currentLevel");
           var highestLevel = user.get("highestLevel");
           var availability = user.get("availability");
-          var picture = user.get("picture").url();
+          var picture = user.get("picture");
+          if (picture != undefined) {
+            var picture = picture.url()
+          }
           var clubs = user.get("clubs");
           var birthday = user.get("birthday");
           var id = user.id;
@@ -916,7 +923,7 @@ render () {
           avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
           titleContainerStyle={{marginLeft:50}}
           containerStyle={{ borderBottomWidth:0, height:90, justifyContent:'center'}}
-          avatar={{ uri : item.picture }  || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
+          avatar={ ( item.picture && { uri : item.picture.url() } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
           title={<Text style={{fontSize:15}}>{item.firstName} {item.lastName[0]}.</Text>}
           subtitleNumberOfLines={3}
           subtitleContainerStyle={{marginLeft:50, width:300}}

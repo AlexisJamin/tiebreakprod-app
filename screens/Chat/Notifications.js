@@ -263,6 +263,10 @@ class Notifications extends React.Component {
   }
 
   viewOnPress(id, userId, type, firstName, seen) {
+
+    console.log('type');
+    console.log(type);
+
     var view = this;
 
     // allows to change background color when seen
@@ -309,7 +313,10 @@ class Notifications extends React.Component {
               var currentLevel = user.get("currentLevel");
               var highestLevel = user.get("highestLevel");
               var availability = user.get("availability");
-              var picture = user.get("picture").url();
+              var picture = user.get("picture");
+              if (picture != undefined) {
+                var picture = picture.url()
+              }
               var clubs = user.get("clubs");
               var birthday = user.get("birthday");
               var id = user.id;
@@ -348,7 +355,10 @@ class Notifications extends React.Component {
               var currentLevel = user.get("currentLevel");
               var highestLevel = user.get("highestLevel");
               var availability = user.get("availability");
-              var picture = user.get("picture").url();
+              var picture = user.get("picture");
+              if (picture != undefined) {
+                var picture = picture.url()
+              }
               var clubs = user.get("clubs");
               var birthday = user.get("birthday");
               var id = user.id;

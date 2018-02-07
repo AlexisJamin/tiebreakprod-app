@@ -149,6 +149,7 @@ constructor(props) {
                 picture: add.props.viewProfile.picture,
                 clubs: add.props.viewProfile.clubs,
                 id: add.props.viewProfile.id,
+                birthday:add.props.viewProfile.birthday,
                 friendRequestSent:true,
                 friendRequestReceived:false,
                 isFriend:false,
@@ -226,6 +227,7 @@ constructor(props) {
               picture: add.props.viewProfile.picture,
               clubs: add.props.viewProfile.clubs,
               id: add.props.viewProfile.id,
+              birthday:add.props.viewProfile.birthday,
               friendRequestSent:false,
               friendRequestReceived:false,
               isFriend:true,
@@ -503,15 +505,14 @@ constructor(props) {
     }
 
     var clubList = [];
-    for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
-      clubList.push(<ProfileViewContentClubs clubId = {this.props.viewProfile.clubs[i].id} />)
+    var clubListBullets = [];
+    if (this.props.viewProfile.clubs != undefined) {
+      for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
+        clubList.push(<ProfileViewContentClubs clubId = {this.props.viewProfile.clubs[i].id} />)
+        clubListBullets.push(<ProfileViewContentClubsBullets/>)
+      }
     }
 
-    var clubListBullets = [];
-    for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
-      clubListBullets.push(<ProfileViewContentClubsBullets/>)
-    }
-  
     var dayList = [];
     for (var i = 0; i < commonAvailabititiesFiltered.length; i++) {
       if (commonAvailabititiesFiltered[i].hours.length > 0) {
@@ -519,7 +520,7 @@ constructor(props) {
       }
     }
   
-  if (this.props.viewProfile.picture!='')
+  if (this.props.viewProfile.picture!=undefined)
            {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.viewProfile.picture}}/>
            } else {

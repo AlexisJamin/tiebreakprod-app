@@ -238,7 +238,7 @@ class CommunityContent extends React.Component {
     // Interested in locations near user.
     query.withinKilometers("geolocation", userGeoPoint, this.props.userPreferences.filterFieldType.range);
     // Limit what could be a lot of points.
-    query.limit(10);
+    query.limit(50);
     var userAvailability = this.props.user.availability;
     // Final list of objects
     query.find({
@@ -463,7 +463,7 @@ class CommunityContent extends React.Component {
     query.withinKilometers("geolocation", userGeoPoint, this.props.userPreferences.filterFieldType.range);
     //query.near("geolocation", userGeoPoint);
     // Limit what could be a lot of points.
-    query.limit(10);
+    query.limit(50);
     var userAvailability = this.props.user.availability;
     // Final list of objects
     query.find({
@@ -666,7 +666,7 @@ class CommunityContent extends React.Component {
           var currentLevel = user.get("currentLevel");
           var highestLevel = user.get("highestLevel");
           var availability = user.get("availability");
-          var picture = user.get("picture").url();
+          var picture = user.get("picture");
           var clubs = user.get("clubs");
           var birthday = user.get("birthday");
           var id = user.id;

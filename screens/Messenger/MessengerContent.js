@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert, Platform } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Modal from 'react-native-modalbox';
@@ -43,7 +43,7 @@ class MessengerContent extends React.Component {
     this.setState({
       userId:user.id,
       name:user.get('firstName'),
-      avatar:user.get('picture').url(),
+      avatar:user.get('picture'),
     })
 
     var query = new Parse.Query("Conversation");
@@ -74,7 +74,7 @@ class MessengerContent extends React.Component {
                     user: {
                       _id: MessageCopy[i].sender.objectId,
                       name: MessageCopy[i].sender.firstName,
-                      avatar: MessageCopy[i].sender.picture.url,
+                      avatar: ( MessageCopy[i].sender.picture && MessageCopy[i].sender.picture.url ) || null,
                     }
                   }
                 )
@@ -103,8 +103,10 @@ class MessengerContent extends React.Component {
     });
 
     subscription.on('create', function (messages = []) {
-     let array = [];
+     console.log('messages');
+     console.log(messages);
      console.log('Message created with text: ', messages.get('message'));
+     let array = [];
      var senderId = messages.get('sender').id;
      if (senderId != user.id) {
       array.push(
@@ -210,7 +212,10 @@ class MessengerContent extends React.Component {
           var currentLevel = user.get("currentLevel");
           var highestLevel = user.get("highestLevel");
           var availability = user.get("availability");
-          var picture = user.get("picture").url();
+          var picture = user.get("picture");
+          if (picture != undefined) {
+            var picture = picture.url()
+          }
           var clubs = user.get("clubs");
           var birthday = user.get("birthday");
           var id = user.id;
@@ -309,13 +314,6 @@ onPressAvatar(friend) {
   }
 
 render () {
-
-    if (Platform.OS === 'android') {
-      var KeyboardSpacer = (<KeyboardSpacer/>);
-    } else {
-      var KeyboardSpacer = null;
-    }
-
   return (
 
     <View style={{flex:1}}>
@@ -324,7 +322,7 @@ render () {
         user={{
           _id: this.state.userId,
           name: this.state.name,
-          avatar: this.state.avatar,
+          avatar: ( ( this.state.avatar && this.state.avatar.url() ) || null ),
         }}
         placeholder={'Écrivez votre message...'}
         renderBubble={this.renderBubble}
@@ -332,7 +330,7 @@ render () {
         onPressAvatar={(friend)=> this.onPressAvatar(friend)}
         onSend={(messages) => this.onSend(messages)}
       />
-      {KeyboardSpacer}
+      <KeyboardSpacer/>
 
       <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
           

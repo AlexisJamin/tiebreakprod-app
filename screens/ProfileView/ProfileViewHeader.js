@@ -129,6 +129,7 @@ class ProfileViewHeader extends React.Component {
                 picture: add.props.viewProfile.picture,
                 clubs: add.props.viewProfile.clubs,
                 id: add.props.viewProfile.id,
+                birthday:add.props.viewProfile.birthday,
                 friendRequestSent:true,
                 friendRequestReceived:false,
                 isFriend:false,
