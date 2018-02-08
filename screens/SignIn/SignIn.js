@@ -32,7 +32,6 @@ class SignIn extends React.Component {
     super(props);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
-    //this._getLocationAsync = this._getLocationAsync.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -43,7 +42,7 @@ class SignIn extends React.Component {
       username:'',
       password:'',
       confirmPassword:'',
-      picture:'',
+      picture:null,
       location:null
     };
   }
@@ -121,6 +120,7 @@ class SignIn extends React.Component {
       highestLevel:undefined,
       availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
       userId:userId,
+      birthday:undefined,
       picture:undefined
     })
 
@@ -187,7 +187,9 @@ class SignIn extends React.Component {
             user.set("email", this.state.username);
             user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
-            //user.set("geolocation", point);
+            if (this.state.location) {
+              user.set("geolocation", point);
+            }
             user.set("filterCondition", "indifferent");
             user.set("filterAge", {"to":70,"from":15});
             user.set("filterLevel", {"to":24,"from":0});
@@ -379,7 +381,7 @@ class SignIn extends React.Component {
     //let { picture } = this.state;
     var profileImage;
 
-     if (this.state.picture!='')
+     if (this.state.picture!=null)
            {
            profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: 'data:image/bin;base64,'+this.state.picture}}/>
            } else {
@@ -632,6 +634,7 @@ _maybeRenderUploadingOverlay = () => {
       this.refs.modal.close();
     }
   };
+
 }
 
 

@@ -37,7 +37,7 @@ constructor(props) {
                {
                this.state.fontAvenirLoaded ? (<Text style={styles.clubs}>{this.props.clubName}</Text>) : null 
                }   
-               <TouchableWithoutFeedback style={{padding:30}} onPress={this.handleClick}>
+               <TouchableWithoutFeedback hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this.handleClick}>
                <Image style={{marginLeft:15, marginTop:3}} source={require('../../assets/icons/General/Delete.imageset/icDeletePaleGrey.png')} /> 
                </TouchableWithoutFeedback>
                </View>

@@ -91,7 +91,7 @@ constructor(props) {
       {clubList}
       </View>
 
-      <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={() => this.props.navigation.navigate('EditClubSearch')} >
+      <TouchableWithoutFeedback hitSlop={{top:20, left:100, bottom:100, right:100}} onPress={() => this.props.navigation.navigate('EditClubSearch')} >
       <View style={{flexDirection:'row', justifyContent:"center"}}>
        <Image style={{marginRight:10}} source={require('../../assets/icons/Search/Search.imageset/icSearch.png')} /> 
        {

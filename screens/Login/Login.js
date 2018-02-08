@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
-import { Facebook, Location, Permissions, Font, Constants } from 'expo';
+import { Facebook, Font, Constants, Location, Permissions, IntentLauncherAndroid } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Svg, { Line } from 'react-native-svg';
 import { Parse } from 'parse/react-native';
 
 
@@ -13,6 +14,9 @@ function mapDispatchToProps(dispatch) {
     },
         handleSubmitClub: function(value) { 
         dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitClub2: function(value) { 
+        dispatch( {type: 'signIn', value: value} ) 
     },
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
@@ -32,11 +36,22 @@ constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
+    this._onPressFacebookLogin = this._onPressFacebookLogin.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false
+      fontAvenirLoaded: false,
+      location:null
     };
   }
+
+   async componentWillMount() {
+     if (Platform.OS === 'android' && !Constants.isDevice) {
+      Alert.alert('isDevice'); 
+    } else {
+      this._getLocationAsync();
+      console.log('_getLocationAsync ok');
+    }
+}
 
   async componentDidMount() {
     await Font.loadAsync({
@@ -149,21 +164,191 @@ constructor(props) {
   };
   
   _handleFacebookLogin = async () => {
+    var login = this;
     try {
-      const { type, token } = await Facebook.logInWithReadPermissionsAsync(
+      const { type, token, expires } = await Facebook.logInWithReadPermissionsAsync(
         '1201211719949057', // Replace with your own app id in standalone app
-        { permissions: ['public_profile'] }
+        { permissions: ['public_profile', 'user_friends', 'email'] }
       );
+      var expdate = new Date(expires*1000);
+      console.log('type');
+      console.log(type);
+      console.log('token');
+      console.log(token);
+      console.log('expires');
+      console.log(expires);
+      console.log('expdate');
+      console.log(expdate);
 
       switch (type) {
         case 'success': {
           // Get the user's name using Facebook's Graph API
-          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture,email`);
           const profile = await response.json();
-          Alert.alert(
-            'Logged in!',
-            `Hi ${profile.name}!`,
-          );
+          var name = profile.name.split(" ");
+          console.log('profile');
+          console.log(profile);
+          console.log('profile.picture');
+          console.log(profile.picture);
+
+          let authData = {
+            id: profile.id,
+            access_token: token,
+            expiration_date: expdate
+          };
+          Parse.FacebookUtils.logIn(authData,{
+            success: function(user) {
+              console.log('user');
+              console.log(user);
+              if (!user.existed()) {
+                console.log("!user.existed()");
+                user.set('firstName', name[0]);
+                user.set('lastName', name[1]);
+                user.set('username', profile.email);
+                user.set('email', profile.email);
+                //user.set('picture', profile.picture.data.url);
+                console.log('set en cours');
+                user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
+                console.log('this.state.location');
+                console.log(login.state.location);
+                if (login.state.location) {
+                  console.log('set en cours 2');
+                  var point = new Parse.GeoPoint({latitude: login.state.location.coords.latitude, longitude: login.state.location.coords.longitude});
+                  user.set("geolocation", point);
+                }
+                console.log('set en cours 3');
+                user.set("filterCondition", "indifferent");
+                user.set("filterAge", {"to":70,"from":18});
+                user.set("filterLevel", {"to":24,"from":0});
+                user.set("filterGender", "indifferent");
+                user.set("filterStyle", "indifferent");
+                user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
+                user.save();
+                console.log('set en cours save');
+
+                login.props.handleSubmit({
+                  firstName:name[0],
+                  lastName:name[1],
+                  style:undefined,
+                  gender:undefined,
+                  currentLevel:undefined,
+                  highestLevel:undefined,
+                  availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
+                  userId:user.id,
+                  birthday:undefined,
+                  picture:undefined
+                })
+
+                login.props.handleSubmitPreferences({
+                  filterCondition:"indifferent",
+                  filterAge:{"to":70,"from":18},
+                  filterLevel:{"to":24,"from":0},
+                  filterGender:"indifferent",
+                  filterStyle:"indifferent",
+                  filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+                })
+
+                login.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
+                })
+
+                login.props.handleSubmitClub2({toto:'toto'})
+                console.log('redux ok');
+
+                login.props.navigation.navigate("Swiper");
+              } 
+
+              else {
+
+                console.log("user.existed()");
+
+                var lastName = user.get("lastName");
+                var firstName = user.get("firstName");
+                var style = user.get("style");
+                var gender = user.get("gender");
+                var currentLevel = user.get("currentLevel");
+                var highestLevel = user.get("highestLevel");
+                var availability = user.get("availability");
+                var filterCondition = user.get("filterCondition");
+                var filterAge = user.get("filterAge");
+                var filterLevel = user.get("filterLevel");
+                var filterGender = user.get("filterGender");
+                var filterStyle = user.get("filterStyle");
+                var filterFieldType = user.get("filterFieldType");
+
+                console.log("user.existed() 2");
+                if (user.get("picture") != undefined) {
+                  var picture = user.get("picture").url();
+                } else {
+                  var picture = undefined;
+                }
+                var birthday = user.get("birthday");
+
+                console.log("user.existed() 3");
+
+                login.props.handleSubmit({
+                  lastName:lastName,
+                  firstName:firstName,
+                  style:style,
+                  gender:gender,
+                  currentLevel:currentLevel,
+                  highestLevel:highestLevel,
+                  availability:availability,
+                  userId:user.id,
+                  picture: picture,
+                  birthday:birthday
+                })
+
+                login.props.handleSubmitPreferences({
+                  filterCondition:filterCondition,
+                  filterAge:filterAge,
+                  filterLevel:filterLevel,
+                  filterGender:filterGender,
+                  filterStyle:filterStyle,
+                  filterFieldType:filterFieldType
+                })
+
+                login.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
+                })
+
+                console.log("user.existed() 4");
+
+                var clubs = user.get("clubs");
+
+                console.log("user.existed() 5");
+                 
+                if (clubs != undefined) {
+                  for (var i = 0; i < clubs.length; i++) {
+                   var queryClub = new Parse.Query("Club");
+                   queryClub.get(clubs[i].id, {
+                      success: function(club) {
+                      // The object was retrieved successfully.
+                      var clubName = club.get("name");
+                      login.props.handleSubmitClub({id:club.id, name:clubName})
+                      },
+                      error: function(object, error) {
+                        // The object was not retrieved successfully.
+                      }
+                    });
+                  }
+                } else { login.props.handleSubmitClub2({toto:'toto'}) }
+                 
+                console.log("user.existed() 6");
+                login.props.navigation.navigate("Swiper");  
+          
+              } 
+            },
+            error: function(user, error) {
+              console.log(user, error);
+            }
+          })
           break;
         }
         case 'cancel': {
@@ -187,11 +372,78 @@ constructor(props) {
     }
   };
 
+  _onPressFacebookLogin() {
+
+    /*Parse.FacebookUtils.logIn(null, {
+    success: function(user) {
+      console.log('user');
+      console.log(user);
+      if (!user.existed()) {
+        alert("User signed up and logged in through Facebook!");
+      } else {
+        alert("User logged in through Facebook!");
+      }
+    },
+    error: function(user, error) {
+      alert("User cancelled the Facebook login or did not fully authorize.");
+    }
+  });*/
+}
+
   _onPressSignInButton() {
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
     });
     this.props.navigation.navigate("SignIn");
+  };
+
+  _getIntentLauncherAndroidAsync = async () => {
+    await IntentLauncherAndroid.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
+    let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+    console.log('location');
+    console.log(location);
+    this.setState({ location: location });
+    console.log('setState ok');
+  };
+
+  _getLocationAsync = async () => {
+    let {status} = await Permissions.askAsync(Permissions.LOCATION);
+    let service = await Location.getProviderStatusAsync();
+    console.log('status');
+    console.log(status);
+    console.log('service');
+    console.log(service);
+
+    if (status != 'granted') {
+     console.log('Permission to access location was denied');
+     Alert.alert(
+          "Vous n'avez pas autorisé Tie Break à accéder à votre localisation. Allez dans Réglages > Confidentialité pour l'activer.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
+     this.setState({ location: undefined });
+    } else if (!service.locationServicesEnabled) {
+      if (Platform.OS === 'android') {
+        Alert.alert(
+          "La localisation est désactivée sur votre mobile.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains.",
+          [
+            {text: 'Activer', onPress : () => this._getIntentLauncherAndroidAsync()},
+            {text: 'Non', onPress : () => this.setState({ location: undefined }), style:'cancel'},
+          ],
+          { cancelable: false }
+          );
+      } else {
+        Alert.alert(
+          "La localisation est désactivée sur votre mobile. Allez dans Réglages > Confidentialité pour l'activer.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
+        this.setState({ location: undefined });
+      }
+    } else if (service.locationServicesEnabled) {
+        let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+        console.log('location');
+        console.log(location);
+        this.setState({ location: location });
+        console.log('setState ok');
+      }
   };
 
   render() {
@@ -257,9 +509,24 @@ constructor(props) {
             <TouchableOpacity onPress={this._onPressLogInButton}>
             <Text style={styles.buttonLogIn}>Connexion</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={this._handleFacebookLogin}>
             <Text style={styles.buttonFacebook}>Se connecter avec Facebook</Text>
             </TouchableOpacity>
+            <View style={{flex:1, top: 20, alignItems: 'center'}}>
+            <Svg
+              height="40"
+              width="150"
+            >
+              <Line
+                x1="0"
+                y1="0"
+                x2="150"
+                y2="0"
+                stroke="rgb(210,210,210)"
+                strokeWidth="2"
+               />
+            </Svg>
+            </View>
             <TouchableWithoutFeedback onPress={this._onPressSignInButton}>
             <Text style={styles.buttonSignIn}>Créer un compte</Text>
             </TouchableWithoutFeedback>

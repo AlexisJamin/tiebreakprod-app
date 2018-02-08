@@ -404,7 +404,7 @@ constructor(props) {
           flexDirection:'column',
           justifyContent:'space-around',
           marginTop:10,
-          marginBottom:10
+          marginBottom:20
           }}>
                     {newUserDispo}
                     {dayList}
