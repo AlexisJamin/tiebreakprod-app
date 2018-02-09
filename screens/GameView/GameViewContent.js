@@ -58,7 +58,7 @@ class GameViewContent extends React.Component {
 
   componentWillMount() {
 
-   var user = Parse.User.current();
+   var user = Parse.User.current() || Parse.User.currentAsync();
    moment.locale('fr');
    //var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
    var edit = this;
@@ -573,7 +573,7 @@ class GameViewContent extends React.Component {
 
   _onPressAnswerPositive() {
       var add = this;
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       if (this.state.attendees == undefined) {
         var attendeesCopy = []
         attendeesCopy.push({"__type":"Pointer","className":"_User","objectId":user.id});
@@ -600,7 +600,7 @@ class GameViewContent extends React.Component {
 
   _onPressConfirmDelete() {
       var add = this;
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       if ( this.state.partner && (user.id == this.state.partner.id) ) {
         console.log("1");
         var query = new Parse.Query("Game");
@@ -677,7 +677,7 @@ class GameViewContent extends React.Component {
 
   _onPressChoosePartner(id, firstName, lastName) {
     const date = new Date();
-    const user = Parse.User.current();
+    const user = Parse.User.current() || Parse.User.currentAsync();
     if ( (this.state.organiser == user.id) && (this.state.partner == undefined) && (this.state.gameDate>date) ) {
         Alert.alert(
         'Vous confirmez vouloir jouer avec : '+firstName+' '+lastName+'.'+' ?',
@@ -908,7 +908,7 @@ class GameViewContent extends React.Component {
       const {organiserAge} = this.state;
       const {canceled} = this.state;
       const {partner} = this.state;
-      const user = Parse.User.current();
+      const user = Parse.User.current() || Parse.User.currentAsync();
       const date = new Date();
       var edit = this;
 

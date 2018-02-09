@@ -118,7 +118,7 @@ constructor(props) {
     } else if (edit.state.filterStyle===1) {
       filterStyle="left";
     }
-     var user = Parse.User.current();
+     var user = Parse.User.current() || Parse.User.currentAsync();
      user.set("filterStyle", filterStyle);
      user.set("filterGender", filterGender);
      user.set("filterCondition", filterCondition);

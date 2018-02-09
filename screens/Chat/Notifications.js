@@ -46,10 +46,10 @@ class Notifications extends React.Component {
   }
 
   componentWillMount() {
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var query = new Parse.Query("Notification");
     var edit = this;
-    query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    query.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync()); 
     query.descending("updatedAt");
     query.limit(10);
     query.find({
@@ -108,7 +108,7 @@ class Notifications extends React.Component {
     });
 
     var query = new Parse.Query("Notification");
-    query.equalTo('toUser', Parse.User.current());
+    query.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());
     query.equalTo('seen', false);
     query.find({
       success: function(notification) {
@@ -187,10 +187,10 @@ class Notifications extends React.Component {
 
   onRefresh() {
     this.setState({refreshing:true});
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var query = new Parse.Query("Notification");
     var edit = this;
-    query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
+    query.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync()); 
     query.descending("updatedAt");
     query.limit(10);
     query.find({
@@ -249,7 +249,7 @@ class Notifications extends React.Component {
     });
 
     var query = new Parse.Query("Notification");
-    query.equalTo('toUser', Parse.User.current());
+    query.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());
     query.equalTo('seen', false);
     query.find({
       success: function(notification) {
@@ -387,7 +387,7 @@ class Notifications extends React.Component {
 
       if (type == 8) {
         console.log('type 8');
-         var user = Parse.User.current();
+         var user = Parse.User.current() || Parse.User.currentAsync();
          var conversation = new Parse.Query("Conversation");
          conversation.containsAll('roomUsers', [user.id, userId]); 
          conversation.first({
@@ -405,7 +405,7 @@ class Notifications extends React.Component {
 
       if (type == 3) {
          console.log('type 3');
-         var user = Parse.User.current();
+         var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
          query.equalTo('objectId', id); 
@@ -422,7 +422,7 @@ class Notifications extends React.Component {
 
       if (type == 7) {
          console.log('type 7');
-         var user = Parse.User.current();
+         var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
          query.equalTo('objectId', id); 
@@ -439,7 +439,7 @@ class Notifications extends React.Component {
 
       if (type == 4) {
          console.log('type 4');
-         var user = Parse.User.current();
+         var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
          query.equalTo('objectId', id); 
@@ -456,7 +456,7 @@ class Notifications extends React.Component {
 
       if (type == 6) {
          console.log('type 6');
-         var user = Parse.User.current();
+         var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
          query.equalTo('objectId', id); 

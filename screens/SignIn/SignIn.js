@@ -420,7 +420,7 @@ class SignIn extends React.Component {
           <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
             
             <TouchableOpacity>
-            <Text style={styles.buttonFacebook}>Remplir avec Facebook</Text>
+            <Text style={styles.buttonFacebook}>S'inscrire avec Facebook</Text>
             </TouchableOpacity>
 
           <TextInput 

@@ -39,7 +39,7 @@ class MessengerContent extends React.Component {
 
   componentWillMount() {
 
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     this.setState({
       userId:user.id,
       name:user.get('firstName'),
@@ -92,7 +92,7 @@ class MessengerContent extends React.Component {
   }
 
   componentDidMount() {
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var sub = this;
     var query = new Parse.Query('Message');
     query.equalTo('conversation', this.props.chat.id);
@@ -262,7 +262,7 @@ onPressMute() {
 
 MuteFriend() {
   console.log('muteFriend');
-  var user = Parse.User.current();
+  var user = Parse.User.current() || Parse.User.currentAsync();
   var add = this;
   var relation1 = new Parse.Query("Relation");
   relation1.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
@@ -307,7 +307,7 @@ MuteFriend() {
 
 onPressAvatar(friend) {
     console.log(friend);
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     if (friend._id != user.id) {
       this.refs.modal.open();
     }

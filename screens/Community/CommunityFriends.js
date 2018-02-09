@@ -48,12 +48,12 @@ class CommunityFriends extends React.Component {
       this.setState({loading1:true, loading2:true, data:[]})
       var friends = [];
       var edit = this;
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       var userGeoPoint = user.get("geolocation");
       var userAvailability = this.props.user.availability;
       var query = new Parse.Query('Relation');
       query.equalTo('status', 3);
-      query.equalTo('fromUser', Parse.User.current());  
+      query.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
       query.startsWith("firstName", props.searchPlayer.player);
       query.find({
         success: function(Friends) {
@@ -241,7 +241,7 @@ class CommunityFriends extends React.Component {
 
       var query2 = new Parse.Query('Relation');
       query2.equalTo('status', 3);
-      query2.equalTo('toUser', Parse.User.current()); 
+      query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync()); 
       query2.startsWith("firstName", props.searchPlayer.player); 
       query2.find({
         success: function(Friends) {
@@ -438,12 +438,12 @@ class CommunityFriends extends React.Component {
     }
     var friends = [];
     var edit = this;
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var userGeoPoint = user.get("geolocation");
     var userAvailability = this.props.user.availability;
     var query = new Parse.Query('Relation');
     query.equalTo('status', 3);
-    query.equalTo('fromUser', Parse.User.current());  
+    query.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
     query.find({
       success: function(Friends) {
         console.log('query 1');
@@ -628,7 +628,7 @@ class CommunityFriends extends React.Component {
 
     var query2 = new Parse.Query('Relation');
     query2.equalTo('status', 3);
-    query2.equalTo('toUser', Parse.User.current());  
+    query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());  
     query2.find({
       success: function(Friends) {
         console.log('query 2');

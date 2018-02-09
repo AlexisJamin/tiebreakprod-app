@@ -75,7 +75,7 @@ constructor(props) {
 
           if (this.state.newPicture) {
 
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var picture = new Parse.File("picture.bin", { base64: edit.state.picture });
 
      picture.save().then(function() {
@@ -105,7 +105,7 @@ constructor(props) {
                 });
           } 
           else {
-          var user = Parse.User.current();
+          var user = Parse.User.current() || Parse.User.currentAsync();
           user.set("firstName", this.state.firstName);
           user.set("lastName", this.state.lastName);
           user.set("currentLevel", parseInt(this.state.currentLevel));

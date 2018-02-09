@@ -48,11 +48,11 @@ class CommunityContent extends React.Component {
 
       this.setState({loading:true})
       var edit = this;
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       var userGeoPoint = user.get("geolocation");
       var userAvailability = this.props.user.availability;
       var query = new Parse.Query(Parse.User);
-      query.notEqualTo('email', Parse.User.current().getEmail());
+      query.notEqualTo('email', user.getEmail());
       query.startsWith("firstName", props.searchPlayer.player);
       // Final list of objects
       query.find({
@@ -221,11 +221,11 @@ class CommunityContent extends React.Component {
 
   async componentDidMount() {
 
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var userGeoPoint = user.get("geolocation");
     var query = new Parse.Query(Parse.User);
     var edit = this;
-    query.notEqualTo('email', Parse.User.current().getEmail());
+    query.notEqualTo('email', user.getEmail());
     query.greaterThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.from);
     query.lessThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.to);
     if (this.props.userPreferences.filterGender === "man") {
@@ -445,11 +445,11 @@ class CommunityContent extends React.Component {
   onRefresh() {
     console.log('refresh');
     this.setState({refreshing:true});
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var userGeoPoint = user.get("geolocation");
     var query = new Parse.Query(Parse.User);
     var edit = this;
-    query.notEqualTo('email', Parse.User.current().getEmail());
+    query.notEqualTo('email', user.getEmail());
     query.greaterThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.from);
     query.lessThanOrEqualTo("currentLevel", this.props.userPreferences.filterLevel.to);
     if (this.props.userPreferences.filterGender === "man") {
@@ -626,7 +626,7 @@ class CommunityContent extends React.Component {
 
   viewProfile(id) {
      var view = this;
-     user= Parse.User.current();
+     user= Parse.User.current() || Parse.User.currentAsync();
      var User = Parse.Object.extend("User");
      var query = new Parse.Query(User);
 

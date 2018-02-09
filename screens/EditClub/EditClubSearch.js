@@ -57,7 +57,7 @@ constructor(props) {
     var query = new Parse.Query(Club);
     var edit = this;
     // User's location
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var userGeoPoint = user.get("geolocation");
     // Interested in locations near user.
     query.near("geopoint", userGeoPoint);
@@ -145,7 +145,7 @@ constructor(props) {
 
       console.log('tag.length>2');
       var Club = Parse.Object.extend("Club");
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       var userGeoPoint = user.get("geolocation");
       var query = new Parse.Query(Club);
       query.startsWith("tags", tag);

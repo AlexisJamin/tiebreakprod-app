@@ -45,7 +45,7 @@ constructor(props) {
   }
 
   _onPressValidateButton () {
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var clubs = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
       clubs.push({"__type":"Pointer","className":"Club","objectId":this.props.userClub[i].id});

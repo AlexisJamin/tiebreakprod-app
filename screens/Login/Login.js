@@ -29,6 +29,8 @@ function mapDispatchToProps(dispatch) {
 
 Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
 Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
+//Parse.User.enableUnsafeCurrentUser();
+
 
 class Login extends React.Component {
 
@@ -45,12 +47,106 @@ constructor(props) {
   }
 
    async componentWillMount() {
-     if (Platform.OS === 'android' && !Constants.isDevice) {
-      Alert.alert('isDevice'); 
-    } else {
-      this._getLocationAsync();
-      console.log('_getLocationAsync ok');
-    }
+      var login = this;
+
+      Parse.User.currentAsync().then(function(user) {
+              console.log('user');
+              console.log(user);
+              if (user != null) {
+
+                var lastName = user.get("lastName");
+                var firstName = user.get("firstName");
+                var style = user.get("style");
+                var gender = user.get("gender");
+                var currentLevel = user.get("currentLevel");
+                var highestLevel = user.get("highestLevel");
+                var availability = user.get("availability");
+                var filterCondition = user.get("filterCondition");
+                var filterAge = user.get("filterAge");
+                var filterLevel = user.get("filterLevel");
+                var filterGender = user.get("filterGender");
+                var filterStyle = user.get("filterStyle");
+                var filterFieldType = user.get("filterFieldType");
+
+                console.log("user.existed() 2");
+                if (user.get("picture") != undefined) {
+                  var picture = user.get("picture").url();
+                } else {
+                  var picture = undefined;
+                }
+                var birthday = user.get("birthday");
+
+                console.log("user.existed() 3");
+
+                login.props.handleSubmit({
+                  lastName:lastName,
+                  firstName:firstName,
+                  style:style,
+                  gender:gender,
+                  currentLevel:currentLevel,
+                  highestLevel:highestLevel,
+                  availability:availability,
+                  userId:user.id,
+                  picture: picture,
+                  birthday:birthday
+                })
+
+                login.props.handleSubmitPreferences({
+                  filterCondition:filterCondition,
+                  filterAge:filterAge,
+                  filterLevel:filterLevel,
+                  filterGender:filterGender,
+                  filterStyle:filterStyle,
+                  filterFieldType:filterFieldType
+                })
+
+                login.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
+                })
+
+                console.log("user.existed() 4");
+
+                var clubs = user.get("clubs");
+
+                console.log("user.existed() 5");
+                 
+                if (clubs != undefined) {
+                  for (var i = 0; i < clubs.length; i++) {
+                   var queryClub = new Parse.Query("Club");
+                   queryClub.get(clubs[i].id, {
+                      success: function(club) {
+                      // The object was retrieved successfully.
+                      var clubName = club.get("name");
+                      login.props.handleSubmitClub({id:club.id, name:clubName})
+                      },
+                      error: function(object, error) {
+                        // The object was not retrieved successfully.
+                      }
+                    });
+                  }
+                } else { login.props.handleSubmitClub2({toto:'toto'}) }
+                 
+                console.log("user.existed() 6");
+                
+                login.props.navigation.navigate("Swiper");
+
+              } 
+              else {
+
+                if (Platform.OS === 'android' && !Constants.isDevice) {
+                  Alert.alert('isDevice'); 
+
+                } 
+                else {
+
+                  this._getLocationAsync();
+                  console.log('_getLocationAsync ok');
+                } 
+              }
+            });
 }
 
   async componentDidMount() {

@@ -36,8 +36,9 @@ class HomeHeader extends Component {
 
   componentWillMount() {
     var edit = this;
+    var currentUser = Parse.User.current() || Parse.User.currentAsync();
     var query = new Parse.Query("Notification");
-    query.equalTo('toUser', Parse.User.current());
+    query.equalTo('toUser', currentUser);
     query.equalTo('seen', false);
     query.find({
       success: function(notification) {

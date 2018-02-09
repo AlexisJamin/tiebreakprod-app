@@ -38,7 +38,7 @@ class CalendarPast extends React.Component {
     var dataMerge = [];
     var edit = this;
     var date = new Date();
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var query1 = new Parse.Query("Game");
     query1.equalTo('organiser', user);
     query1.lessThan('date', date); 
@@ -167,7 +167,7 @@ class CalendarPast extends React.Component {
     var dataMerge = [];
     var edit = this;
     var date = new Date();
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var query1 = new Parse.Query("Game");
     query1.equalTo('organiser', user);
     query1.lessThan('date', date); 

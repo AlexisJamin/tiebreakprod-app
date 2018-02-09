@@ -116,7 +116,7 @@ constructor(props) {
   }
 
   _onPressValidateDispo () {
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       user.set("availability", this.state.availability);
       user.save();
       this.props.navigation.goBack();

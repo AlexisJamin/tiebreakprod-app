@@ -32,16 +32,17 @@ export default class Home extends React.Component {
 
   _onPressConfirmLogOut() {
     console.log("déconnecté !");
-    Parse.User.logOut().then(() => {
-    var currentUser = Parse.User.current();  // this will now be null
-    });
-    const resetAction = NavigationActions.reset({
-      index: 0, 
-      actions: [
-      NavigationActions.navigate({ routeName: 'Login'})
-      ]
-    });
-    this.props.navigation.dispatch(resetAction);
+    var logout = this;
+    Parse.User.logOut().then(function() {
+      const resetAction = NavigationActions.reset({
+        index: 0, 
+        actions: [
+        NavigationActions.navigate({ routeName: 'Login'})
+        ]
+      });
+      logout.props.navigation.dispatch(resetAction);
+    })
+    
   }
 
 

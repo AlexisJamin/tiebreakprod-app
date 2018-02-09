@@ -36,7 +36,7 @@ class ChatContent extends React.Component {
   }
 
   componentWillMount() {
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var edit = this;
     var query = new Parse.Query("Conversation");
     query.equalTo('roomUsers', user.id); 
@@ -105,7 +105,7 @@ class ChatContent extends React.Component {
 
  componentDidMount() {
 
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var edit = this;
 
     var query = new Parse.Query('Conversation');
@@ -177,7 +177,7 @@ renderSeparator() {
 
     onRefresh() {
       this.setState({refreshing:true});
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       var query = new Parse.Query("Conversation");
       var edit = this;
       query.equalTo('roomUsers', user.id); 

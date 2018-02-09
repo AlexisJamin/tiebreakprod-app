@@ -48,7 +48,7 @@ class CreateGameContent extends React.Component {
    moment.locale('fr');
    //var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
 
-   var user = Parse.User.current();
+   var user = Parse.User.current() || Parse.User.currentAsync();
    var edit = this;
    var query = new Parse.Query("User");
    var clubListName = [];
@@ -75,7 +75,7 @@ class CreateGameContent extends React.Component {
 
     var query1 = new Parse.Query('Relation');
     query1.equalTo('status', 3);
-    query1.equalTo('fromUser', Parse.User.current());  
+    query1.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
     query1.find({
       success: function(Friends) {
         console.log('query 1');
@@ -92,7 +92,7 @@ class CreateGameContent extends React.Component {
 
     var query2 = new Parse.Query('Relation');
     query2.equalTo('status', 3);
-    query2.equalTo('toUser', Parse.User.current());  
+    query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());  
     query2.find({
       success: function(Friends) {
         console.log('query 2');
@@ -124,10 +124,10 @@ class CreateGameContent extends React.Component {
   _onPressAnswerPositive() {
       var add = this;
       var friends = [];
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       var query = new Parse.Query('Relation');
       query.equalTo('status', 3);
-      query.equalTo('fromUser', Parse.User.current());  
+      query.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
       query.find({
         success: function(Friends) {
           for (var i = 0; i < Friends.length; i++) {
@@ -143,7 +143,7 @@ class CreateGameContent extends React.Component {
 
       var query2 = new Parse.Query('Relation');
       query2.equalTo('status', 3);
-      query2.equalTo('toUser', Parse.User.current());  
+      query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());  
       query2.find({
         success: function(Friends) {
           for (var i = 0; i < Friends.length; i++) {
@@ -175,7 +175,7 @@ class CreateGameContent extends React.Component {
         var surface = 'synthetic';
       }
       var game = new Parse.Object("Game");
-      game.set("organiser", Parse.User.current());
+      game.set("organiser", Parse.User.current() || Parse.User.currentAsync());
       game.set("price", this.state.price);
       game.set("surface", surface);
       game.set("createdAt", Date());

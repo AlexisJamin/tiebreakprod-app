@@ -71,7 +71,7 @@ constructor(props) {
       fontAvenirLoaded: true
     });
     
-      var user = Parse.User.current();
+      var user = Parse.User.current() || Parse.User.currentAsync();
       var edit = this;
       var query = new Parse.Query("Relation");
       query.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
@@ -122,10 +122,10 @@ constructor(props) {
 
   _onPressAddFriend () {
     var add = this;
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var otherUser = { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id };
     var relation = new Parse.Object("Relation");
-    relation.set("fromUser", Parse.User.current());
+    relation.set("fromUser", Parse.User.current() || Parse.User.currentAsync());
     relation.set("toUser", otherUser);
     relation.set("createdAt", Date());
     relation.set("updatedAt", Date());
@@ -176,7 +176,7 @@ constructor(props) {
 
   _onPressAnswerAdd() {
 
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var add = this;
     var relation = new Parse.Query("Relation");
     relation.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
@@ -198,7 +198,7 @@ constructor(props) {
         conversation.set("roomUsers", [user.id, add.props.viewProfile.id]);
         conversation.set("createdAt", Date());
         conversation.set("updatedAt", Date());
-        conversation.set("firstUser", Parse.User.current());
+        conversation.set("firstUser", Parse.User.current() || Parse.User.currentAsync());
         conversation.set("secondUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
         conversation.save(null, {
         success: function(conversation) {
@@ -207,7 +207,7 @@ constructor(props) {
           message.set("createdAt", Date());
           message.set("updatedAt", Date());
           message.set("message", '🎾');
-          message.set("sender", Parse.User.current());
+          message.set("sender", Parse.User.current() || Parse.User.currentAsync());
           message.set("conversation", conversation.id);
           message.save(null, {
           success: function(message) {
@@ -246,7 +246,7 @@ constructor(props) {
 
   _onPressAnswerRefuse() {
 
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var add = this;
     var relation = new Parse.Query("Relation");
     relation.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
@@ -285,7 +285,7 @@ constructor(props) {
   }
 
   ConfirmDeleteFriend() {
-    var user = Parse.User.current();
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var add = this;
     var relation1 = new Parse.Query("Relation");
     relation1.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
