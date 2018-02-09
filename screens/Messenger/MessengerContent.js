@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert, Platform } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Modal from 'react-native-modalbox';
@@ -117,7 +117,7 @@ class MessengerContent extends React.Component {
           user: {
             _id: messages.get('sender').objectId,
             name: messages.get('sender').firstName,
-            avatar: messages.get('sender').get('picture').url(),
+            avatar: ( messages.get('sender').get('picture') && messages.get('sender').get('picture').url() ) || null,
           }
         }
       )
@@ -141,9 +141,6 @@ class MessengerContent extends React.Component {
       success: function(message) {
         messages[0]._id = message.id;
         messages[0].createdAt = message.get('createdAt');
-        send.setState((previousState) => ({
-          messages: GiftedChat.append(previousState.messages, messages),
-        }));
 
         var query = new Parse.Query("Conversation");
         query.equalTo('objectId', message.get('conversation')); 
@@ -153,6 +150,10 @@ class MessengerContent extends React.Component {
             Conversation.set('updatedAt', Date());
             Conversation.save();
 
+            send.setState((previousState) => ({
+              messages: GiftedChat.append(previousState.messages, messages),
+            }));
+            
             Parse.Cloud.run("createNotification", { 
             "userId":send.props.chat.userId,
             "message":"vous a envoyé un message",
@@ -165,8 +166,8 @@ class MessengerContent extends React.Component {
 
 
       }, error: function(message, error) {
-        console.log(message);
-        console.log(error);
+        console.log('le message est:', message);
+        console.log('lerreur est:', error);
       }
     });
   }
@@ -314,6 +315,11 @@ onPressAvatar(friend) {
   }
 
 render () {
+    if (Platform.OS === 'android') {
+      var keyboardSpacer = (<KeyboardSpacer/>);
+    } else {
+      var keyboardSpacer = null;
+    }
   return (
 
     <View style={{flex:1}}>
@@ -330,7 +336,7 @@ render () {
         onPressAvatar={(friend)=> this.onPressAvatar(friend)}
         onSend={(messages) => this.onSend(messages)}
       />
-      <KeyboardSpacer/>
+      {keyboardSpacer}
 
       <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
           

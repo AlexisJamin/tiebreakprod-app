@@ -333,6 +333,7 @@ constructor(props) {
             keyboardType="default"
             returnKeyType='next'
             autoCorrect={false}
+            autoCapitalize='sentences'
             defaultValue={this.state.firstName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(firstName) => this.setState({firstName})}
@@ -345,6 +346,7 @@ constructor(props) {
             keyboardType="default"
             returnKeyType='next'
             autoCorrect={false}
+            autoCapitalize='sentences'
             value={this.state.lastName}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(lastName) => this.setState({lastName})}

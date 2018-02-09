@@ -42,7 +42,7 @@ class SignIn extends React.Component {
       username:'',
       password:'',
       confirmPassword:'',
-      picture:null,
+      picture:'',
       location:null
     };
   }
@@ -82,11 +82,6 @@ class SignIn extends React.Component {
 
   var user = new Parse.User();
 
-  if (this.state.location) {
-    var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
-  }
-  
-
   user.set("username", this.state.username);
   user.set("password", this.state.password);
   user.set("firstName", this.state.firstName);
@@ -95,6 +90,7 @@ class SignIn extends React.Component {
   user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
   if (this.state.location) {
+    var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
     user.set("geolocation", point);
   }
   user.set("filterCondition", "indifferent");
@@ -178,8 +174,6 @@ class SignIn extends React.Component {
 
             if (signin.state.picture.length>0) {
 
-            //var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
-
             user.set("username", this.state.username);
             user.set("password", this.state.password);
             user.set("firstName", this.state.firstName);
@@ -188,6 +182,7 @@ class SignIn extends React.Component {
             user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
 
             if (this.state.location) {
+              var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
               user.set("geolocation", point);
             }
             user.set("filterCondition", "indifferent");
@@ -426,7 +421,8 @@ class SignIn extends React.Component {
           <TextInput 
             style={styles.input} 
             keyboardType="default"
-            returnKeyType={'next'}
+            returnKeyType='next'
+            autoCapitalize='sentences'
             autoCorrect={false}
             placeholder='Prénom'
             underlineColorAndroid='rgba(0,0,0,0)'
@@ -438,6 +434,7 @@ class SignIn extends React.Component {
             style={styles.input} 
             keyboardType="default"
             returnKeyType='next'
+            autoCapitalize='sentences'
             autoCorrect={false}
             placeholder='Nom'
             underlineColorAndroid='rgba(0,0,0,0)'
