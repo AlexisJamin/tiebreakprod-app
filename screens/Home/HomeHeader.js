@@ -79,9 +79,29 @@ class HomeHeader extends Component {
         top:40
         }}>
 
-       		<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('Menu')}>
-          <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
-          </TouchableWithoutFeedback>
+          <IconBadge
+            MainElement={
+              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('Menu')}>
+              <Image source={require('../../assets/icons/Menu/Profile.imageset/icProfile.png')} /> 
+              </TouchableWithoutFeedback>
+            }
+            BadgeElement={
+              <Text style={{color:'#FFFFFF', fontSize:10}}/>
+            }
+            IconBadgeStyle={
+              {width:15,
+              height:15,
+              borderRadius:15,
+              minWidth:15,
+              top:-9,
+              right:-9,
+              backgroundColor:'rgb(200,90,24)',
+              borderWidth:2,
+              borderColor:'white'}
+            }
+            Hidden={this.props.user.new==false}
+            />
+
        {
         this.state.fontLoaded ? (<Text style={styles.title}> TIE BREAK </Text> ) : null 
        }

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { View, Image, Text, StyleSheet, TouchableWithoutFeedback, Share } from 'react-native';
 import { Font } from 'expo';
-//import Share, {ShareSheet, Button} from 'react-native-share';
 import { connect } from 'react-redux';
+import IconBadge from 'react-native-icon-badge';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -108,12 +108,27 @@ navigationCommunity(route, index) {
         </View>
           
           <View style={{marginTop: 20}}>
-            {
-        this.state.fontAvenirNextLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationProfile('Profile',0)}>
-          <Text style={styles.title}> MON PROFIL </Text>
-          </TouchableWithoutFeedback>) : null 
-          }
+          <IconBadge
+            MainElement={
+            this.state.fontAvenirNextLoaded ? (
+              <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationProfile('Profile',0)}>
+              <Text style={styles.title}> MON PROFIL </Text>
+              </TouchableWithoutFeedback>) : null 
+            }
+            BadgeElement={
+              <Text style={{color:'#FFFFFF', fontSize:10}}/>
+            }
+            IconBadgeStyle={
+              {width:15,
+              height:15,
+              minWidth:15,
+              top:-7,
+              right:-7,
+              backgroundColor:'rgb(200,90,24)'}
+            }
+            Hidden={this.props.user.new==false}
+            />
+            
           </View>
 
           <View style={{marginTop: 15}}>

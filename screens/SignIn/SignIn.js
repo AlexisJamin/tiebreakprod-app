@@ -20,7 +20,7 @@ function mapDispatchToProps(dispatch) {
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
     },
-    handleSubmitButton: function(value) { 
+        handleSubmitButton: function(value) { 
         dispatch( {type: 'button', value: value} ) 
     }
   }
@@ -42,7 +42,7 @@ class SignIn extends React.Component {
       username:'',
       password:'',
       confirmPassword:'',
-      picture:'',
+      picture:null,
       location:null
     };
   }
@@ -117,7 +117,8 @@ class SignIn extends React.Component {
       availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
       userId:userId,
       birthday:undefined,
-      picture:undefined
+      picture:undefined,
+      new:true
     })
 
       signin.props.handleSubmitPreferences({
@@ -172,7 +173,7 @@ class SignIn extends React.Component {
           { 
             emailFormatIsFalse=false;
 
-            if (signin.state.picture.length>0) {
+            if (signin.state.picture != null) {
 
             user.set("username", this.state.username);
             user.set("password", this.state.password);
@@ -220,7 +221,8 @@ class SignIn extends React.Component {
                 highestLevel:'à compléter',
                 availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
                 userId:userId,
-                picture: picture.url()
+                picture: picture.url(),
+                new:true
               })
 
                 signin.props.handleSubmitPreferences({

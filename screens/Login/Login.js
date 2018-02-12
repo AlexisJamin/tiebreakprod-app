@@ -38,7 +38,6 @@ constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
-    this._onPressFacebookLogin = this._onPressFacebookLogin.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -88,7 +87,8 @@ constructor(props) {
                   availability:availability,
                   userId:user.id,
                   picture: picture,
-                  birthday:birthday
+                  birthday:birthday,
+                  new:false
                 })
 
                 login.props.handleSubmitPreferences({
@@ -130,7 +130,7 @@ constructor(props) {
                 } else { login.props.handleSubmitClub2({toto:'toto'}) }
                  
                 console.log("user.existed() 6");
-                
+
                 login.props.navigation.navigate("Swiper");
 
               } 
@@ -207,7 +207,8 @@ constructor(props) {
                   availability:availability,
                   userId:userId,
                   picture: picture,
-                  birthday:birthday
+                  birthday:birthday, 
+                  new:false
                 })
 
                 login.props.handleSubmitPreferences({
@@ -296,7 +297,9 @@ constructor(props) {
             success: function(user) {
               console.log('user');
               console.log(user);
+              
               if (!user.existed()) {
+
                 console.log("!user.existed()");
                 user.set('firstName', name[0]);
                 user.set('lastName', name[1]);
@@ -332,7 +335,8 @@ constructor(props) {
                   availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
                   userId:user.id,
                   birthday:undefined,
-                  picture:undefined
+                  picture:undefined,
+                  new:false
                 })
 
                 login.props.handleSubmitPreferences({
@@ -395,7 +399,8 @@ constructor(props) {
                   availability:availability,
                   userId:user.id,
                   picture: picture,
-                  birthday:birthday
+                  birthday:birthday,
+                  new:true
                 })
 
                 login.props.handleSubmitPreferences({
@@ -467,24 +472,6 @@ constructor(props) {
       );
     }
   };
-
-  _onPressFacebookLogin() {
-
-    /*Parse.FacebookUtils.logIn(null, {
-    success: function(user) {
-      console.log('user');
-      console.log(user);
-      if (!user.existed()) {
-        alert("User signed up and logged in through Facebook!");
-      } else {
-        alert("User logged in through Facebook!");
-      }
-    },
-    error: function(user, error) {
-      alert("User cancelled the Facebook login or did not fully authorize.");
-    }
-  });*/
-}
 
   _onPressSignInButton() {
     Parse.User.logOut().then(() => {

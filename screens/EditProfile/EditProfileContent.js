@@ -99,7 +99,8 @@ constructor(props) {
                 highestLevel:edit.state.highestLevel,
                 availability:edit.state.availability,
                 picture:picture.url(),
-                birthday:edit.state.birthday
+                birthday:edit.state.birthday,
+                new:false,
               })
                  edit.props.navigation.goBack();
                 });
@@ -124,7 +125,8 @@ constructor(props) {
                 highestLevel:this.state.highestLevel,
                 availability:this.state.availability,
                 picture:this.state.picture,
-                birthday:this.state.birthday
+                birthday:this.state.birthday,
+                new:false
               })
                  this.props.navigation.goBack();
                   }
