@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, Share } from 'react-native'
 import { Font, Util } from 'expo'
 import ModalDropdown from 'react-native-modal-dropdown'
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -28,6 +28,15 @@ class CreateGameContent extends React.Component {
     super(props);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
     this._onPressAnswerPositive = this._onPressAnswerPositive.bind(this);
+    this._shareFriends = this._shareFriends.bind(this);
+    this._showResult = this._showResult.bind(this);
+    let user = Parse.User.current() || Parse.User.currentAsync();
+    let firstName = user.get('firstName');
+    let shareOptions = {
+      message: firstName + " a créé une partie sur Tie Break ! (http://www.tie-break.fr)",
+      title: "Tie Break",
+      subject: "Application Tie Break" //  for email
+    };
     this.state = {
       fontAvenirNextLoaded:false,
       fontAvenirLoaded:false,
@@ -41,6 +50,7 @@ class CreateGameContent extends React.Component {
       price:0,
       friends1:null,
       friends2:null,
+      shareOptions:shareOptions
     };
   }
 
@@ -193,12 +203,34 @@ class CreateGameContent extends React.Component {
             "type": 3,
              })
           }
-          add.props.navigation.goBack();
+          console.log('Parse Cloud game ok');
+          Alert.alert(
+          'Voulez-vous partager / inviter des ami(e)s ?',
+          '',
+          [
+            {text: 'Annuler', onPress: () => add.props.navigation.goBack()},
+            {text: 'OK', onPress : () => add._shareFriends()},
+          ],
+          { cancelable: false }
+        )
         }
       });
       
   }
 
+  _shareFriends() {
+    Share.share(this.state.shareOptions)
+    .then(this._showResult)
+    .catch((error) => this.setState({result: 'error: ' + error.message}));
+  }
+
+   _showResult(result) {
+    if (result.action === Share.sharedAction) {
+      this.props.navigation.goBack();
+    } else {
+      this.props.navigation.goBack();
+    }
+  }
 
   _onPressValidateButton() {
     if (this.state.surface != null && this.state.selectedConditionIndex != null && this.state.date != null && this.state.selectedClubIndex != null) {
