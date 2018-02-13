@@ -15,6 +15,9 @@ function mapDispatchToProps(dispatch) {
         dispatch( {type: 'user', value: value} ) 
     },
         handleSubmitClub: function(value) { 
+        dispatch( {type: 'userClub', value: value} ) 
+    },
+        handleSubmitClub2: function(value) { 
         dispatch( {type: 'signIn', value: value} ) 
     },
         handleSubmitPreferences: function(value) { 
@@ -139,7 +142,7 @@ class SignIn extends React.Component {
       ProfileButtonIndex:null
     })
 
-      signin.props.handleSubmitClub({toto:'toto'})
+      signin.props.handleSubmitClub2({toto:'toto'})
 
       signin.props.navigation.navigate("Swiper")
   },
@@ -243,7 +246,7 @@ class SignIn extends React.Component {
                   ProfileButtonIndex:null
                 })
 
-                signin.props.handleSubmitClub({toto:'toto'})
+                signin.props.handleSubmitClub2({toto:'toto'})
 
                 signin.props.navigation.navigate("Swiper")
                 }, function(error) {
@@ -610,7 +613,7 @@ class SignIn extends React.Component {
 
           <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
             
-            <TouchableOpacity>
+            <TouchableOpacity onPress={this._handleFacebookLogin}>
             <Text style={styles.buttonFacebook}>S'inscrire avec Facebook</Text>
             </TouchableOpacity>
 
