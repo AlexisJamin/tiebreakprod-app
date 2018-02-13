@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform } from 'react-native';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, ImageEditor, ImageStore } from 'react-native';
 import { Facebook, Font, Constants, ImagePicker, registerRootComponent, Location, Permissions, IntentLauncherAndroid } from 'expo';
 import Modal from 'react-native-modalbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -32,6 +32,7 @@ class SignIn extends React.Component {
     super(props);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
     this.signInWithoutPicture = this.signInWithoutPicture.bind(this);
+    this.getImageFromFacebook = this.getImageFromFacebook.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
@@ -43,7 +44,8 @@ class SignIn extends React.Component {
       password:'',
       confirmPassword:'',
       picture:null,
-      location:null
+      location:null,
+      pictureBase64:null
     };
   }
 
@@ -283,22 +285,214 @@ class SignIn extends React.Component {
 
 // FaceBook Login
 
+  getImageFromFacebook(url) {
+    console.log('getImageFromFacebook');
+    const imageURL = url;
+    Image.getSize(imageURL, (width, height) => {
+      var imageSize = {
+        size: {
+          width,
+          height
+        },
+        offset: {
+          x: 0,
+          y: 0,
+        }
+      };
+      ImageEditor.cropImage(imageURL, imageSize, (imageURI) => {
+        console.log(imageURI);
+        ImageStore.getBase64ForTag(imageURI, (base64Data) => {
+          this.setState({pictureBase64: base64Data});
+          if (Platform.OS === 'ios') {
+            ImageStore.removeImageForTag(imageURI);
+          }
+        }, (reason) => console.log(reason) )
+      }, (reason) => console.log(reason) )
+    }, (reason) => console.log(reason))
+  }
+  
   _handleFacebookLogin = async () => {
+    var login = this;
     try {
-      const { type, token } = await Facebook.logInWithReadPermissionsAsync(
-        '1201211719949057', // Replace with your own app id in standalone app
-        { permissions: ['public_profile'] }
+      const { type, token, expires } = await Facebook.logInWithReadPermissionsAsync(
+        '233912777050369', // Replace with your own app id in standalone app
+        { permissions: ['public_profile', 'user_friends', 'email'] }
       );
+      var expdate = new Date(expires*1000);
 
       switch (type) {
         case 'success': {
           // Get the user's name using Facebook's Graph API
-          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture.type(large),email`);
           const profile = await response.json();
-          Alert.alert(
-            'Logged in!',
-            `Hi ${profile.name}!`,
-          );
+          var name = profile.name.split(" ");
+
+          this.getImageFromFacebook(profile.picture.data.url);
+
+          let authData = {
+            id: profile.id,
+            access_token: token,
+            expiration_date: expdate
+          };
+          Parse.FacebookUtils.logIn(authData,{
+            success: function(user) {
+              console.log('user');
+              console.log(user);
+              
+              if (!user.existed()) {
+
+                console.log("!user.existed()");
+                user.set('firstName', name[0]);
+                user.set('lastName', name[1]);
+                user.set('username', profile.email);
+                user.set('email', profile.email);
+                if (login.state.pictureBase64) {
+                  console.log('login.state.pictureBase64');
+                  var picture = new Parse.File("picture.bin", { base64: login.state.pictureBase64 });
+                  user.set('picture', picture);
+                }
+                console.log('set en cours');
+                user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
+                if (login.state.location) {
+                  console.log('login.state.location');
+                  var point = new Parse.GeoPoint({latitude: login.state.location.coords.latitude, longitude: login.state.location.coords.longitude});
+                  user.set("geolocation", point);
+                }
+                console.log('set en cours 3');
+                user.set("filterCondition", "indifferent");
+                user.set("filterAge", {"to":70,"from":18});
+                user.set("filterLevel", {"to":24,"from":0});
+                user.set("filterGender", "indifferent");
+                user.set("filterStyle", "indifferent");
+                user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
+                user.save();
+                console.log('set en cours save');
+
+                login.props.handleSubmit({
+                  firstName:name[0],
+                  lastName:name[1],
+                  style:undefined,
+                  gender:undefined,
+                  currentLevel:undefined,
+                  highestLevel:undefined,
+                  availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
+                  userId:user.id,
+                  birthday:undefined,
+                  picture:(profile.picture && profile.picture.data.url)||undefined,
+                  new:true
+                })
+
+                login.props.handleSubmitPreferences({
+                  filterCondition:"indifferent",
+                  filterAge:{"to":70,"from":18},
+                  filterLevel:{"to":24,"from":0},
+                  filterGender:"indifferent",
+                  filterStyle:"indifferent",
+                  filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+                })
+
+                login.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
+                })
+
+                login.props.handleSubmitClub2({toto:'toto'})
+                console.log('redux ok');
+
+                login.props.navigation.navigate("Swiper");
+              } 
+
+              else {
+
+                console.log("user.existed()");
+
+                var lastName = user.get("lastName");
+                var firstName = user.get("firstName");
+                var style = user.get("style");
+                var gender = user.get("gender");
+                var currentLevel = user.get("currentLevel");
+                var highestLevel = user.get("highestLevel");
+                var availability = user.get("availability");
+                var filterCondition = user.get("filterCondition");
+                var filterAge = user.get("filterAge");
+                var filterLevel = user.get("filterLevel");
+                var filterGender = user.get("filterGender");
+                var filterStyle = user.get("filterStyle");
+                var filterFieldType = user.get("filterFieldType");
+
+                console.log("user.existed() 2");
+                if (user.get("picture") != undefined) {
+                  var picture = user.get("picture").url();
+                } else {
+                  var picture = undefined;
+                }
+                var birthday = user.get("birthday");
+
+                console.log("user.existed() 3");
+
+                login.props.handleSubmit({
+                  lastName:lastName,
+                  firstName:firstName,
+                  style:style,
+                  gender:gender,
+                  currentLevel:currentLevel,
+                  highestLevel:highestLevel,
+                  availability:availability,
+                  userId:user.id,
+                  picture: picture,
+                  birthday:birthday,
+                  new:false
+                })
+
+                login.props.handleSubmitPreferences({
+                  filterCondition:filterCondition,
+                  filterAge:filterAge,
+                  filterLevel:filterLevel,
+                  filterGender:filterGender,
+                  filterStyle:filterStyle,
+                  filterFieldType:filterFieldType
+                })
+
+                login.props.handleSubmitButton({
+                  ChatButtonIndex:null,
+                  CommunityButtonIndex:null,
+                  CalendarButtonIndex:null,
+                  ProfileButtonIndex:null
+                })
+
+                console.log("user.existed() 4");
+
+                var clubs = user.get("clubs");
+
+                console.log("user.existed() 5");
+                 
+                if (clubs != undefined) {
+                  for (var i = 0; i < clubs.length; i++) {
+                   var queryClub = new Parse.Query("Club");
+                   queryClub.get(clubs[i].id, {
+                      success: function(club) {
+                      // The object was retrieved successfully.
+                      var clubName = club.get("name");
+                      login.props.handleSubmitClub({id:club.id, name:clubName})
+                      },
+                      error: function(object, error) {
+                        // The object was not retrieved successfully.
+                      }
+                    });
+                  }
+                } else { login.props.handleSubmitClub2({toto:'toto'}) }
+                 
+                console.log("user.existed() 6");
+                login.props.navigation.navigate("Swiper");  
+          
+              } 
+            },
+            error: function(user, error) {
+              console.log(user, error);
+            }
+          })
           break;
         }
         case 'cancel': {

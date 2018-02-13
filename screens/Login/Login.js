@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Platform, ImageStore, ImageEditor } from 'react-native';
 import { Facebook, Font, Constants, Location, Permissions, IntentLauncherAndroid } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -38,15 +38,25 @@ constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
+     this.getImageFromFacebook = this.getImageFromFacebook.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
-      location:null
+      location:null,
+      pictureBase64:null
     };
   }
 
    async componentWillMount() {
       var login = this;
+
+       if (Platform.OS === 'android' && !Constants.isDevice) {
+          Alert.alert('isDevice'); 
+        } 
+        else {
+          this._getLocationAsync();
+          console.log('_getLocationAsync ok');
+        } 
 
       Parse.User.currentAsync().then(function(user) {
               console.log('user');
@@ -134,18 +144,6 @@ constructor(props) {
                 login.props.navigation.navigate("Swiper");
 
               } 
-              else {
-
-                if (Platform.OS === 'android' && !Constants.isDevice) {
-                  Alert.alert('isDevice'); 
-
-                } 
-                else {
-
-                  this._getLocationAsync();
-                  console.log('_getLocationAsync ok');
-                } 
-              }
             });
 }
 
@@ -259,34 +257,50 @@ constructor(props) {
    }
    });
   };
+
+  getImageFromFacebook(url) {
+    console.log('getImageFromFacebook');
+    const imageURL = url;
+    Image.getSize(imageURL, (width, height) => {
+      var imageSize = {
+        size: {
+          width,
+          height
+        },
+        offset: {
+          x: 0,
+          y: 0,
+        }
+      };
+      ImageEditor.cropImage(imageURL, imageSize, (imageURI) => {
+        console.log(imageURI);
+        ImageStore.getBase64ForTag(imageURI, (base64Data) => {
+          this.setState({pictureBase64: base64Data});
+          if (Platform.OS === 'ios') {
+            ImageStore.removeImageForTag(imageURI);
+          }
+        }, (reason) => console.log(reason) )
+      }, (reason) => console.log(reason) )
+    }, (reason) => console.log(reason))
+  }
   
   _handleFacebookLogin = async () => {
     var login = this;
     try {
       const { type, token, expires } = await Facebook.logInWithReadPermissionsAsync(
-        '1201211719949057', // Replace with your own app id in standalone app
+        '233912777050369', // Replace with your own app id in standalone app
         { permissions: ['public_profile', 'user_friends', 'email'] }
       );
       var expdate = new Date(expires*1000);
-      console.log('type');
-      console.log(type);
-      console.log('token');
-      console.log(token);
-      console.log('expires');
-      console.log(expires);
-      console.log('expdate');
-      console.log(expdate);
 
       switch (type) {
         case 'success': {
           // Get the user's name using Facebook's Graph API
-          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture,email`);
+          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture.type(large),email`);
           const profile = await response.json();
           var name = profile.name.split(" ");
-          console.log('profile');
-          console.log(profile);
-          console.log('profile.picture');
-          console.log(profile.picture);
+
+          this.getImageFromFacebook(profile.picture.data.url);
 
           let authData = {
             id: profile.id,
@@ -305,13 +319,15 @@ constructor(props) {
                 user.set('lastName', name[1]);
                 user.set('username', profile.email);
                 user.set('email', profile.email);
-                //user.set('picture', profile.picture.data.url);
+                if (login.state.pictureBase64) {
+                  console.log('login.state.pictureBase64');
+                  var picture = new Parse.File("picture.bin", { base64: login.state.pictureBase64 });
+                  user.set('picture', picture);
+                }
                 console.log('set en cours');
                 user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
-                console.log('this.state.location');
-                console.log(login.state.location);
                 if (login.state.location) {
-                  console.log('set en cours 2');
+                  console.log('login.state.location');
                   var point = new Parse.GeoPoint({latitude: login.state.location.coords.latitude, longitude: login.state.location.coords.longitude});
                   user.set("geolocation", point);
                 }
@@ -335,8 +351,8 @@ constructor(props) {
                   availability:[{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}],
                   userId:user.id,
                   birthday:undefined,
-                  picture:undefined,
-                  new:false
+                  picture:(profile.picture && profile.picture.data.url)||undefined,
+                  new:true
                 })
 
                 login.props.handleSubmitPreferences({
@@ -400,7 +416,7 @@ constructor(props) {
                   userId:user.id,
                   picture: picture,
                   birthday:birthday,
-                  new:true
+                  new:false
                 })
 
                 login.props.handleSubmitPreferences({
