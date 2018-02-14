@@ -3,9 +3,6 @@ import { View, Text, StyleSheet} from 'react-native';
 import { Font } from 'expo';
 import { Parse } from 'parse/react-native';
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-
 export default class ProfileViewContentClubs extends React.Component {
 
 constructor() {

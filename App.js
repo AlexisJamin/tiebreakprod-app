@@ -4,6 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { createStore } from 'redux';
+import { Parse } from 'parse/react-native'
+
+Parse.initialize('3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa');
+Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
 
 import Login from './screens/Login/Login';
 import SignIn from './screens/SignIn/SignIn';

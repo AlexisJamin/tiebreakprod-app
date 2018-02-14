@@ -6,9 +6,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 

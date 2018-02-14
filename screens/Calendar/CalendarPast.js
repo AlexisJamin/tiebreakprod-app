@@ -4,9 +4,6 @@ import { List, ListItem } from 'react-native-elements';
 import { Parse } from 'parse/react-native';
 import { connect } from 'react-redux';
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-
 import moment from 'moment';
 import 'moment/locale/fr';
 

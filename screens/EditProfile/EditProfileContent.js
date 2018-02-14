@@ -11,9 +11,6 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import 'moment/locale/fr';
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 

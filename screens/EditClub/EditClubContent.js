@@ -6,9 +6,6 @@ import { Parse } from 'parse/react-native';
 
 import EditClubContentClubList from './EditClubContentClubList';
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-
 function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, Share } from 'react-native'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, Share, AsyncStorage } from 'react-native'
 import { Font, Util } from 'expo'
 import ModalDropdown from 'react-native-modal-dropdown'
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -7,9 +7,6 @@ import { ButtonGroup } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { connect } from 'react-redux'
 import { Parse } from 'parse/react-native'
-
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse'
 
 import moment from 'moment';
 import 'moment/locale/fr';

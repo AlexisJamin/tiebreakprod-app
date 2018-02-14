@@ -27,10 +27,6 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-//Parse.User.enableUnsafeCurrentUser();
-
 
 class Login extends React.Component {
 

@@ -183,17 +183,7 @@ navigationCommunity(route, index) {
 
            <View style={{marginTop: 10}}>
             {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> À PROPOS </Text>) : null 
-          }
-          </View>
-
-          <View style={{marginTop: 15}}>
-            <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
-          </View>
-
-           <View style={{marginTop: 10}}>
-            {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> CONTACT </Text>) : null 
+        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> CGU </Text>) : null 
           }
           </View>
           

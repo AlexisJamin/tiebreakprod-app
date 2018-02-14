@@ -4,9 +4,6 @@ import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 
-Parse.initialize("3E8CAAOTf6oi3NaL6z8oVVJ7wvtfKa");
-Parse.serverURL = 'https://tiebreak.herokuapp.com/parse';
-
 function mapStateToProps(store) {
 
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button, searchPlayer: store.searchPlayer }
@@ -667,6 +664,9 @@ class CommunityContent extends React.Component {
           var highestLevel = user.get("highestLevel");
           var availability = user.get("availability");
           var picture = user.get("picture");
+          if (picture != undefined) {
+            var picture = picture.url()
+          }
           var clubs = user.get("clubs");
           var birthday = user.get("birthday");
           var id = user.id;
