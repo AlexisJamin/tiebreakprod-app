@@ -27,13 +27,6 @@ class CreateGameContent extends React.Component {
     this._onPressAnswerPositive = this._onPressAnswerPositive.bind(this);
     this._shareFriends = this._shareFriends.bind(this);
     this._showResult = this._showResult.bind(this);
-    let user = Parse.User.current() || Parse.User.currentAsync();
-    let firstName = user.get('firstName');
-    let shareOptions = {
-      message: firstName + " a créé une partie sur Tie Break ! (http://www.tie-break.fr)",
-      title: "Tie Break",
-      subject: "Application Tie Break" //  for email
-    };
     this.state = {
       fontAvenirNextLoaded:false,
       fontAvenirLoaded:false,
@@ -46,8 +39,7 @@ class CreateGameContent extends React.Component {
       date:null,
       price:0,
       friends1:null,
-      friends2:null,
-      shareOptions:shareOptions
+      friends2:null
     };
   }
 
@@ -216,7 +208,14 @@ class CreateGameContent extends React.Component {
   }
 
   _shareFriends() {
-    Share.share(this.state.shareOptions)
+    let user = Parse.User.current() || Parse.User.currentAsync();
+    let firstName = user.get('firstName');
+    let shareOptions = {
+      message: firstName + " a créé une partie sur Tie Break le "+moment(this.state.date).format('LLLL')+" ! (http://www.tie-break.fr)",
+      title: "Tie Break",
+      subject: "Application Tie Break" //  for email
+    };
+    Share.share(shareOptions)
     .then(this._showResult)
     .catch((error) => this.setState({result: 'error: ' + error.message}));
   }
