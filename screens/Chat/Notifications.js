@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TextInput, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { Parse } from 'parse/react-native';
+import { Notifications, Amplitude } from 'expo';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
+
+import translate from '../../translate.js';
 
 function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
@@ -25,7 +28,7 @@ function mapDispatchToProps(dispatch) {
   }
 };
 
-class Notifications extends React.Component {
+class NotificationList extends React.Component {
 
   constructor(props) {
     super(props);
@@ -48,7 +51,7 @@ class Notifications extends React.Component {
     var edit = this;
     query.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync()); 
     query.descending("updatedAt");
-    query.limit(10);
+    query.limit(20);
     query.find({
       success: function(Notification) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
@@ -57,23 +60,23 @@ class Notifications extends React.Component {
           for (var i = 0; i < Notification.length; i++) {
             NotificationCopy.push(JSON.parse(JSON.stringify(Notification[i])));
               if (NotificationCopy[i].type == 0) {
-                NotificationCopy[i].typeName = 'Souhaite devenir votre ami(e)';
+                NotificationCopy[i].typeName = translate.wantsToBeYourFriend[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 1) {
-                NotificationCopy[i].typeName = 'A accepté votre demande d’amitié';
+                NotificationCopy[i].typeName = translate.acceptedToBeYourFriend[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 2) {
-                NotificationCopy[i].typeName = 'A refusé votre demande d’amitié';
+                NotificationCopy[i].typeName = translate.refusedToBeYourFriend[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 3) {
-                NotificationCopy[i].typeName = 'Vous a proposé une partie';
+                NotificationCopy[i].typeName = translate.proposesYouAGame[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 4) {
-                NotificationCopy[i].typeName = 'A accepté votre proposition de partie';
+                NotificationCopy[i].typeName = translate.acceptedYouGameProposal[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 5) {
-                NotificationCopy[i].typeName = 'A refusé votre proposition de partie';
+                NotificationCopy[i].typeName = translate.refusedYourGameProposal[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 6) {
-                NotificationCopy[i].typeName = 'A annulé votre partie';
+                NotificationCopy[i].typeName = translate.cancelledYourGame[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 7) {
-                NotificationCopy[i].typeName = 'Aimerait participer à votre partie';
+                NotificationCopy[i].typeName = translate.wantsToParticipate[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 8) {
-                NotificationCopy[i].typeName = 'Vous a envoyé un message';
+                NotificationCopy[i].typeName = translate.sentYouAMessage[edit.props.user.currentLocale];
               } 
           }
           
@@ -88,7 +91,8 @@ class Notifications extends React.Component {
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
                   var picture = users.get("picture");
-                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                  var expoPushToken = users.get("expoPushToken");
+                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserToken:expoPushToken};
                   Object.assign(notification[i], fromUserParam);
                   edit.setState({ data: notification, loading:false });
                 }
@@ -112,32 +116,31 @@ class Notifications extends React.Component {
         edit.props.handleSubmitUpdateNotification({
           notification:notification.length
         })
+        user.set("badgeNumber", notification.length);
+        user.save();
+        Notifications.setBadgeNumberAsync(notification.length);
         edit.setState({notification:notification.length})
       }
     });
   }
 
   componentDidMount() {
-    //not working yet because need to update server on Heroku
-    /*var user = Parse.User.current();
+
+    var user = Parse.User.current();
     var query = new Parse.Query("Notification");
-    var edit = this;
     query.equalTo('toUser', Parse.User.current()); 
     var subscription = query.subscribe();
 
     subscription.on('open', () => {
-     console.log('subscription Notification opened');
     });
 
     subscription.on('create', (notification) => {
-     console.log('notification created');
       this.onRefresh();
     });
 
     subscription.on('update', (notification) => {
-      console.log('notification updated');
       this.onRefresh();
-    });*/
+    });
   }
 
   renderSeparator() {
@@ -176,8 +179,14 @@ class Notifications extends React.Component {
         }}
       >
         <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
-        <Text style={{marginTop:10}}> Aucune notification.</Text>
-        <Text style={{marginTop:10}}> Avez-vous pensé à compléter votre profil ? </Text>
+        <Text style={{marginTop:20}}> Aucune notification.</Text>
+        <TouchableOpacity 
+          hitSlop={{top:20, left:20, bottom:20, right:20}} 
+          onPress={() => this.props.navigation.navigate('Profile')}
+          style={{marginTop:20}}
+          >
+        <Text style={{textDecorationLine:'underline'}}> Avez-vous pensé à compléter votre profil ? </Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -189,7 +198,7 @@ class Notifications extends React.Component {
     var edit = this;
     query.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync()); 
     query.descending("updatedAt");
-    query.limit(10);
+    query.limit(20);
     query.find({
       success: function(Notification) {
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
@@ -198,23 +207,23 @@ class Notifications extends React.Component {
           for (var i = 0; i < Notification.length; i++) {
             NotificationCopy.push(JSON.parse(JSON.stringify(Notification[i])));
               if (NotificationCopy[i].type == 0) {
-                NotificationCopy[i].typeName = 'Souhaite devenir votre ami(e)';
+                NotificationCopy[i].typeName = translate.wantsToBeYourFriend[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 1) {
-                NotificationCopy[i].typeName = 'A accepté votre demande d’amitié';
+                NotificationCopy[i].typeName = translate.acceptedToBeYourFriend[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 2) {
-                NotificationCopy[i].typeName = 'A refusé votre demande d’amitié';
+                NotificationCopy[i].typeName = translate.refusedToBeYourFriend[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 3) {
-                NotificationCopy[i].typeName = 'Vous propose une partie le XXX';
+                NotificationCopy[i].typeName = translate.proposesYouAGame[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 4) {
-                NotificationCopy[i].typeName = 'A accepté votre proposition de partie le XXX';
+                NotificationCopy[i].typeName = translate.acceptedYouGameProposal[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 5) {
-                NotificationCopy[i].typeName = 'A refusé votre proposition de partie le XXX';
+                NotificationCopy[i].typeName = translate.refusedYourGameProposal[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 6) {
-                NotificationCopy[i].typeName = 'A annulé votre partie le XXX';
+                NotificationCopy[i].typeName = translate.cancelledYourGame[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 7) {
-                NotificationCopy[i].typeName = 'Aimerait participer à votre partie le XXX';
+                NotificationCopy[i].typeName = translate.wantsToParticipate[edit.props.user.currentLocale];
               } else if (NotificationCopy[i].type == 8) {
-                NotificationCopy[i].typeName = 'Vous a envoyé un message';
+                NotificationCopy[i].typeName = translate.sentYouAMessage[edit.props.user.currentLocale];
               } 
           }
           
@@ -229,7 +238,8 @@ class Notifications extends React.Component {
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
                   var picture = users.get("picture");
-                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture};
+                  var expoPushToken = users.get("expoPushToken");
+                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserToken:expoPushToken};
                   Object.assign(notification[i], fromUserParam);
                   edit.setState({ data: notification, refreshing:false });
                 }
@@ -253,16 +263,16 @@ class Notifications extends React.Component {
         edit.props.handleSubmitUpdateNotification({
           notification:notification.length
         })
+        user.set("badgeNumber", notification.length);
+        user.save();
+        Notifications.setBadgeNumberAsync(notification.length);
         edit.setState({notification:notification.length})
       }
     });
 
   }
 
-  viewOnPress(id, userId, type, firstName, seen) {
-
-    console.log('type');
-    console.log(type);
+  viewOnPress(id, userId, type, firstName, seen, token) {
 
     var view = this;
 
@@ -287,6 +297,9 @@ class Notifications extends React.Component {
           view.props.handleSubmitUpdateNotification({
             notification:view.state.notification-1
           })
+          user.set("badgeNumber", view.state.notification-1);
+          user.save();
+          Notifications.setBadgeNumberAsync(view.state.notification-1);
           view.setState({data: NotificationCopy, notification:view.state.notification-1})
         },
         error: function(error) {
@@ -316,6 +329,7 @@ class Notifications extends React.Component {
               }
               var clubs = user.get("clubs");
               var birthday = user.get("birthday");
+              var expoPushToken = user.get("expoPushToken");
               var id = user.id;
 
               view.props.handleSubmit({
@@ -332,8 +346,10 @@ class Notifications extends React.Component {
                 friendRequestReceived:true,
                 clubs:clubs,
                 id:id,
-                birthday:birthday
+                birthday:birthday,
+                userToken:expoPushToken
               })
+            Amplitude.logEvent("ProfileView Button clicked");
             view.props.navigation.navigate("ProfileView");
             }
           });
@@ -358,6 +374,7 @@ class Notifications extends React.Component {
               }
               var clubs = user.get("clubs");
               var birthday = user.get("birthday");
+              var expoPushToken = user.get("expoPushToken");
               var id = user.id;
 
               view.props.handleSubmit({
@@ -375,15 +392,16 @@ class Notifications extends React.Component {
                 friendRequestReceived:false,
                 clubs:clubs,
                 id:id,
-                birthday:birthday
+                birthday:birthday,
+                userToken:expoPushToken
               })
+            Amplitude.logEvent("ProfileView Button clicked");
             view.props.navigation.navigate("ProfileView");
             }
           });
       }
 
       if (type == 8) {
-        console.log('type 8');
          var user = Parse.User.current() || Parse.User.currentAsync();
          var conversation = new Parse.Query("Conversation");
          conversation.containsAll('roomUsers', [user.id, userId]); 
@@ -394,14 +412,15 @@ class Notifications extends React.Component {
               id:conversation.id,
               firstName:firstName,
               userId:userId,
+              userToken:token
             })
+            Amplitude.logEvent("Messenger Button clicked");
             view.props.navigation.navigate("Messenger");
             }
           });
       } 
 
       if (type == 3) {
-         console.log('type 3');
          var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
@@ -412,13 +431,13 @@ class Notifications extends React.Component {
             view.props.handleSubmitGame({
               gameId:gameId,
             })
+            Amplitude.logEvent("GameView Button clicked");
             view.props.navigation.navigate("GameView");
            }
           });
       } 
 
       if (type == 7) {
-         console.log('type 7');
          var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
@@ -429,13 +448,13 @@ class Notifications extends React.Component {
             view.props.handleSubmitGame({
               gameId:gameId,
             })
+            Amplitude.logEvent("GameView Button clicked");
             view.props.navigation.navigate("GameView");
            }
           });
       }
 
       if (type == 4) {
-         console.log('type 4');
          var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
@@ -446,13 +465,13 @@ class Notifications extends React.Component {
             view.props.handleSubmitGame({
               gameId:gameId,
             })
+            Amplitude.logEvent("GameView Button clicked");
             view.props.navigation.navigate("GameView");
            }
           });
       } 
 
       if (type == 6) {
-         console.log('type 6');
          var user = Parse.User.current() || Parse.User.currentAsync();
          var Notification = Parse.Object.extend("Notification");
          var query = new Parse.Query(Notification);
@@ -463,6 +482,7 @@ class Notifications extends React.Component {
             view.props.handleSubmitGame({
               gameId:gameId,
             })
+            Amplitude.logEvent("GameView Button clicked");
             view.props.navigation.navigate("GameView");
            }
           });
@@ -475,7 +495,7 @@ render () {
 
   return (
 
-    <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
+    <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
 
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
@@ -505,7 +525,7 @@ render () {
           subtitleContainerStyle={{marginLeft:30, width:300}}
           subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'bold'}}>{item.typeName} </Text>}
           hideChevron={true}
-          onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type, item.fromUserFirstName, item.seen)}}
+          onPress={()=>{this.viewOnPress(item.objectId, item.fromUser.objectId, item.type, item.fromUserFirstName, item.seen, item.fromUserToken)}}
           />
         )}
       />
@@ -517,7 +537,7 @@ render () {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (Notifications);
+export default connect(mapStateToProps, mapDispatchToProps) (NotificationList);
 
 const styles = StyleSheet.create({
   container: {

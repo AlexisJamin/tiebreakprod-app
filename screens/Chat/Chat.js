@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 
-import ChatHeader from './ChatHeader';
+import Header from '../Header/Header';
 import ChatButton from './ChatButton';
 import ChatContent from './ChatContent';
 import Notifications from './Notifications';
@@ -10,14 +10,16 @@ import Notifications from './Notifications';
 
 const ChatNavigator = TabNavigator(
 {
-  Notifications: {screen: Notifications, navigationOptions: {tabBarVisible: false}},
-  ChatContent: {screen: ChatContent, navigationOptions: {tabBarVisible: false}}
+  Notifications: {screen: Notifications },
+  ChatContent: {screen: ChatContent }
 },
 {
   initialRouteName:'Notifications',
   swipeEnabled: false,
-  lazy: true,
-  animationEnabled: false
+  animationEnabled: false,
+  navigationOptions: {
+    tabBarVisible: false
+  }
   },
 );
 
@@ -41,11 +43,13 @@ export default class Chat extends React.Component {
 
       </View>
 
-          <View style={{height:80, marginBottom:60}}>
-           <ChatHeader navigation={this.props.navigation}/>
+          <View style={{flex:0.17, marginBottom:40}}>
+           <Header navigation={this.props.navigation} screenProps={{header:"chat", back:false}}/>
           </View>
         
+        <View style={{flex:0.83}}>
         <ChatNavigator navigation={this.props.navigation}/>
+        </View>
 
         </View>
     );

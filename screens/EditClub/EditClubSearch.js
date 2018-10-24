@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, TextInput, Keyboard, FlatList, ActivityIndicator } from 'react-native';
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Keyboard, FlatList, ActivityIndicator, Linking, Platform, Alert } from 'react-native';
+import { Font, Constants, Location, Permissions, IntentLauncherAndroid } from 'expo';
+import { Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
 import { List, ListItem } from 'react-native-elements';
 
-function mapStateToProps(store) {
+import translate from '../../translate.js';
 
+function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };
 
@@ -30,58 +32,102 @@ constructor(props) {
     this._onChangeText = this._onChangeText.bind(this);
     this.addClub = this.addClub.bind(this);
     this.state = {
-      fontAvenirNextLoaded: false,
-      fontAvenirLoaded: false,
       loading:true,
       selectedClubId:'',
       selectedClubName:'',
       data:null,
       dataCopy:null,
+      location:null
     };
+    this.getLocation();
   }
 
-  async componentDidMount() {
-    await Font.loadAsync({
-      'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
-      'Avenir': require('../../assets/fonts/Avenir.ttf'),
-    });
-    this.setState({ 
-      fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true 
-    });
+  getLocation() {
+     if (Platform.OS === 'android' && !Constants.isDevice) {
+      Alert.alert('isDevice'); 
+    } else {
+      this._getLocationAsync().then(()=>{
+        var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
+        var user = Parse.User.current() || Parse.User.currentAsync();
+        user.set("geolocation", point);
+        user.save();
+      });
+    }
+}
+
+  _getIntentLauncherAndroidAsync = async () => {
+    await IntentLauncherAndroid.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
+    let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+    this.setState({ location: location });
+  };
+
+  _getLocationAsync = async () => {
+    let {status} = await Permissions.askAsync(Permissions.LOCATION);
+    let service = await Location.getProviderStatusAsync();
+
+    if (status != 'granted') {
+     console.log('Permission to access location was denied');
+     Alert.alert(
+          "Vous n'avez pas autorisé Tie Break à accéder à votre localisation. Allez dans Réglages > Confidentialité pour l'activer.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
+     this.setState({ location: undefined });
+    } else if (!service.locationServicesEnabled) {
+      if (Platform.OS === 'android') {
+        Alert.alert(
+          "La localisation est désactivée sur votre mobile.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains.",
+          [
+            {text: 'Activer', onPress : () => this._getIntentLauncherAndroidAsync()},
+            {text: 'Non', onPress : () => this.setState({ location: undefined }), style:'cancel'},
+          ],
+          { cancelable: false }
+          );
+      } else {
+        Alert.alert(
+          "La localisation est désactivée sur votre mobile. Allez dans Réglages > Confidentialité pour l'activer.",
+          "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
+        this.setState({ location: undefined });
+      }
+    } else if (service.locationServicesEnabled) {
+        let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
+        this.setState({ location: location });
+      }
+  };
+
+   componentDidMount() {
 
     var Club = Parse.Object.extend("Club");
     var query = new Parse.Query(Club);
     var edit = this;
-    // User's location
+
     var user = Parse.User.current() || Parse.User.currentAsync();
     var userGeoPoint = user.get("geolocation");
-    // Interested in locations near user.
-    query.near("geopoint", userGeoPoint);
-    // Limit what could be a lot of points.
-    query.limit(30);
-    // Final list of objects
-    query.find({
-      success: function(Club) {
-        if (Club.length != 0) {
-          // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
-          var ClubCopy = JSON.parse(JSON.stringify(Club));
-          // sorts clubs already in user's club list
-          // calculate distance between user and the clubs
-          for (var i = 0; i < ClubCopy.length; i++) {
-            var distance = Math.round(userGeoPoint.kilometersTo(ClubCopy[i].geopoint));
-            var distanceParam = {distance: distance};
-            Object.assign(ClubCopy[i], distanceParam);
-          }
-          var ClubCopyFiltered = ClubCopy.filter(function (o1) {
-              return !edit.props.userClub.some(function (o2) {
-                  return o1.objectId === o2.id; 
-             });
-          });
-          edit.setState({ data: ClubCopyFiltered, dataCopy: ClubCopyFiltered, loading:false });
-        } else {edit.setState({ data: null, loading:false })}
-      }
-    });
+
+    if (userGeoPoint != undefined) {
+      query.near("geopoint", userGeoPoint);
+      query.limit(30);
+      query.find({
+        success: function(Club) {
+          if (Club.length != 0) {
+            // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
+            var ClubCopy = JSON.parse(JSON.stringify(Club));
+            // sorts clubs already in user's club list
+            // calculate distance between user and the clubs
+            for (var i = 0; i < ClubCopy.length; i++) {
+              var distance = Math.round(userGeoPoint.kilometersTo(ClubCopy[i].geopoint));
+              var distanceParam = {distance: distance};
+              Object.assign(ClubCopy[i], distanceParam);
+            }
+            var ClubCopyFiltered = ClubCopy.filter(function (o1) {
+                return !edit.props.userClub.some(function (o2) {
+                    return o1.objectId === o2.id; 
+               });
+            });
+            edit.setState({ data: ClubCopyFiltered, dataCopy: ClubCopyFiltered, loading:false });
+          } else { edit.setState({ data: null, loading:false }) }
+        }
+      });
+    } else { this.setState({ data: null, loading:false }) }
   }
 
    renderSeparator() {
@@ -119,11 +165,9 @@ constructor(props) {
         }}
       >
         <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
-        <Text style={{marginTop:10, marginBottom:5}}> Aucun résultat.</Text>
-        <Text style={{marginTop:10}}> Pour ajouter votre club,</Text>
-        <Text style={{marginTop:10}}> envoyez-nous un email à : </Text>
-        <Text style={{marginTop:10}}> contact@tie-break.fr </Text>
-        <Text style={{marginTop:10}}> (effectué dans la journée !) </Text>
+        <Text style={{marginTop:10, marginBottom:5}}> {translate.noResult[this.props.user.currentLocale]} </Text>
+        <Text style={{marginTop:10, width:200, textAlign: 'center'}}> {translate.contactUsAddClub[this.props.user.currentLocale]} </Text>
+        <Text style={{marginTop:12, textDecorationLine:'underline', fontSize:16}} onPress={()=>Linking.openURL('mailto: contact@tie-break.fr')}> contact@tie-break.fr </Text>
       </View>
     );
   }
@@ -185,16 +229,16 @@ constructor(props) {
       <View style={{flex:1, backgroundColor:'white'}}>
 
       <View style={{flexDirection:'row', justifyContent:"space-around", marginTop:30, marginBottom:30}}>
-          <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.props.navigation.goBack()}>
-          <Image style={{top:12, left:5}} source={require('../../assets/icons/General/Back.imageset/icBackGrey.png')} />
-          </TouchableWithoutFeedback>
+          <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={() => this.props.navigation.goBack()}>
+          <Entypo name="chevron-left" size={25} style={{top:5}} />
+          </TouchableOpacity>
           <TextInput 
             style={styles.searchBar}
             keyboardType="default"
             returnKeyType='done'
             autoCapitalize='none'
             autoCorrect={false}
-            placeholder='rechercher un club'
+            placeholder={translate.searchClub[this.props.user.currentLocale]}
             underlineColorAndroid='rgba(0,0,0,0)'
             blurOnSubmit={false}
             onChangeText={(tag) => this._onChangeText(tag)}

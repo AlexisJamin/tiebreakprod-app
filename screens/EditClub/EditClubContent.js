@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Font, Amplitude } from 'expo';
+import { Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
+
+import translate from '../../translate.js';
 
 import EditClubContentClubList from './EditClubContentClubList';
 
@@ -45,10 +48,11 @@ constructor(props) {
     var user = Parse.User.current() || Parse.User.currentAsync();
     var clubs = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
-      clubs.push({"__type":"Pointer","className":"Club","objectId":this.props.userClub[i].id});
+      clubs.push(this.props.userClub[i].id);
     }
     user.set("clubs", clubs);
     user.save();
+    Amplitude.setUserProperties({clubNumber:this.props.userClub.length});
     this.props.navigation.goBack();
   }
 
@@ -60,7 +64,7 @@ constructor(props) {
   render() {
 
     if (this.props.userClub.length == 0) {
-    var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
+    var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>{translate.toComplete[this.props.user.currentLocale].toUpperCase()}</Text>;
     } else {
     var clubList = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
@@ -73,7 +77,7 @@ constructor(props) {
       <View style={{flex:1, backgroundColor:'white'}}>
       {
         this.state.fontAvenirLoaded ? (
-          <Text style={{marginBottom:30, fontFamily: 'AvenirNext', left:10}}> MES CLUBS FAVORIS </Text>
+          <Text style={{marginBottom:30, fontFamily: 'AvenirNext', left:10}}> {translate.myFavoriteClubs[this.props.user.currentLocale].toUpperCase()} </Text>
         ) : null 
        }
 
@@ -88,20 +92,20 @@ constructor(props) {
       {clubList}
       </View>
 
-      <TouchableWithoutFeedback hitSlop={{top:20, left:100, bottom:100, right:100}} onPress={() => this.props.navigation.navigate('EditClubSearch')} >
+      <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={() => this.props.navigation.navigate('EditClubSearch')} >
       <View style={{flexDirection:'row', justifyContent:"center"}}>
-       <Image style={{marginRight:10}} source={require('../../assets/icons/Search/Search.imageset/icSearch.png')} /> 
+       <Entypo name="magnifying-glass" size={20} />
        {
-       this.state.fontAvenirLoaded ? (<Text style={styles.clubs}> Ajouter un club favori </Text>) : null 
+       this.state.fontAvenirLoaded ? (<Text style={styles.clubs}> {translate.addFavoriteClub[this.props.user.currentLocale]} </Text>) : null 
        } 
        </View>
-      </TouchableWithoutFeedback>   
+      </TouchableOpacity>   
 
       </ScrollView>
 
-      <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
-      <Text style={styles.buttonValidate}>Valider</Text>
-      </TouchableWithoutFeedback>
+      <TouchableOpacity onPress={this._onPressValidateButton}>
+      <Text style={styles.buttonValidate}>{translate.validate[this.props.user.currentLocale]}</Text>
+      </TouchableOpacity>
       </View>
 
     );

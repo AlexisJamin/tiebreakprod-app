@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback} from 'react-native';
-import { Font } from 'expo';
-import Svg,{
-    Line,
-} from 'react-native-svg';
+import { View, Image, Text, StyleSheet, ScrollView , TouchableOpacity} from 'react-native';
+import { Font, Svg, Amplitude } from 'expo';
+import { Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 
-import moment from 'moment';
-import 'moment/locale/fr';
+import moment from 'moment/min/moment-with-locales';
+
+import translate from '../../translate.js';
 
 import ProfileContentClubs from './ProfileContentClubs';
 import ProfileContentClubsBullets from './ProfileContentClubsBullets';
@@ -16,7 +15,6 @@ import ProfileContentDispo from './ProfileContentDispo';
 
 
 function mapStateToProps(store) {
-
   return { user: store.user, userClub: store.userClub }
 }
 
@@ -29,7 +27,8 @@ constructor(props) {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false
     };
-    console.log(this.props.user);
+
+    moment.locale(this.props.user.currentLocale);
   }
 
   async componentDidMount() {
@@ -44,18 +43,32 @@ constructor(props) {
     });
   }
 
+_onPressEditProfile = () => {
+  Amplitude.logEvent("EditProfile Button clicked");
+  this.props.navigation.navigate('EditProfile');
+};
+
+_onPressEditDispo = () => {
+  Amplitude.logEvent("EditDispo Button clicked");
+  this.props.navigation.navigate('EditDispo');
+};
+
+_onPressEditClub = () => {
+  Amplitude.logEvent("EditClub Button clicked");
+  this.props.navigation.navigate('EditClub');
+};
 
   render() {
-    moment.locale('fr');
+
     if (this.props.user.birthday != undefined) {
-      var age = moment().diff(this.props.user.birthday, 'years')+' ans';
+      var age = moment().diff(this.props.user.birthday, 'years')+' '+translate.old[this.props.user.currentLocale];
     } else {
-      var age = 'à compléter';
+      var age = translate.toComplete[this.props.user.currentLocale];
     }
     
 
     if (this.props.userClub.length == 0) {
-    var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>À COMPLÉTER</Text>;
+    var newUserClub = <Text style={{textAlign:'center', top: 20, marginBottom:10}}>{translate.toComplete[this.props.user.currentLocale].toUpperCase()}</Text>;
     } else {
     var clubList = [];
     for (var i = 0; i < this.props.userClub.length; i++) {
@@ -67,7 +80,8 @@ constructor(props) {
       clubListBullets.push(<ProfileContentClubsBullets/>)
     }
   }
-    if (this.props.user.availability[0].hours.length == 0 &&
+    if (this.props.user.availability == undefined ||
+        this.props.user.availability[0].hours.length == 0 &&
         this.props.user.availability[1].hours.length == 0 &&
         this.props.user.availability[2].hours.length == 0 &&
         this.props.user.availability[3].hours.length == 0 &&
@@ -75,8 +89,8 @@ constructor(props) {
         this.props.user.availability[5].hours.length == 0 &&
         this.props.user.availability[6].hours.length == 0) {
     var newUserDispo = (<View style={{alignItems:'center', top: 20, marginBottom:10}}>
-                        <Text style={{marginBottom:10}}> À COMPLÉTER</Text>
-                        <Text> (nécessaire pour trouver des ami(e)s / parties) </Text>
+                        <Text style={{marginBottom:10}}> {translate.toComplete[this.props.user.currentLocale].toUpperCase()}</Text>
+                        <Text> ({translate.required[this.props.user.currentLocale]}) </Text>
                         </View>);
     } else {
     var dayList = [];
@@ -90,14 +104,14 @@ constructor(props) {
   if (this.props.user.picture!=undefined)
            {
            profileImage = (
-            <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+            <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditProfile} >
             <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
-            </TouchableWithoutFeedback>)
+            </TouchableOpacity>)
            } else {
              profileImage = (
-              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+              <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditProfile} >
               <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
-              </TouchableWithoutFeedback>)
+              </TouchableOpacity>)
              }
 
   if (this.props.user.currentLevel == undefined) {
@@ -209,24 +223,24 @@ constructor(props) {
   }
 
   if (this.props.user.gender == undefined) {
-    var gender = "à compléter";
+    var gender = translate.toComplete[this.props.user.currentLocale];
   } else if (this.props.user.gender == 'male') {
-    var gender = 'Homme';
+    var gender = translate.man[this.props.user.currentLocale];
   } else if (this.props.user.gender == 'female') {
-    var gender = 'Femme';
+    var gender = translate.woman[this.props.user.currentLocale];
   }
 
   if (this.props.user.style == undefined) {
-    var style = "à compléter";
+    var style = translate.toComplete[this.props.user.currentLocale];
   } else if (this.props.user.style == 'right') {
-    var style = 'Droitier';
+    var style = translate.rightHanded[this.props.user.currentLocale];
   } else if (this.props.user.style == 'left') {
-    var style = 'Gaucher';
+    var style = translate.leftHanded[this.props.user.currentLocale];
   }
 
     return (
 
-      <View style={{flex:1, backgroundColor:'white'}}>
+      <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
 
         <ScrollView>
 
@@ -245,34 +259,34 @@ constructor(props) {
             
             {
              this.state.fontAvenirNextLoaded ? (
-               <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+               <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditProfile} >
               <Text style={styles.name}> {this.props.user.firstName} {this.props.user.lastName[0]}. </Text> 
-              </TouchableWithoutFeedback>
+              </TouchableOpacity>
              ) : null 
             }
             {
              this.state.fontAvenirLoaded ? (
-              <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
+              <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditProfile} >
               <Text style={styles.age}> ({age}) </Text> 
-              </TouchableWithoutFeedback>
+              </TouchableOpacity>
              ) : null 
             }
-            <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditProfile')} >
-            <Image style={{marginTop:4, marginLeft:8}} source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
-            </TouchableWithoutFeedback>
+            <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditProfile} >
+            <Entypo name="pencil" size={20} color='gray' />
+            </TouchableOpacity>
           
           </View>
 
           <View style={{flex:1, top: 20, alignItems: 'center'}}>
             <Svg
-              height="40"
-              width="150"
+              height={40}
+              width={150}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="150"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={150}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
@@ -307,14 +321,14 @@ constructor(props) {
     
             <View style={{flex:1, top: 20, alignItems: 'center'}}>
             <Svg
-              height="40"
-              width="300"
+              height={40}
+              width={300}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="300"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={300}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
@@ -328,13 +342,13 @@ constructor(props) {
         }}>
                {
               this.state.fontAvenirLoaded ? (
-                <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditClub')} >
-                <Text style={styles.name}>MES CLUBS</Text>
-                </TouchableWithoutFeedback>) : null 
+                <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditClub} >
+                <Text style={styles.name}>{translate.myClubs[this.props.user.currentLocale]}</Text>
+                </TouchableOpacity>) : null 
               }   
-            <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditClub')} >
-             <Image style={{marginTop:4, marginLeft:8}} source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
-             </TouchableWithoutFeedback>
+            <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditClub} >
+             <Entypo name="pencil" size={20} color='gray' style={{left:3}} />
+             </TouchableOpacity>
 
           </View>
 
@@ -366,14 +380,14 @@ constructor(props) {
 
          <View style={{flex:1, top: 20, alignItems: 'center'}}>
             <Svg
-              height="40"
-              width="300"
+              height={40}
+              width={300}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="300"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={300}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
@@ -388,13 +402,13 @@ constructor(props) {
 
                {
               this.state.fontAvenirLoaded ? (
-                <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditDispo')} >
-                <Text style={styles.name}>MES DISPONIBILITÉS</Text>
-                </TouchableWithoutFeedback>) : null 
+                <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditDispo} >
+                <Text style={styles.name}>{translate.myAvailabilities[this.props.user.currentLocale]}</Text>
+                </TouchableOpacity>) : null 
               }   
-            <TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.navigate('EditDispo')} >
-            <Image style={{marginTop:4, marginLeft:8}} source={require('../../assets/icons/General/EditGray.imageset/icEditGrey.png')} />
-            </TouchableWithoutFeedback>
+            <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressEditDispo} >
+            <Entypo name="pencil" size={20} color='gray' style={{left:3}} />
+            </TouchableOpacity>
 
           </View>
 

@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView , TouchableWithoutFeedback, Alert} from 'react-native';
-import { Font } from 'expo';
-import Svg,{
-    Line,
-} from 'react-native-svg';
+import { View, Image, Text, StyleSheet, ScrollView , TouchableOpacity, Alert} from 'react-native';
+import { Font, Svg, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
-import moment from 'moment';
-import 'moment/locale/fr';
+import moment from 'moment/min/moment-with-locales';
+
+import translate from '../../translate.js';
 
 import ProfileViewContentClubs from './ProfileViewContentClubs';
 import ProfileViewContentClubsBullets from './ProfileViewContentClubsBullets';
@@ -47,6 +45,7 @@ constructor(props) {
       friendRequestRefused: false,
       isFriend: false,
     };
+    moment.locale(this.props.user.currentLocale);
   }
 
   componentWillReceiveProps(props) {
@@ -75,16 +74,12 @@ constructor(props) {
       query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
       query.find({
         success: function(relation) {
-          console.log('fromUser');
           var relationCopy = JSON.parse(JSON.stringify(relation));
             if (relationCopy[0].status == 1) {
-            console.log('friendRequestSent');
             edit.setState({friendRequestSent:true, isFriend:false, friendRequestRefused:false, friendRequestReceived:false})
           } else if (relationCopy[0].status == 2) {
-            console.log('friendRequestRefused');
             edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
           } else if (relationCopy[0].status == 3) {
-            console.log('isFriend');
             edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
           } 
         },
@@ -98,16 +93,12 @@ constructor(props) {
       query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
       query2.find({
         success: function(relation) {
-          console.log('toUser');
           var relationCopy = JSON.parse(JSON.stringify(relation));
            if (relationCopy[0].status == 1) {
-            console.log('friendRequestReceived');
             edit.setState({friendRequestReceived:true, isFriend:false, friendRequestSent:false, friendRequestRefused:false})
           } else if (relationCopy[0].status == 2) {
-            console.log('friendRequestRefused');
             edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
           } else if (relationCopy[0].status == 3) {
-            console.log('isFriend');
             edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
           }
         },
@@ -119,6 +110,7 @@ constructor(props) {
 
   _onPressAddFriend () {
     var add = this;
+    Amplitude.logEvent("Add Friend Button clicked");
     var user = Parse.User.current() || Parse.User.currentAsync();
     var otherUser = { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id };
     var relation = new Parse.Object("Relation");
@@ -129,12 +121,17 @@ constructor(props) {
     relation.set("status", 1);
     relation.save(null, {
         success: function(relation) {
+
           Parse.Cloud.run("createNotification", { 
             "userId": add.props.viewProfile.id,
-            "message": "Souhaite devenir votre ami(e)",
-            "relationId":relation.id,
-            "type":0,
+            "token": add.props.viewProfile.userToken,
+            "firstName": user.get('firstName'),
+            "message": "souhaite devenir ton ami(e).",
+            "channel":"friend-requests",
+            "relationId": relation.id,
+            "type": 0,
              })
+
           add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
                 firstName:add.props.viewProfile.firstName,
@@ -147,6 +144,7 @@ constructor(props) {
                 clubs: add.props.viewProfile.clubs,
                 id: add.props.viewProfile.id,
                 birthday:add.props.viewProfile.birthday,
+                userToken:add.props.viewProfile.userToken,
                 friendRequestSent:true,
                 friendRequestReceived:false,
                 isFriend:false,
@@ -161,11 +159,11 @@ constructor(props) {
 
   _onPressAnswer() {
     Alert.alert(
-    'Ajouter comme ami(e)',
+    translate.addFriendList[this.props.user.currentLocale]+' ?',
     '',
     [
-      {text: 'Refuser', onPress: () => this._onPressAnswerRefuse(), style:'destructive'},
-      {text: 'Ajouter', onPress: () => this._onPressAnswerAdd()},
+      {text: translate.refuse[this.props.user.currentLocale], onPress: () => this._onPressAnswerRefuse(), style:'destructive'},
+      {text: translate.add[this.props.user.currentLocale], onPress: () => this._onPressAnswerAdd()},
     ],
     { cancelable: false }
   )
@@ -174,6 +172,7 @@ constructor(props) {
   _onPressAnswerAdd() {
 
     var user = Parse.User.current() || Parse.User.currentAsync();
+    Amplitude.logEvent("Confirm Friend Request Button clicked");
     var add = this;
     var relation = new Parse.Query("Relation");
     relation.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
@@ -186,7 +185,10 @@ constructor(props) {
 
         Parse.Cloud.run("createNotification", { 
             "userId": add.props.viewProfile.id,
-            "message": "A accepté votre demande d’amitié",
+            "token": add.props.viewProfile.userToken,
+            "firstName": user.get('firstName'),
+            "channel":"friend-requests",
+            "message": "a accepté ta demande d’amitié.",
             "relationId": relation.id,
             "type": 1,
              })
@@ -199,7 +201,6 @@ constructor(props) {
         conversation.set("secondUser", { "__type": "Pointer", "className": "_User", "objectId": add.props.viewProfile.id });
         conversation.save(null, {
         success: function(conversation) {
-          console.log('conversation créée');
           var message = new Parse.Object("Message");
           message.set("createdAt", Date());
           message.set("updatedAt", Date());
@@ -208,11 +209,20 @@ constructor(props) {
           message.set("conversation", conversation.id);
           message.save(null, {
           success: function(message) {
-            console.log('message créé');
-            console.log(message.get('createdAt'));
             conversation.set("lastMessage", { "__type": "Pointer", "className": "Message", "objectId": message.id });
             conversation.set("lastMessageDate", message.get('createdAt'));
             conversation.save();
+
+            Parse.Cloud.run("createNotification", { 
+            "userId": add.props.viewProfile.id,
+            "token": add.props.viewProfile.userToken,
+            "firstName": user.get('firstName'),
+            "channel":"friend-requests",
+            "message":"t'a envoyé un message.",
+            "conversationId":conversation.id,
+            "type":8,
+             })
+
             add.props.handleSubmit({
               lastName:add.props.viewProfile.lastName,
               firstName:add.props.viewProfile.firstName,
@@ -225,6 +235,7 @@ constructor(props) {
               clubs: add.props.viewProfile.clubs,
               id: add.props.viewProfile.id,
               birthday:add.props.viewProfile.birthday,
+              userToken:add.props.viewProfile.userToken,
               friendRequestSent:false,
               friendRequestReceived:false,
               isFriend:true,
@@ -244,6 +255,7 @@ constructor(props) {
   _onPressAnswerRefuse() {
 
     var user = Parse.User.current() || Parse.User.currentAsync();
+    Amplitude.logEvent("Refuse Friend Request Button clicked");
     var add = this;
     var relation = new Parse.Query("Relation");
     relation.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
@@ -254,13 +266,6 @@ constructor(props) {
         relation.set("status", 2);
         relation.save();
 
-        Parse.Cloud.run("createNotification", { 
-            "userId":add.props.viewProfile.id,
-            "message":"A refusé votre demande d’amitié",
-            "relationId":relation.id,
-            "type":2,
-             })
-
         add.setState({friendRequestSent: false, friendRequestReceived:false, isFriend:false, friendRequestRefused:true})
       },
       error: function(error) {
@@ -270,12 +275,13 @@ constructor(props) {
   }
 
   _onPressDeleteFriend() {
+    Amplitude.logEvent("Delete Friend Button clicked");
     Alert.alert(
-      "Supprimer le lien d'amitié avec"+this.props.viewProfile.firstName +'?',
+      translate.deleteFriend[this.props.user.currentLocale]+ translate.with[this.props.user.currentLocale]+this.props.viewProfile.firstName +'?',
       '',
       [
-        {text: 'Oui', onPress: () => this.ConfirmDeleteFriend()},
-        {text: 'Non'},
+        {text: translate.yes[this.props.user.currentLocale], onPress: () => this.ConfirmDeleteFriend()},
+        {text: translate.no[this.props.user.currentLocale]},
       ],
       { cancelable: false }
     )
@@ -283,22 +289,20 @@ constructor(props) {
 
   ConfirmDeleteFriend() {
     var user = Parse.User.current() || Parse.User.currentAsync();
+    Amplitude.logEvent("Confirm Delete Friend Button clicked");
     var add = this;
     var relation1 = new Parse.Query("Relation");
     relation1.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
     relation1.equalTo('fromUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
     relation1.first({
       success: function(relation) {
-          console.log('relation 1');
           var conversation = new Parse.Query("Conversation");
           conversation.equalTo('roomUsers', user.id); 
           conversation.equalTo('roomUsers', add.props.viewProfile.id); 
           conversation.first({
             success: function(conversation) {
-              console.log('relation 1 conversation');
               conversation.destroy();
               relation.destroy();
-              console.log('relation 1 destroy');
               add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
                 firstName:add.props.viewProfile.firstName,
@@ -310,6 +314,8 @@ constructor(props) {
                 picture: add.props.viewProfile.picture,
                 clubs: add.props.viewProfile.clubs,
                 id: add.props.viewProfile.id,
+                birthday:add.props.viewProfile.birthday,
+                userToken:add.props.viewProfile.userToken,
                 friendRequestSent:false,
                 friendRequestReceived:false,
                 isFriend:false,
@@ -325,16 +331,13 @@ constructor(props) {
     relation2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
     relation2.first({
       success: function(relation) {
-        console.log('relation 2');
           var conversation = new Parse.Query("Conversation");
           conversation.equalTo('roomUsers', user.id); 
           conversation.equalTo('roomUsers', add.props.viewProfile.id); 
           conversation.first({
             success: function(conversation) {
-              console.log('relation 2 conversation');
               conversation.destroy();
               relation.destroy();
-              console.log('relation 2 destroy');
 
               add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
@@ -347,6 +350,8 @@ constructor(props) {
                 picture: add.props.viewProfile.picture,
                 clubs: add.props.viewProfile.clubs,
                 id: add.props.viewProfile.id,
+                birthday:add.props.viewProfile.birthday,
+                userToken:add.props.viewProfile.userToken,
                 friendRequestSent:false,
                 friendRequestReceived:false,
                 isFriend:false,
@@ -360,11 +365,10 @@ constructor(props) {
 
   render() {
 
-    moment.locale('fr');
     if (this.props.viewProfile.birthday != undefined) {
-      var age = moment().diff(this.props.viewProfile.birthday, 'years')+' ans';
+      var age = moment().diff(this.props.viewProfile.birthday, 'years')+' '+translate.old[this.props.user.currentLocale];
     } else {
-      var age = 'inc.';
+      var age = translate.inc[this.props.user.currentLocale];
     }
 
     if (this.props.viewProfile.currentLevel == undefined) {
@@ -476,19 +480,19 @@ constructor(props) {
   }
 
   if (this.props.viewProfile.gender == undefined) {
-    var gender = "inc.";
+    var gender = translate.inc[this.props.user.currentLocale];
   } else if (this.props.viewProfile.gender == 'male') {
-    var gender = 'Homme';
+    var gender = translate.man[this.props.user.currentLocale];
   } else if (this.props.viewProfile.gender == 'female') {
-    var gender = 'Femme';
+    var gender = translate.woman[this.props.user.currentLocale];
   }
 
   if (this.props.viewProfile.style == undefined) {
-    var style = "inc.";
+    var style = translate.inc[this.props.user.currentLocale];
   } else if (this.props.viewProfile.style == 'right') {
-    var style = 'Droitier';
+    var style = translate.rightHanded[this.props.user.currentLocale];
   } else if (this.props.viewProfile.style == 'left') {
-    var style = 'Gaucher';
+    var style = translate.leftHanded[this.props.user.currentLocale];
   }
 
     var commonAvailabitities = [...this.props.viewProfile.availability];
@@ -505,7 +509,7 @@ constructor(props) {
     var clubListBullets = [];
     if (this.props.viewProfile.clubs != undefined) {
       for (var i = 0; i < this.props.viewProfile.clubs.length; i++) {
-        clubList.push(<ProfileViewContentClubs clubId = {this.props.viewProfile.clubs[i].id} />)
+        clubList.push(<ProfileViewContentClubs clubId = {this.props.viewProfile.clubs[i].id || this.props.viewProfile.clubs[i]} />)
         clubListBullets.push(<ProfileViewContentClubsBullets/>)
       }
     }
@@ -526,26 +530,26 @@ constructor(props) {
 
   var deleteAddFriend= null;
     if (this.state.isFriend) {
-      deleteAddFriend=(<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={this._onPressDeleteFriend} style={{padding:30}}>
-       <Text style={{textDecorationLine:'underline'}}> Supprimer le lien d'amitié </Text>
-       </TouchableWithoutFeedback>);
+      deleteAddFriend=(<TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressDeleteFriend} style={{padding:30}}>
+       <Text style={{textDecorationLine:'underline'}}> {translate.deleteFriend[this.props.user.currentLocale]} </Text>
+       </TouchableOpacity>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
-      deleteAddFriend=(<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={this._onPressAddFriend} style={{padding:30}}>
-       <Text style={{textDecorationLine:'underline'}}> Ajouter comme ami(e) </Text>
-       </TouchableWithoutFeedback>);
+      deleteAddFriend=(<TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressAddFriend} style={{padding:30}}>
+       <Text style={{textDecorationLine:'underline'}}> {translate.addFriendList[this.props.user.currentLocale]} </Text>
+       </TouchableOpacity>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent) {
-      deleteAddFriend=(<TouchableWithoutFeedback style={{padding:30}}>
-       <Text style={{textDecorationLine:'underline'}}> En attente de réponse </Text>
-       </TouchableWithoutFeedback>);
+      deleteAddFriend=(<TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}}>
+       <Text style={{textDecorationLine:'underline'}}> {translate.waitingForAnswer[this.props.user.currentLocale]} </Text>
+       </TouchableOpacity>);
     } else if (this.state.friendRequestRefused) {
       deleteAddFriend=null;
     }
 
   var friendRequest = null;
     if (this.state.friendRequestReceived) {
-      friendRequest=(<TouchableWithoutFeedback onPress={this._onPressAnswer}>
-         <Text style={styles.buttonValidate}>Répondre à la demande d'amitié</Text>
-         </TouchableWithoutFeedback>);
+      friendRequest=(<TouchableOpacity onPress={this._onPressAnswer}>
+         <Text style={styles.buttonValidate}>{translate.answerFriendRequest[this.props.user.currentLocale]}</Text>
+         </TouchableOpacity>);
       deleteAddFriend = null;
     }
 
@@ -583,14 +587,14 @@ constructor(props) {
 
           <View style={{flex:1, top: 20, alignItems: 'center'}}>
             <Svg
-              height="40"
-              width="150"
+              height={40}
+              width={150}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="150"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={150}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
@@ -625,14 +629,14 @@ constructor(props) {
     
             <View style={{flex:1, top: 20, alignItems: 'center'}}>
             <Svg
-              height="40"
-              width="300"
+              height={40}
+              width={300}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="300"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={300}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
@@ -646,7 +650,7 @@ constructor(props) {
         }}>
 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>CLUBS PRÉFÉRÉS</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>{translate.favoriteClubs[this.props.user.currentLocale].toUpperCase()}</Text>) : null 
               }   
 
           </View>
@@ -677,14 +681,14 @@ constructor(props) {
 
          <View style={{flex:1, top:20, alignItems:'center'}}>
             <Svg
-              height="40"
-              width="300"
+              height={40}
+              width={300}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="300"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={300}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
@@ -698,7 +702,7 @@ constructor(props) {
         }}>
 
                {
-              this.state.fontAvenirLoaded ? (<Text style={styles.name}>DISPONIBILITÉS COMMUNES</Text>) : null 
+              this.state.fontAvenirLoaded ? (<Text style={styles.name}>{translate.commonAvailabilities[this.props.user.currentLocale].toUpperCase()}</Text>) : null 
               }   
 
           </View>

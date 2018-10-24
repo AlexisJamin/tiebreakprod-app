@@ -1,25 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
-import { Font } from 'expo';
+import { Font, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 
-function mapStateToProps(store) {
+import translate from '../../translate.js';
 
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+function mapStateToProps(store) {
+  return { user: store.user, button: store.button, window:store.window }
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-        handleSubmit: function(value) { 
-        dispatch( {type: 'user', value: value} ) 
-    },
-        handleSubmitClub: function(value) { 
-        dispatch( {type: 'userClub', value: value} ) 
-    },
-        handleSubmitPreferences: function(value) { 
-        dispatch( {type: 'userPreferences', value: value} ) 
-    },
     handleSubmitButton: function(value) { 
         dispatch( {type: 'button', value: value} ) 
     }
@@ -37,6 +29,7 @@ class ProfileButton extends React.Component {
   }  
 
   async componentDidMount() {
+
     await Font.loadAsync({
       'Avenir': require('../../assets/fonts/Avenir.ttf'),
     });
@@ -48,24 +41,26 @@ class ProfileButton extends React.Component {
         ChatButtonIndex:this.props.button.ChatButtonIndex,
         CommunityButtonIndex:this.props.button.CommunityButtonIndex,
         CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+        ReservationButtonIndex:this.props.button.ReservationButtonIndex,
         ProfileButtonIndex:selectedIndex
       })
     if (selectedIndex==0) {
+      Amplitude.logEvent("ProfileContent Button clicked");
       this.props.navigation.navigate("ProfileContent");
-      console.log("clic sur bouton Mon Profil");
     } else {
-      this.props.navigation.navigate("ProfilePreferences");
-      console.log("clic sur bouton Mes Preferences");
+      Amplitude.logEvent("FriendsContent Button clicked");
+      this.props.navigation.navigate("FriendsContent");
     }
   }
 
   render() {
 
-    const buttons = ['Mon profil', 'Mes préférences'];
+    const buttons = [translate.myProfile[this.props.user.currentLocale], translate.myFriends[this.props.user.currentLocale]];
     const selectedIndex = this.props.button.ProfileButtonIndex;
+    var heightWindow = this.props.window.height*0.2;
 
     return (
- 
+    
       <ButtonGroup 
       onPress={this.updateIndex}
       selectedIndex={selectedIndex}
@@ -73,7 +68,7 @@ class ProfileButton extends React.Component {
       textStyle={styles.title}
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
-      containerStyle={styles.container}/>
+      containerStyle={[styles.container, {height:heightWindow}]}/>
     );
   }
 }
@@ -87,7 +82,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 15,
     textAlign: 'center',
-    top: 40,
+    top: 50,
   },
    subtitle: {
     color: 'white',
@@ -98,7 +93,6 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    height: 120,
     marginRight: 0,
     marginLeft: 0,
   },

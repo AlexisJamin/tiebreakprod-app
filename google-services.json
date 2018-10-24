@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "310969590483",
+    "firebase_url": "https://tie-break-4863f.firebaseio.com",
+    "project_id": "tie-break-4863f",
+    "storage_bucket": "tie-break-4863f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310969590483:android:9a6a3c705992f022",
+        "android_client_info": {
+          "package_name": "com.tiebreak.tiebreak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310969590483-dcg5gld6v4j8ai39hfcobag6c6jkab70.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_EHJ7ITHlQ-w1le34yAR4HiUQO4n-vLE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

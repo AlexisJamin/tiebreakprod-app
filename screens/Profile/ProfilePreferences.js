@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, Switch, Slider} from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Slider} from 'react-native';
 import { Font } from 'expo';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { ButtonGroup } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
+
+import translate from '../../translate.js';
 
 function mapStateToProps(store) {
 
@@ -22,7 +24,7 @@ function mapDispatchToProps(dispatch) {
         handleSubmitPreferences: function(value) { 
         dispatch( {type: 'userPreferences', value: value} ) 
     },
-    handleSubmitButton: function(value) { 
+        handleSubmitButton: function(value) { 
         dispatch( {type: 'button', value: value} ) 
     }
   }
@@ -33,15 +35,6 @@ class ProfilePreferences extends React.Component {
 constructor(props) {
     super(props);
     this._onPressValidateButton = this._onPressValidateButton.bind(this);
-
-    let filterCondition;
-      if (this.props.userPreferences.filterCondition==="indifferent") {
-      filterCondition=2;
-    } else if (this.props.userPreferences.filterCondition==="inside") {
-      filterCondition=0;
-    } else if (this.props.userPreferences.filterCondition==="outside") {
-      filterCondition=1;
-    }
 
     let filterGender;
       if (this.props.userPreferences.filterGender==="indifferent") {
@@ -67,7 +60,6 @@ constructor(props) {
       filterLevel: [this.props.userPreferences.filterLevel.from, this.props.userPreferences.filterLevel.to],
       filterAge: [this.props.userPreferences.filterAge.from, this.props.userPreferences.filterAge.to],
       range:this.props.userPreferences.filterFieldType.range,
-      filterCondition: filterCondition,
       filterGender: filterGender,
       filterStyle: filterStyle
     };
@@ -89,15 +81,6 @@ constructor(props) {
 
     var edit = this;
 
-     let filterCondition;
-      if (edit.state.filterCondition===2) {
-      filterCondition="indifferent";
-    } else if (edit.state.filterCondition===0) {
-      filterCondition="inside";
-    } else if (edit.state.filterCondition===1) {
-      filterCondition="outside";
-    }
-
     let filterGender;
       if (edit.state.filterGender===2) {
       filterGender="indifferent";
@@ -118,14 +101,12 @@ constructor(props) {
      var user = Parse.User.current() || Parse.User.currentAsync();
      user.set("filterStyle", filterStyle);
      user.set("filterGender", filterGender);
-     user.set("filterCondition", filterCondition);
      user.set("filterLevel", {"to":edit.state.filterLevel[1], "from":edit.state.filterLevel[0]});
      user.set("filterAge", {"to":edit.state.filterAge[1], "from":edit.state.filterAge[0]});
      user.set("filterFieldType", {"range":edit.state.range,"key":"aroundMe","latitude":edit.props.user.latitude,"longitude":edit.props.user.longitude});
      user.save();
 
      edit.props.handleSubmitPreferences({
-        filterCondition:filterCondition,
         filterAge:{"to":edit.state.filterAge[1], "from":edit.state.filterAge[0]},
         filterLevel:{"to":edit.state.filterLevel[1], "from":edit.state.filterLevel[0]},
         filterGender:filterGender,
@@ -145,10 +126,8 @@ constructor(props) {
 
   render() {
 
-    const buttonsCourt = ['Intérieur', 'Extérieur', 'Indifférent'];
-    const buttonsGenre = ['Homme', 'Femme', 'Indifférent'];
-    const buttonsStyle = ['Droitier', 'Gaucher', 'Indifférent'];
-    let { filterCondition } = this.state;
+    const buttonsGenre = [translate.man[this.props.user.currentLocale], translate.woman[this.props.user.currentLocale], translate.indifferent[this.props.user.currentLocale]];
+    const buttonsStyle = [translate.rightHanded[this.props.user.currentLocale], translate.leftHanded[this.props.user.currentLocale], translate.indifferent[this.props.user.currentLocale]];
     let { filterGender } = this.state;
     let { filterStyle } = this.state;
     let { range } = this.state;
@@ -257,40 +236,6 @@ constructor(props) {
     var niveauMax = '-15';
   }
 
-    /*{
-      this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', marginBottom:30, paddingLeft:10}}> CALENDRIER </Text>
-      ) : null 
-     }
-
-     <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
-    {
-      this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', width:200}}>Synchroniser le calendrier du téléphone avec Tie Break </Text> 
-      ) : null 
-     }
-
-     <Switch
-     onTintColor='rgb(42,129,82)'
-     value={true}
-     />
-     </View>
-
-     {
-      this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'AvenirNext', textAlign:'left', marginBottom:30, paddingLeft:10}}> GEOLOCALISATION </Text>
-      ) : null 
-     }
-
-     <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:30}}>
-    {
-      this.state.fontAvenirLoaded ? (<Text style={{fontFamily:'Avenir', width:200}}>Autoriser Tie Break (nécessaire pour trouver des amis / parties / terrains ) </Text> 
-      ) : null 
-     }
-
-     <Switch
-     onTintColor='rgb(42,129,82)'
-     value={true}
-     />
-     </View> */
-
     return (
 
       <View style={{flex:1, backgroundColor:'white'}}>
@@ -300,18 +245,18 @@ constructor(props) {
         <View style={styles.page}>
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:30, fontFamily: 'Avenir', fontStyle: 'italic', textAlign:'center'}}> Quelles sont vos préférences de jeu ? </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:30, fontFamily: 'Avenir', fontStyle: 'italic', textAlign:'center'}}>{translate.gamePreferences[this.props.user.currentLocale]}</Text>
           ) : null 
          }
 
-         {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:30, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAINS </Text>
+        {
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', paddingLeft:10, marginBottom:10 }}>{translate.partners[this.props.user.currentLocale].toUpperCase()}</Text>
           ) : null 
          }
 
         <View style={{flexDirection:'row', justifyContent: 'center'}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Distance maximum : </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}>{translate.maxDistance[this.props.user.currentLocale]} : </Text> 
           ) : null 
          }
          {
@@ -331,24 +276,11 @@ constructor(props) {
         />
         </View>
 
-         <ButtonGroup 
-          onPress={(filterCondition) => this.setState({filterCondition})}
-          selectedIndex={filterCondition}
-          buttons={buttonsCourt}
-          textStyle={styles.title}
-          selectedBackgroundColor={'rgb(42,127,83)'}
-          selectedTextStyle={styles.subtitle}
-          containerStyle={styles.container}
-          />
-
-        {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'AvenirNext', textAlign: 'left', paddingLeft:10}}> PARTENAIRES </Text>
-          ) : null 
-         }
+        
 
         <View style={{flexDirection:'row', justifyContent: 'center', marginBottom:30, marginTop:30}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau min : {niveauMin} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}>{translate.minLevel[this.props.user.currentLocale]} : {niveauMin} </Text> 
             ) : null 
          }
         {
@@ -356,7 +288,7 @@ constructor(props) {
             ) : null 
          }
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Niveau max : {niveauMax} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}>{translate.maxLevel[this.props.user.currentLocale]} : {niveauMax} </Text> 
             ) : null 
          }
         </View>
@@ -389,7 +321,7 @@ constructor(props) {
 
         <View style={{flexDirection:'row', justifyContent: 'center', marginBottom:30}}>
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Âge min : {this.state.filterAge[0]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}>{translate.ageMin[this.props.user.currentLocale]} : {this.state.filterAge[0]} </Text> 
             ) : null 
          }
         {
@@ -397,7 +329,7 @@ constructor(props) {
             ) : null 
          }
         {
-          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}> Âge max : {this.state.filterAge[1]} </Text> 
+          this.state.fontAvenirLoaded ? (<Text style={{fontFamily: 'Avenir', fontWeight: '600'}}>{translate.ageMax[this.props.user.currentLocale]} : {this.state.filterAge[1]} </Text> 
             ) : null 
          }
         </View>
@@ -434,9 +366,9 @@ constructor(props) {
 
          </ScrollView>
 
-         <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
-         <Text style={styles.buttonLogIn}>Valider</Text>
-         </TouchableWithoutFeedback>
+         <TouchableOpacity onPress={this._onPressValidateButton}>
+         <Text style={styles.buttonLogIn}>{translate.validate[this.props.user.currentLocale]}</Text>
+         </TouchableOpacity>
 
          </View>
 

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableWithoutFeedback, ImageBackground } from 'react-native';
 import { Font } from 'expo';
 import { connect } from 'react-redux';
+
+import translate from '../../translate.js';
 
 import EditDispoContentHours from './EditDispoContentHours'
 
@@ -39,27 +41,36 @@ constructor(props) {
 
 
   render() {
-        if (this.props.days == 'Mon') {
-          var days = 'Lun';
+
+      if (this.props.days == 'Mon') {
+          var days = translate.monday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Tue') {
-          var days = 'Mar';
+          var days = translate.tuesday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Wed') {
-          var days = 'Mer';
+          var days = translate.wednesday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Thu') {
-          var days = 'Jeu';
+          var days = translate.thursday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Fri') {
-          var days = 'Ven';
+          var days = translate.friday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Sat') {
-          var days = 'Sam';
+          var days = translate.saturday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Sun') {
-          var days = 'Dim';
+          var days = translate.sunday[this.props.user.currentLocale].slice(0,3);
         }
+
         var day;
         var hoursList = [];
         if (this.props.hours.length>0) {
-        day=(<Image source={require('../../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-              <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', textAlign:'center', marginTop: 12}}>{days}</Text>
-              </Image>)
+        day=(<ImageBackground 
+                source={require('../../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width:40,
+                  height:40
+                 }}>
+              <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', textAlign:'center'}}>{days}</Text>
+              </ImageBackground>)
         for (var i = 0; i < this.props.hours.length; i++) {
         hoursList.push(<EditDispoContentHours hours = {this.props.hours[i]} />)
         }
@@ -71,10 +82,10 @@ constructor(props) {
 
               <TouchableWithoutFeedback onPress={this.handleClick}>
               <View style={{
-              paddingTop:10, 
-              paddingBottom: 10, 
-              marginRight:40,
-              flexDirection: 'row'
+                paddingTop:10, 
+                paddingBottom: 10, 
+                marginRight:40,
+                flexDirection: 'row'
               }}>
                 
 
@@ -112,8 +123,8 @@ const styles = StyleSheet.create({
     height:40, 
     color: 'black', 
     backgroundColor: 'rgba(0,0,0,0)', 
-    paddingTop:10, 
     borderWidth:0.5, 
+    paddingTop:10,
     borderColor:'grey', 
     borderRadius:20
   },

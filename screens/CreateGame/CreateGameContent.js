@@ -1,6 +1,6 @@
 import React from 'react'
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableWithoutFeedback, ScrollView, Keyboard, Share, AsyncStorage } from 'react-native'
-import { Font, Util } from 'expo'
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, ScrollView, Keyboard, Share, AsyncStorage } from 'react-native'
+import { Font, Util, Amplitude } from 'expo'
 import ModalDropdown from 'react-native-modal-dropdown'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { ButtonGroup } from 'react-native-elements'
@@ -8,8 +8,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { connect } from 'react-redux'
 import { Parse } from 'parse/react-native'
 
-import moment from 'moment';
-import 'moment/locale/fr';
+import moment from 'moment/min/moment-with-locales';
+
+import translate from '../../translate.js';
+
+function mapStateToProps(store) {
+  return { user: store.user, userClub: store.userClub }
+};
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -41,48 +46,36 @@ class CreateGameContent extends React.Component {
       friends1:null,
       friends2:null
     };
+
+    moment.locale(this.props.user.currentLocale);
   }
 
   async componentWillMount() {
-   moment.locale('fr');
-   //var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
 
    var user = Parse.User.current() || Parse.User.currentAsync();
    var edit = this;
    var query = new Parse.Query("User");
    var clubListName = [];
    var clubListId = [];
-    query.get(user.id, {
-      success: function(users) {
-        // The object was retrieved successfully.
-        console.log('success clubList');
-        var clubList = users.get("clubs");
-        if (clubList!=undefined && clubList.length>0) {
-          for (var i = 0; i < clubList.length; i++) {
-            clubListName.push(users.get("clubs")[i].get('name'));
-            clubListId.push(users.get("clubs")[i].id);
-            }
-          edit.setState({ clubListId : clubListId, clubListName : clubListName})
-        } else { edit.setState({ clubListId: [], clubListName: [] })}
 
-      },
-      error: function(object, error) {
-        // The object was not retrieved successfully.
-        // error is a Parse.Error with an error code and message.
-      }
-    });
+    if (this.props.userClub.length>0) {
+      for (var i = 0; i < this.props.userClub.length; i++) {
+        clubListName.push(this.props.userClub[i].name);
+        clubListId.push(this.props.userClub[i].id);
+        }
+      edit.setState({ clubListId : clubListId, clubListName : clubListName})
+    } 
+    else { edit.setState({ clubListId: [], clubListName: [] })}
 
     var query1 = new Parse.Query('Relation');
     query1.equalTo('status', 3);
     query1.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
     query1.find({
       success: function(Friends) {
-        console.log('query 1');
         if (Friends.length != 0) {
           edit.setState({friends1:true})
         }
         else {edit.setState({friends1:false})}
-        console.log('loading1 terminé');
       },
       error: function(e) {
         console.log(e);
@@ -94,12 +87,10 @@ class CreateGameContent extends React.Component {
     query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());  
     query2.find({
       success: function(Friends) {
-        console.log('query 2');
         if (Friends.length != 0) {
           edit.setState({friends2:true})
        } 
        else {edit.setState({friends2:false})}
-        console.log('loading2 terminé');
       },
       error: function(e) {
         console.log(e);
@@ -124,37 +115,7 @@ class CreateGameContent extends React.Component {
       var add = this;
       var friends = [];
       var user = Parse.User.current() || Parse.User.currentAsync();
-      var query = new Parse.Query('Relation');
-      query.equalTo('status', 3);
-      query.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
-      query.find({
-        success: function(Friends) {
-          for (var i = 0; i < Friends.length; i++) {
-            var FriendsCopy = JSON.parse(JSON.stringify(Friends[i]));
-            friends.push(FriendsCopy.toUser.objectId);
-          }
-          console.log(friends);
-        },
-        error: function(e) {
-          console.log(e);
-        }
-      })
-
-      var query2 = new Parse.Query('Relation');
-      query2.equalTo('status', 3);
-      query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());  
-      query2.find({
-        success: function(Friends) {
-          for (var i = 0; i < Friends.length; i++) {
-            var FriendsCopy = JSON.parse(JSON.stringify(Friends[i]));
-            friends.push(FriendsCopy.fromUser.objectId);
-          }
-          console.log(friends);
-        },
-        error: function(e) {
-          console.log(e);
-        }
-      });
+      Amplitude.logEvent("Create Game Button clicked");
 
       if (this.state.selectedConditionIndex == 0) {
         var condition = 'inside';
@@ -162,48 +123,102 @@ class CreateGameContent extends React.Component {
         var condition = 'outside';
       }
 
-      if (this.state.surface == 'Dur') {
+      if (this.state.surface == 0) {
         var surface = 'hard';
-      } else if (this.state.surface == 'Gazon') {
+      } else if (this.state.surface == 1) {
         var surface = 'grass';
-      } else if (this.state.surface == 'Moquette') {
+      } else if (this.state.surface == 2) {
         var surface = 'carpet';
-      } else if (this.state.surface == 'Terre battue') {
+      } else if (this.state.surface == 3) {
         var surface = 'clay';
-      } else if (this.state.surface == 'Synthétique') {
+      } else if (this.state.surface == 4) {
         var surface = 'synthetic';
       }
-      var game = new Parse.Object("Game");
-      game.set("organiser", Parse.User.current() || Parse.User.currentAsync());
-      game.set("price", this.state.price);
-      game.set("surface", surface);
-      game.set("createdAt", Date());
-      game.set("updatedAt", Date());
-      game.set("date", this.state.date);
-      game.set("club", { "__type": "Pointer", "className": "Club", "objectId": this.state.clubListId[this.state.selectedClubIndex]});
-      game.set("condition", condition);
-      game.save(null, {
-        success: function(game) {
-          for (var i = 0; i < friends.length; i++) {
-            Parse.Cloud.run("createNotification", { 
-            "userId": friends[i],
-            "message": "Vous propose une partie le "+moment(add.state.date).format('llll'),
-            "gameId": game.id,
-            "type": 3,
-             })
+      
+      var query = new Parse.Query('Relation');
+      query.equalTo('status', 3);
+      query.equalTo('fromUser', Parse.User.current() || Parse.User.currentAsync());  
+      query.find({
+        success: function(Friends) {
+          for (var i = 0; i < Friends.length; i++) {
+            var FriendsCopy = JSON.parse(JSON.stringify(Friends[i]));
+            var objectFriend = {id:FriendsCopy.toUser.objectId, token:FriendsCopy.toUser.expoPushToken}
+            friends.push(objectFriend);
           }
-          console.log('Parse Cloud game ok');
-          Alert.alert(
-          'Voulez-vous partager / inviter des ami(e)s ?',
-          '',
-          [
-            {text: 'Annuler', onPress: () => add.props.navigation.goBack()},
-            {text: 'OK', onPress : () => add._shareFriends()},
-          ],
-          { cancelable: false }
-        )
+        },
+        error: function(e) {
+          console.log(e);
         }
-      });
+      })
+      .then(()=>{
+        var query2 = new Parse.Query('Relation');
+        query2.equalTo('status', 3);
+        query2.equalTo('toUser', Parse.User.current() || Parse.User.currentAsync());  
+        return query2.find({
+          success: function(Friends) {
+            for (var i = 0; i < Friends.length; i++) {
+              var FriendsCopy = JSON.parse(JSON.stringify(Friends[i]));
+              var objectFriend = {id:FriendsCopy.fromUser.objectId, token:FriendsCopy.fromUser.expoPushToken}
+              friends.push(objectFriend);
+            }
+          },
+          error: function(e) {
+            console.log(e);
+          }
+        });
+
+      })
+      .then(()=> {
+        var game = new Parse.Object("Game");
+        game.set("organiser", Parse.User.current() || Parse.User.currentAsync());
+        game.set("price", this.state.price);
+        game.set("surface", surface);
+        game.set("createdAt", Date());
+        game.set("updatedAt", Date());
+        game.set("date", this.state.date);
+        game.set("club", { "__type": "Pointer", "className": "Club", "objectId": this.state.clubListId[this.state.selectedClubIndex]});
+        game.set("condition", condition);
+        return game.save(null, {
+          success: function(game) {
+            for (var i = 0; i < friends.length; i++) {
+
+              if (friends[i].token) {
+                Parse.Cloud.run("createNotification", { 
+                  "userId": friends[i].id,
+                  "token": friends[i].token,
+                  "firstName": user.get('firstName'),
+                  "channel":"game-requests",
+                  "message": "te propose une partie le "+moment(add.state.date).format('llll'),
+                  "gameId": game.id,
+                  "type": 3,
+                   })
+              } else {
+                Parse.Cloud.run("createNotification", { 
+                  "userId": friends[i].id,
+                  "token": false,
+                  "firstName": user.get('firstName'),
+                  "channel":"game-requests",
+                  "message": "te propose une partie le "+moment(add.state.date).format('llll'),
+                  "gameId": game.id,
+                  "type": 3,
+                   })
+              }
+            }
+          }
+        });
+
+      })   
+      .then(()=>{
+          Alert.alert(
+            'Souhaites-tu partager ce challenge à tes ami(e)s hors Tie Break ?',
+            '',
+            [
+              {text: translate.cancel[this.props.user.currentLocale], onPress: () => add.props.navigation.goBack()},
+              {text: translate.ok[this.props.user.currentLocale], onPress : () => add._shareFriends()},
+            ],
+            { cancelable: false }
+          )
+      })   
       
   }
 
@@ -222,8 +237,10 @@ class CreateGameContent extends React.Component {
 
    _showResult(result) {
     if (result.action === Share.sharedAction) {
+      Amplitude.logEvent("Shared Game");
       this.props.navigation.goBack();
     } else {
+      Amplitude.logEvent("Refused Share Game");
       this.props.navigation.goBack();
     }
   }
@@ -233,34 +250,42 @@ class CreateGameContent extends React.Component {
 
       if (this.state.friends1 || this.state.friends2) {
           Alert.alert(
-          'Vous confirmez avoir réservé un terrain le :',
+          translate.confirmTennisCourtBooked[this.props.user.currentLocale],
           moment(this.state.date).format('llll')+' ?',
           [
-            {text: 'Non'},
-            {text: 'Oui', onPress: () => this._onPressAnswerPositive()},
+            {text: translate.no[this.props.user.currentLocale]},
+            {text: translate.yes[this.props.user.currentLocale], onPress: () => this._onPressAnswerPositive()},
           ],
           { cancelable: false }
         )
-      } else {Alert.alert("Vous n'avez pas encore d'ami(e)s à inviter.");}
+      } else {Alert.alert(translate.NoFriendsToInvite[this.props.user.currentLocale])}
     } else {
-      Alert.alert('Veuillez compléter tous les champs');
+      Alert.alert(translate.pleaseCompleteAllInputs[this.props.user.currentLocale]);
     }
   }
 
-  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+  _showDateTimePicker = () => {
+    Amplitude.logEvent("DatePicker Button clicked");
+    this.setState({ isDateTimePickerVisible: true })
+  };
 
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   _handleDatePicked = (date) => {
-    console.log('A date has been picked: ', date);
     this.setState({ date: date });
+    Amplitude.logEvent("Date picked");
     this._hideDateTimePicker();
+  };
+
+  _handleSelectClub = (index) => {
+    this.setState({selectedClubIndex:index});
+    Amplitude.logEvent("Club picked");
   };
 
   render() {
 
-    const conditions = ['Intérieur', 'Extérieur'];
-    const surfaces = ['Dur', 'Gazon', 'Moquette', 'Terre battue', 'Synthétique'];
+    const conditions = [translate.indoor[this.props.user.currentLocale], translate.outdoor[this.props.user.currentLocale]];
+    const surfaces = [translate.hard[this.props.user.currentLocale], translate.grass[this.props.user.currentLocale], translate.carpet[this.props.user.currentLocale], translate.clay[this.props.user.currentLocale], translate.synthetic[this.props.user.currentLocale]];
     const { clubListId } = this.state;
     const clubs = this.state.clubListName;
     const minimumDate = new Date();
@@ -280,35 +305,36 @@ class CreateGameContent extends React.Component {
         <View style={styles.page}>
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> DATE </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> {translate.date[this.props.user.currentLocale].toUpperCase()} </Text>
           ) : null 
          }
 
         <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={this._showDateTimePicker}>
+        <TouchableOpacity onPress={this._showDateTimePicker}>
           <View style={styles.button}>
-            <Text style={{color:'white'}}>{ (this.state.date && moment(this.state.date).format('LLLL')) || 'Choisir une date' }</Text>
+            <Text style={{color:'white'}}>{ (this.state.date && moment(this.state.date).format('LLLL')) || translate.chooseDate[this.props.user.currentLocale] }</Text>
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
         <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
           mode="datetime"
           minimumDate={minimumDate}
-          cancelTextIOS="Annuler"
-          confirmTextIOS="Valider"
-          titleIOS="Choisir une date"
+          cancelTextIOS={translate.cancel[this.props.user.currentLocale]}
+          confirmTextIOS={translate.validate[this.props.user.currentLocale]}
+          titleIOS={translate.chooseDate[this.props.user.currentLocale]}
+          locale={this.props.user.currentLocale}
         />
         </View>
         
         {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> {translate.field[this.props.user.currentLocale].toUpperCase()} </Text>
           ) : null 
          }
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Lieu </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> {translate.location[this.props.user.currentLocale]} </Text>
           ) : null 
          }
 
@@ -321,15 +347,15 @@ class CreateGameContent extends React.Component {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue={'Mes clubs'}
+          defaultValue={translate.myClubs[this.props.user.currentLocale]}
           options={clubs}
-          onSelect={(index, selectedClub) => this.setState({selectedClubIndex:index})}
+          onSelect={(index, selectedClub) => this._handleSelectClub(index)}
           />
 
           </View>
 
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Conditions </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> {translate.conditions[this.props.user.currentLocale]} </Text>
           ) : null 
          }
 
@@ -344,7 +370,7 @@ class CreateGameContent extends React.Component {
           />
           
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Type de surface </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> {translate.surfaceType[this.props.user.currentLocale]} </Text>
           ) : null 
          }
 
@@ -355,15 +381,15 @@ class CreateGameContent extends React.Component {
           dropdownStyle={styles.modalDrop} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
-          defaultValue={'Surface'}
+          defaultValue={translate.surface[this.props.user.currentLocale]}
           options={surfaces}
-          onSelect={(index, surface) => this.setState({surface})}
+          onSelect={(index, surface) => this.setState({surface:index})}
           />
 
           </View>
 
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> Prix </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> {translate.price[this.props.user.currentLocale]} </Text>
           ) : null 
          }
 
@@ -377,7 +403,7 @@ class CreateGameContent extends React.Component {
             autoCapitalize='none'
             autoCorrect={false}
             secureTextEntry={false}
-            placeholder='Sans frais'
+            placeholder={translate.free[this.props.user.currentLocale]}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(price) => this.setState({price})}
             onSubmitEditing={Keyboard.dismiss}
@@ -393,9 +419,9 @@ class CreateGameContent extends React.Component {
             justifyContent:'center',
             alignItems:'stretch'
              }}>
-            <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
-            <Text style={styles.buttonLogIn}>Créer la partie</Text>
-            </TouchableWithoutFeedback>
+            <TouchableOpacity onPress={this._onPressValidateButton}>
+            <Text style={styles.buttonLogIn}>{translate.createGame[this.props.user.currentLocale]}</Text>
+            </TouchableOpacity>
 
           </View>
 
@@ -407,7 +433,7 @@ class CreateGameContent extends React.Component {
 
 }
 
-export default connect(null, mapDispatchToProps) (CreateGameContent);
+export default connect(mapStateToProps, mapDispatchToProps) (CreateGameContent);
 
 const styles = StyleSheet.create({
   buttonLogIn: {
@@ -434,7 +460,7 @@ const styles = StyleSheet.create({
   modalDrop: {
     marginLeft:1,
     width:295,
-    height:80, 
+    height:150, 
     marginTop:10,
   },
   text: {

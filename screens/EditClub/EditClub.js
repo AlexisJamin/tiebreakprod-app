@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 
 
-import EditClubHeader from './EditClubHeader'
-import EditClubContent from './EditClubContent'
+import Header from '../Header/Header';
+import EditClubContent from './EditClubContent';
 
 
 export default class EditClub extends React.Component {
@@ -12,11 +12,11 @@ export default class EditClub extends React.Component {
 
     	<View style={{flex: 1, backgroundColor:'white'}} >
  
-            <View style={{height:120}}>
-            <EditClubHeader navigation={this.props.navigation}/>
+            <View style={{flex:0.16, marginBottom:40}}>
+            <Header navigation={this.props.navigation} screenProps={{header:"editMyClubs", back:false}} />
             </View>
 
-             <View style={{flex: 4}}>
+             <View style={{flex:0.84}}>
             <EditClubContent navigation={this.props.navigation}/>
             </View>
 

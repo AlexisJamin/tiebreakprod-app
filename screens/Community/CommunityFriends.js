@@ -4,8 +4,9 @@ import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
-function mapStateToProps(store) {
+import translate from '../../translate.js';
 
+function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button, searchPlayer: store.searchPlayer }
 };
 
@@ -36,11 +37,11 @@ class CommunityFriends extends React.Component {
 
   componentWillReceiveProps(props) {
 
-    if (props.searchPlayer.player.length==0) {
+    if (props.searchPlayer.player && props.searchPlayer.player.length==0) {
       this.setState({data:this.state.dataCopy})
     }
 
-    if (props.searchPlayer.player.length>2) {
+    if (props.searchPlayer.player && props.searchPlayer.player.length>2) {
 
       this.setState({loading1:true, loading2:true, data:[]})
       var friends = [];
@@ -55,6 +56,8 @@ class CommunityFriends extends React.Component {
       query.find({
         success: function(Friends) {
           console.log('query 1');
+          console.log("Friends query 1");
+          console.log(Friends);
           if (Friends.length != 0) {
             var friendsQuery1 = [];
             for (var i = 0; i < Friends.length; i++) {  
@@ -243,6 +246,8 @@ class CommunityFriends extends React.Component {
       query2.find({
         success: function(Friends) {
           console.log('query 2');
+          console.log("Friends query 2");
+          console.log(Friends);
           if (Friends.length != 0) {
             var friendsQuery2 = [];
             for (var i = 0; i < Friends.length; i++) {  
@@ -846,8 +851,8 @@ class CommunityFriends extends React.Component {
         }}
       >
         <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
-        <Text style={{marginTop:10}}> Vous n'avez pas encore d'ami(e)s.</Text>
-        <Text style={{marginTop:10}}> Cliquez sur "Communauté" pour en trouver ! </Text>
+        <Text style={{marginTop:20}}> Vous n'avez pas encore d'ami(e)s.</Text>
+        <Text style={{marginTop:20}}> Cliquez sur "Communauté" pour en trouver ! </Text>
       </View>
     );
   }
@@ -873,6 +878,7 @@ class CommunityFriends extends React.Component {
           }
           var clubs = user.get("clubs");
           var birthday = user.get("birthday");
+          var expoPushToken = user.get("expoPushToken");
           var id = user.id;
 
           view.props.handleSubmit({
@@ -890,7 +896,8 @@ class CommunityFriends extends React.Component {
             friendRequestReceived:false,
             clubs:clubs,
             id:id,
-            birthday:birthday
+            birthday:birthday,
+            userToken:expoPushToken
           })
     view.props.navigation.navigate("ProfileView");
         }
@@ -901,7 +908,7 @@ class CommunityFriends extends React.Component {
 render () {
   return (
 
-    <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
+    <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
 
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
@@ -926,7 +933,7 @@ render () {
           subtitleContainerStyle={{marginLeft:50, width:300}}
           subtitle={
              <View>
-            <Text style={{fontSize:12, paddingTop:2}}>{item.commonDispo} disponibilité(s) en commun</Text>
+            <Text style={{fontSize:12, paddingTop:2}}>{item.commonDispo} {translate.commonDispo[this.props.user.currentLocale]}</Text>
             <Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>
             <Text style={{fontSize:12, paddingTop:2}}>{item.distance} km</Text>
             </View>

@@ -1,14 +1,18 @@
 {
   "expo": {
-    "name": "tiebreaktest",
-    "description": "An empty new project",
-    "slug": "tiebreaktest",
+    "name": "Tie Break",
+    "description": "L'application de rencontre du tennis",
+    "slug": "tiebreakprod",
     "privacy": "public",
-    "sdkVersion": "22.0.0",
-    "version": "1.0.0",
+    "sdkVersion": "30.0.0",
+    "version": "1.1.1",
+    "scheme": "tiebreakapp",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
     "icon": "./assets/icons/AppIcon.appiconset/Icon-v2.png",
+    "notification": {
+      "icon": "./assets/icons/AppIcon.appiconset/iconPushColor.png"
+    },
     "splash": {
       "image": "./assets/icons/Welcome/Splash.imageset/group.png",
       "resizeMode": "contain",
@@ -17,8 +21,65 @@
     "packagerOpts": {
       "assetExts": ["ttf", "mp4"]
     },
+    "facebookAppId":"233912777050369",
+    "facebookDisplayName":"Tie Break",
+    "facebookScheme":"fb233912777050369",
+    "assetBundlePatterns": [
+      "./assets/icons/AppSpecific/Logo.imageset/logoBlack.png",
+      "./assets/icons/AppSpecific/Header.imageset/header_bg.png",
+      "./assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png",
+      "./assets/icons/Menu/Profile.imageset/icProfile.png",
+      "./assets/icons/Menu/Messages.imageset/icMessageBig.png",
+      "./assets/icons/AppSpecific/Footer.imageset/group3.png",
+      "./assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png",
+      "./assets/icons/Buy/Buy.imageset/buy.png",
+      "./assets/icons/General/ArrowRightBlack.imageset/fill72.png",
+      "./assets/icons/Add/Add.imageset/combinedShape.png",
+      "./assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png",
+      "./assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png",
+      "./assets/icons/AppIcon.appiconset/iconPushColor.png",
+      "./assets/icons/Decathlon/Logo_DECATHLON.png",
+      "./assets/icons/TennisActu/Logo.png",
+      "./assets/fonts/AvenirNext.ttf",
+      "./assets/fonts/Avenir.ttf",
+      "./assets/fonts/SevenOneEight-Ultra.ttf"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tiebreakapp.tiebreak",
+      "buildNumber": "1.0.19",
+      "loadJSInBackgroundExperimental": true,
+      "appStoreUrl": "https://itunes.apple.com/fr/app/tie-break/id1183915697",
+      "config": {
+        "branch": {
+          "apiKey": "key_live_ogSdixer7P4zq8LBXLM3GgeatCio7oAq"
+        },
+      },
+      "infoPlist":{
+        "NSCameraUsageDescription": "Tie Break uses the camera to take user's profile pictures.",
+        "NSLocationWhenInUseUsageDescription": "Tie Break uses location to match tennis players together.",
+        "NSPhotoLibraryUsageDescription": "Tie Break accesses Library to get user's profile picture."
+      }
+    },
+    "android": {
+      "package": "com.tiebreak.tiebreak",
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "branch": {
+          "apiKey": "key_live_ogSdixer7P4zq8LBXLM3GgeatCio7oAq"
+        },
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "VIBRATE",
+        "com.majeur.launcher.permission.UPDATE_BADGE",
+        "com.sec.android.provider.badge.permission.READ",
+        "com.sec.android.provider.badge.permission.WRITE",
+        "com.sonyericsson.home.permission.BROADCAST_BADGE"
+      ],
+      "versionCode":12
     }
   }
 }

@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
-import { Font } from 'expo';
+import { Font, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 
-function mapStateToProps(store) {
+import translate from '../../translate.js';
 
-  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
+function mapStateToProps(store) {
+  return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button, window:store.window }
 };
 
 function mapDispatchToProps(dispatch) {
@@ -48,21 +49,23 @@ class CalendarButton extends React.Component {
         ChatButtonIndex:this.props.button.ChatButtonIndex,
         CommunityButtonIndex:this.props.button.CommunityButtonIndex,
         CalendarButtonIndex:selectedIndex,
-        ProfileButtonIndex:this.props.button.ProfileButtonIndex
+        ProfileButtonIndex:this.props.button.ProfileButtonIndex,
+        ReservationButtonIndex:this.props.button.ReservationButtonIndex
       })
     if (selectedIndex==0) {
+      Amplitude.logEvent("CalendarFuture Button clicked");
       this.props.navigation.navigate("CalendarFuture");
-      console.log("clic sur bouton À venir");
     } else {
+      Amplitude.logEvent("CalendarPast Button clicked");
       this.props.navigation.navigate("CalendarPast");
-      console.log("clic sur bouton Passé");
     }
   }
 
   render() {
 
-    const buttons = ['À venir', 'Passé']
+    const buttons = [translate.upComing[this.props.user.currentLocale], translate.past[this.props.user.currentLocale]]
     const selectedIndex = this.props.button.CalendarButtonIndex;
+    var heightWindow = this.props.window.height*0.2;
 
     return (
 
@@ -73,9 +76,7 @@ class CalendarButton extends React.Component {
       textStyle={styles.title}
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
-      containerStyle={styles.container}/>
-
-        
+      containerStyle={[styles.container, {height:heightWindow}]}/>
     );
   }
 }
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 15,
     textAlign: 'center',
-    top: 40,
+    top: 50,
   },
    subtitle: {
     color: 'white',
@@ -100,7 +101,6 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    height: 120,
     marginRight: 0,
     marginLeft: 0,
   },

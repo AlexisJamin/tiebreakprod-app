@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Font, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
 import Modal from 'react-native-modalbox';
 import { ButtonGroup, CheckBox } from 'react-native-elements';
+
+import translate from '../../translate.js';
 
 import EditDispoContentDays from './EditDispoContentDays';
 
@@ -116,13 +118,18 @@ constructor(props) {
       var user = Parse.User.current() || Parse.User.currentAsync();
       user.set("availability", this.state.availability);
       user.save();
+      let availabilities;
+      for (var i = 0; i < this.state.availability.length; i++) {
+        availabilities = availabilities + this.state.availability[i].hours.length;
+      }
+      Amplitude.setUserProperties({availabilities:availabilities});
       this.props.navigation.goBack();
   }
 
   render() {
 
     var dayList = [];
-    var days = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+    var days = [translate.monday[this.props.user.currentLocale],translate.tuesday[this.props.user.currentLocale],translate.wednesday[this.props.user.currentLocale],translate.thursday[this.props.user.currentLocale],translate.friday[this.props.user.currentLocale],translate.saturday[this.props.user.currentLocale],translate.sunday[this.props.user.currentLocale]];
     const { selectedIndex8h } = this.state;
     const { selectedIndex9h } = this.state;
     const { selectedIndex10h } = this.state;
@@ -149,7 +156,7 @@ constructor(props) {
     }
 
     var checkboxList=[];
-    for (var i = 8; i <= 20; i++) {
+    for (var i = 8; i <= 22; i++) {
       var isChecked=false;
       if (this.state.availability[this.state.modal].hours.indexOf(i+'h')!=-1) {
         isChecked = true;
@@ -180,9 +187,9 @@ constructor(props) {
         </KeyboardAwareScrollView>
 
 
-          <TouchableWithoutFeedback onPress={this._onPressValidateDispo}>
-          <Text style={styles.buttonValidate}>Valider</Text>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity onPress={this._onPressValidateDispo}>
+          <Text style={styles.buttonValidate}>{translate.validate[this.props.user.currentLocale]}</Text>
+          </TouchableOpacity>
 
           <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
           <View style={{flex:1, justifyContent:'space-around'}}>
@@ -193,9 +200,9 @@ constructor(props) {
           }}>
          <Text style={{fontSize:14}}> {days[this.state.modal]} </Text> 
          <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
-         <TouchableWithoutFeedback style={{padding:30}} onPress={() => this.refs.modal.close()}>
+         <TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={() => this.refs.modal.close()}>
          <Image source={require('../../assets/icons/General/Close.imageset/icCloseGrey.png')} />
-         </TouchableWithoutFeedback>
+         </TouchableOpacity>
          </View>
 
          <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:1, marginRight:1, alignItems:'center'}}>
@@ -203,9 +210,9 @@ constructor(props) {
          </View>
          </View>
 
-          <TouchableWithoutFeedback onPress={this._onPressValidateModal}>
-          <Text style={styles.buttonModal}>Valider</Text>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity onPress={this._onPressValidateModal}>
+          <Text style={styles.buttonModal}>{translate.validate[this.props.user.currentLocale]}</Text>
+          </TouchableOpacity>
           </Modal>
 
           </View>

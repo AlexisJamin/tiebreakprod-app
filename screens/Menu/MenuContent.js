@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, TouchableWithoutFeedback, Share } from 'react-native';
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, TouchableOpacity, Share, ScrollView, Alert } from 'react-native';
+import { Font, WebBrowser, Amplitude } from 'expo';
+import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
-import IconBadge from 'react-native-icon-badge';
+import Modal from 'react-native-modalbox';
+import { Parse } from 'parse/react-native';
+
+import translate from '../../translate.js';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -22,7 +26,6 @@ function mapDispatchToProps(dispatch) {
 };
 
 function mapStateToProps(store) {
-
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
 };
 
@@ -30,9 +33,12 @@ class MenuContent extends React.Component {
 
 constructor(props) {
 		super(props);
+    this._onPressLogOut = this._onPressLogOut.bind(this);
+    this._onPressConfirmLogOut = this._onPressConfirmLogOut.bind(this);
 		this.state = {
 			fontAvenirNextLoaded: false,
-			fontAvenirLoaded: false  
+			fontAvenirLoaded: false,
+      store:null  
 		};
 	}
 
@@ -47,16 +53,6 @@ constructor(props) {
     });
   }
 
-navigationProfile(route, index) {
-  this.props.handleSubmitButton({
-    ChatButtonIndex:this.props.button.ChatButtonIndex,
-    CommunityButtonIndex:this.props.button.CommunityButtonIndex,
-    CalendarButtonIndex:this.props.button.CalendarButtonIndex,
-    ProfileButtonIndex:index
-  })
-  this.props.navigation.navigate(route);
-};
-
 navigationCalendar(route, index) {
   this.props.handleSubmitButton({
     ChatButtonIndex:this.props.button.ChatButtonIndex,
@@ -64,6 +60,7 @@ navigationCalendar(route, index) {
     CalendarButtonIndex:index,
     ProfileButtonIndex:this.props.button.ProfileButtonIndex
   })
+  Amplitude.logEvent("Calendar Button clicked");
   this.props.navigation.navigate(route);
 };
 
@@ -77,117 +74,242 @@ navigationCommunity(route, index) {
   this.props.navigation.navigate(route);
 };
 
-  render() {
+_handleOpenCGU = () => {
+    Amplitude.logEvent("CGU Button clicked");
+    WebBrowser.openBrowserAsync('http://cgu-tie-break.strikingly.com/');
+  }
 
-    var shareOptions = {
+ _onPressLogOut() {
+      Amplitude.logEvent("LogOut Button clicked");
+      Alert.alert(
+        translate.confirmLogout[this.props.user.currentLocale],
+        '',
+        [
+          {text: translate.no[this.props.user.currentLocale]},
+          {text: translate.yes[this.props.user.currentLocale], onPress: () => this._onPressConfirmLogOut()},
+        ],
+        { cancelable: false }
+      ) 
+  }
+
+  _onPressConfirmLogOut() {
+    Amplitude.logEvent("Confirm LogOut Button clicked");
+    var logout = this;
+    console.log("1");
+    Parse.User.logOut().then(function() {
+      console.log("2");
+      const resetAction = NavigationActions.reset({
+        index: 0, 
+        actions: [
+        NavigationActions.navigate({ routeName: 'Login'})
+        ]
+      });
+      console.log("3");
+      logout.props.navigation.dispatch(resetAction);
+      console.log("4");
+    })
+    
+  }
+
+_handleOpenWebsite = () => {
+    WebBrowser.openBrowserAsync('https://www.decathlon.de/C-33067-tennis');
+  };
+
+/*_handleModal = () => {
+  var edit = this;
+  var user = Parse.User.current() || Parse.User.currentAsync();
+  var userGeoPoint = user.get("geolocation");
+
+  if (userGeoPoint != undefined) {
+
+    Parse.Cloud.run('storeList').then(function(storeList) {
+      console.log('storeList');
+      console.log(storeList.length);
+
+      console.log("storeList[0].address");
+      console.log(storeList[0].address);
+      console.log("storeList[0].address.gps");
+      console.log(storeList[0].address.gps);
+
+    for (var i = 0; i < storeList.length; i++) {
+        if (storeList[i].address.gps != undefined) {
+        var distance = Math.round(userGeoPoint.kilometersTo(storeList[i].address.gps));
+        var distanceParam = {distance: distance};
+        Object.assign(storeList[i], distanceParam);
+        }
+      }
+      console.log('storeList distance');
+      console.log(storeList[0]);
+
+      var storeListReduced = storeList.reduce(function(accumulateur, store){
+          if (accumulateur.distance < store.distance) {
+            return accumulateur;
+          } else {
+            return store;
+          }
+      });
+
+      console.log("storeListReduced");
+      console.log(storeListReduced);
+      edit.setState({store:storeListReduced})
+
+    });
+    this.refs.modal.open();
+
+  } else {this.refs.modal.open()}
+}*/
+
+    _shareTieBreak = () => {
+
+      let shareOptions = {
       message: "Rejoins-moi sur Tie Break pour faire un tennis ! (http://www.tie-break.fr)",
       title: "Tie Break",
       subject: "Application Tie Break" //  for email
     };
 
-    if (this.props.user.picture!=undefined)
-           {
-           var profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={{uri: this.props.user.picture}}/>
-           } else {
-             var profileImage = <Image style={{width: 90, height: 90, borderRadius: 45}} source={require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png')}/>
-             }
+      Amplitude.logEvent("Share Tie Break Button clicked");
+      Share.share(shareOptions);
+    };
 
-    return (
+  render() {
 
-    	<View style={{
-    		    flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop:-30
-    	}}>
 
-    	  <View>
-          <TouchableWithoutFeedback onPress={()=> this.navigationProfile('Profile',0)} >
-          {profileImage}
-          </TouchableWithoutFeedback>
-        </View>
-          
-          <View style={{marginTop: 20}}>
-          <IconBadge
-            MainElement={
-            this.state.fontAvenirNextLoaded ? (
-              <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationProfile('Profile',0)}>
-              <Text style={styles.title}> MON PROFIL </Text>
-              </TouchableWithoutFeedback>) : null 
-            }
-            BadgeElement={
-              <Text style={{color:'#FFFFFF', fontSize:10}}/>
-            }
-            IconBadgeStyle={
-              {width:15,
-              height:15,
-              minWidth:15,
-              top:-7,
-              right:-7,
-              backgroundColor:'rgb(200,90,24)'}
-            }
-            Hidden={this.props.user.new==false}
-            />
-            
-          </View>
-
+    /*if (this.props.user.currentLocale=='de') {
+      var decathlon = ( 
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
           <View style={{marginTop: 15}}>
-            <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCalendar('Calendar',0)} >
+            <TouchableOpacity onPress={this._handleModal}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </View>
 
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCalendar('Calendar',0)} >
-          <Text style={styles.subtitle}> MON CALENDRIER </Text>
-          </TouchableWithoutFeedback>
+           <TouchableOpacity hitSlop={{top:30, left:50, bottom:30, right:50}} onPress={this._handleModal}>
+          <Text style={styles.subtitle}>{translate.buyEquipment[this.props.user.currentLocale].toUpperCase()}</Text>
+          </TouchableOpacity>) : null 
+          }
+          </View>
+          </View>);
+    } else {
+      var decathlon = null;
+    }*/
+
+    return (
+
+      
+        <View style={{flex:1, marginTop:80}}>
+        
+        <ScrollView >
+
+        <View style={{
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
+
+          <View style={{marginTop: 15}}>
+            <TouchableOpacity onPress={()=> this.navigationCalendar('Calendar',0)} >
+            <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
+            </TouchableOpacity>
+          </View>
+
+           <View style={{marginTop: 10}}>
+            {
+        this.state.fontAvenirLoaded ? (
+          <TouchableOpacity hitSlop={{top:30, left:50, bottom:30, right:50}} onPress={()=> this.navigationCalendar('Calendar',0)} >
+          <Text style={styles.subtitle}>{translate.myCalendar[this.props.user.currentLocale].toUpperCase()}</Text>
+          </TouchableOpacity>
           ) : null 
           }
           </View>
 
           <View style={{marginTop: 15}}>
-            <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCommunity('Community',0)}>
+            <TouchableOpacity onPress={this._shareTieBreak}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </View>
 
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=> this.navigationCommunity('Community',0)}>
-          <Text style={styles.subtitle}> MES COMMUNAUTÉS </Text>
-          </TouchableWithoutFeedback>) : null 
+          <TouchableOpacity hitSlop={{top:30, left:50, bottom:30, right:50}} onPress={this._shareTieBreak}>
+          <Text style={styles.subtitle}>{translate.inviteFriends[this.props.user.currentLocale].toUpperCase()}</Text>
+          </TouchableOpacity>) : null 
           }
           </View>
 
           <View style={{marginTop: 15}}>
-            <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=>{Share.share(shareOptions)}}>
+            <TouchableOpacity onPress={this._handleOpenCGU}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </View>
 
            <View style={{marginTop: 10}}>
             {
         this.state.fontAvenirLoaded ? (
-          <TouchableWithoutFeedback hitSlop={{top:100, left:100, bottom:100, right:100}} onPress={()=>{Share.share(shareOptions)}}>
-          <Text style={styles.subtitle}> INVITER DES AMIS </Text>
-          </TouchableWithoutFeedback>) : null 
+           <TouchableOpacity hitSlop={{top:30, left:50, bottom:30, right:50}} onPress={this._handleOpenCGU}>
+          <Text style={styles.subtitle}>{translate.ugc[this.props.user.currentLocale].toUpperCase()}</Text>
+          </TouchableOpacity>) : null 
           }
           </View>
 
           <View style={{marginTop: 15}}>
+            <TouchableOpacity onPress={this._onPressLogOut}>
             <Image source={require('../../assets/icons/AppSpecific/BallYellow.imageset/combinedShapeCopy.png')} />
+            </TouchableOpacity>
           </View>
 
            <View style={{marginTop: 10}}>
             {
-        this.state.fontAvenirLoaded ? (<Text style={styles.subtitle}> CGU </Text>) : null 
+        this.state.fontAvenirLoaded ? (
+           <TouchableOpacity hitSlop={{top:30, left:50, bottom:30, right:50}} onPress={this._onPressLogOut}>
+          <Text style={styles.subtitle}>{translate.logout[this.props.user.currentLocale].toUpperCase()}</Text>
+          </TouchableOpacity>) : null 
           }
           </View>
+
+           </View>
+
+           </ScrollView>
+
+
+        <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
+          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20, justifyContent:'center', alignItem:'center', flexDirection:'row'}}>
+          <Image source={require('../../assets/icons/Decathlon/Logo_DECATHLON.png')} />
+          </View>
+
+          <TouchableOpacity 
+            style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+            <View>
+              <Text style={styles.modalText}>{translate.closestShop[this.props.user.currentLocale]} ({this.state.store && this.state.store.distance} km) : </Text>
+              <Text style={styles.modalText}> Décathlon {this.state.store && this.state.store.name}, </Text>
+              <Text style={styles.modalText}>{this.state.store && this.state.store.address.line1}, {this.state.store && this.state.store.address.line2}, {this.state.store && this.state.store.address.postalCode} {this.state.store && this.state.store.address.city}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={this._handleOpenWebsite} 
+            style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 13}}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+            <View>
+              <Text style={styles.modalText}>{translate.website[this.props.user.currentLocale]}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            hitSlop={{top:10, left:50, bottom:10, right:50}}
+            onPress={() => this.refs.modal.close()}>
+            <Text style={styles.modalCancel}>{translate.cancel[this.props.user.currentLocale]}</Text>
+          </TouchableOpacity>
+        </Modal>
+
+  
           
         </View>
+
+        
 
     );
   }
@@ -215,5 +337,27 @@ const styles = StyleSheet.create({
     alignItem:'center', 
     justifyContent: 'center',
   },
+  modal: {
+    justifyContent: 'space-around',
+    height: 280,
+    borderWidth:1, 
+    borderRadius:15,
+    width: "95%",
+    borderColor:'rgb(213,212,216)',
+    bottom:12
+  },
+  modalCancel: {
+    ccolor: "black",
+    fontSize: 16,
+    width:"100%",
+    textAlign:'center',
+  },
+  modalText: {
+    color: "black",
+    fontSize: 14,
+    width:"100%",
+    textAlign:'center',
+    paddingBottom:3
+  }
 });
 

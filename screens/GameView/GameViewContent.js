@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TouchableWithoutFeedback, ScrollView, ActivityIndicator, RefreshControl, FlatList } from 'react-native';
-import { Font, MapView } from 'expo';
+import { StyleSheet, View, Image, Alert, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, FlatList } from 'react-native';
+import { Font, MapView, Amplitude } from 'expo';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
-import moment from 'moment';
-import 'moment/locale/fr';
+import translate from '../../translate.js';
+
+import moment from 'moment/min/moment-with-locales';
 
 function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, game:store.game }
@@ -49,15 +50,17 @@ class GameViewContent extends React.Component {
       canceled:null,
       attendees:null,
       data:null,
-      loading:true
+      loading:true,
+      partnerToken:null,
+      organiserToken:null,
     };
+    moment.locale(this.props.user.currentLocale);
   }
 
   componentWillMount() {
 
    var user = Parse.User.current() || Parse.User.currentAsync();
-   moment.locale('fr');
-   //var deviceLocale = await Expo.Util.getCurrentLocaleAsync();
+   //var deviceLocale = await Expo.DangerZone.Localization.getCurrentLocaleAsync();
    var edit = this;
     var query = new Parse.Query("Game");
     query.equalTo('objectId', this.props.game.gameId); 
@@ -97,7 +100,6 @@ class GameViewContent extends React.Component {
 
             // Checks if user is organiser
             if (user.id == organiser.id)  {
-              console.log('user.id == organiser.id');
 
               // Checks if there are attendees or partner
               if ( (attendees != undefined && attendees.length>0) || partner!=undefined) {
@@ -114,19 +116,21 @@ class GameViewContent extends React.Component {
                         var firstName = attendee.get('firstName');
                         var lastName = attendee.get('lastName')[0];
                         var birthday = attendee.get('birthday');
-                        var picture = attendee.get('picture').url();
+                        if (picture != undefined) {
+                          var picture = attendee.get('picture');
+                        } else {picture =undefined}
                         var currentLevel = attendee.get('currentLevel');
                         var highestLevel = attendee.get('highestLevel');
+                        var expoPushToken = attendee.get("expoPushToken");
 
-                        moment.locale('fr');
                         if (birthday != undefined) {
-                          var age = moment().diff(birthday, 'years')+' ans';
+                          var age = moment().diff(birthday, 'years')+' ' +translate.old[edit.props.user.currentLocale];
                         } else {
-                          var age = 'inc.';
+                          var age = translate.inc[edit.props.user.currentLocale];
                         }
 
                         if (currentLevel == undefined) {
-                          var currentLevel = "inc.";
+                          var currentLevel = translate.inc[edit.props.user.currentLocale];
                         } else if (currentLevel == 0) {
                           var currentLevel = 'Débutant';
                         } else if (currentLevel == 1) {
@@ -180,7 +184,7 @@ class GameViewContent extends React.Component {
                         }
 
                         if (highestLevel == undefined) {
-                          var highestLevel = "inc.";
+                          var highestLevel = translate.inc[edit.props.user.currentLocale];
                         } else if (highestLevel == 0) {
                           var highestLevel = 'Débutant';
                         } else if (highestLevel == 1) {
@@ -241,14 +245,14 @@ class GameViewContent extends React.Component {
                           age:age,
                           picture:picture,
                           currentLevel:currentLevel,
-                          highestLevel:highestLevel
+                          highestLevel:highestLevel,
+                          token:expoPushToken
                         })
                         edit.setState({data:attendeesContent, loading:false})
                       }
                     });
                   }
                 } else if ( partner!=undefined ) {
-                  console.log('partner!=undefined');
                   partnerObject = [];
 
                   var query = new Parse.Query("User");
@@ -259,16 +263,18 @@ class GameViewContent extends React.Component {
                           var objectId = users.id;
                           var firstName = users.get('firstName');
                           var lastName = users.get('lastName')[0];
-                          var picture = users.get('picture').url();
+                          if (picture != undefined) {
+                            var picture = users.get('picture');
+                          } else {picture =undefined}
                           var currentLevel = users.get('currentLevel');
                           var highestLevel = users.get('highestLevel');
                           var birthday = users.get('birthday');
+                          var expoPushToken = users.get("expoPushToken");
 
-                          moment.locale('fr');
                           if (birthday != undefined) {
-                            var age = moment().diff(birthday, 'years')+' ans';
+                            var age = moment().diff(birthday, 'years')+' '+translate.old[edit.props.user.currentLocale];
                           } else {
-                            var age = 'inc.';
+                            var age = translate.inc[edit.props.user.currentLocale];
                           }
 
                           if (currentLevel == undefined) {
@@ -386,21 +392,20 @@ class GameViewContent extends React.Component {
                             age:age,
                             picture:picture,
                             currentLevel:currentLevel,
-                            highestLevel:highestLevel
+                            highestLevel:highestLevel,
+                            token:expoPushToken
                           })
 
-                          edit.setState({data:partnerObject, loading:false})
+                          edit.setState({data:partnerObject, loading:false, partnerToken:expoPushToken})
                         }
                       });
 
                 } else {edit.setState({loading:false})}
                 
               } else {
-                console.log('Pas de participants');
                 edit.setState({loading:false})
               }
             } else {
-              console.log('user.id != organiser.id');
               organiserObject = [];
 
               var query = new Parse.Query("User");
@@ -411,16 +416,18 @@ class GameViewContent extends React.Component {
                       var objectId = user.get('objectId');
                       var firstName = user.get('firstName');
                       var lastName = user.get('lastName')[0];
-                      var picture = user.get('picture').url();
+                      if (picture != undefined) {
+                        var picture = user.get('picture');
+                      } else {picture =undefined}
                       var currentLevel = user.get('currentLevel');
                       var highestLevel = user.get('highestLevel');
                       var birthday = user.get('birthday');
+                      var expoPushToken = user.get("expoPushToken");
 
-                      moment.locale('fr');
                       if (birthday != undefined) {
-                        var age = moment().diff(birthday, 'years')+' ans';
+                        var age = moment().diff(birthday, 'years')+' '+translate.old[edit.props.user.currentLocale];
                       } else {
-                        var age = 'inc.';
+                        var age = translate.inc[edit.props.user.currentLocale];
                       }
 
                       if (currentLevel == undefined) {
@@ -539,10 +546,11 @@ class GameViewContent extends React.Component {
                         age:age,
                         picture:picture,
                         currentLevel:currentLevel,
-                        highestLevel:highestLevel
+                        highestLevel:highestLevel,
+                        token:expoPushToken
                       })
 
-                      edit.setState({data:organiserObject, loading:false})
+                      edit.setState({data:organiserObject, loading:false, organiserToken:expoPushToken})
 
                     }
                   });
@@ -569,6 +577,7 @@ class GameViewContent extends React.Component {
   }
 
   _onPressAnswerPositive() {
+    Amplitude.logEvent("Confirm Wish Participate Button clicked");
       var add = this;
       var user = Parse.User.current() || Parse.User.currentAsync();
       if (this.state.attendees == undefined) {
@@ -584,56 +593,69 @@ class GameViewContent extends React.Component {
         success: function(game) {
           game.set('attendees', attendeesCopy);
           game.save();
+
           Parse.Cloud.run("createNotification", { 
             "userId":add.state.organiser,
-            "message":"Aimerait participer à votre partie le "+moment(add.state.date).format('llll'),
+            "token": add.state.organiserToken,
+            "firstName": user.get('firstName'),
+            "channel":"game-requests",
+            "message":"aimerait participer à ta partie le "+moment(add.state.date).format('llll'),
             "gameId":add.props.game.gameId,
             "type":7,
              })
+
           add.setState({attendees:attendeesCopy})
         }
       });
   }
 
   _onPressConfirmDelete() {
+    Amplitude.logEvent("Confirm Delete Game Button clicked");
       var add = this;
       var user = Parse.User.current() || Parse.User.currentAsync();
       if ( this.state.partner && (user.id == this.state.partner.id) ) {
-        console.log("1");
         var query = new Parse.Query("Game");
         query.equalTo('objectId', this.props.game.gameId); 
         query.first({
           success: function(game) {
             game.set('canceled', true);
             game.save();
+
             Parse.Cloud.run("createNotification", { 
               "userId":add.state.organiser,
-              "message":"A annulé votre partie le "+moment(add.state.date).format('llll'),
+              "token": add.state.organiserToken,
+              "firstName": user.get('firstName'),
+              "channel":"game-requests",
+              "message":"a annulé votre partie le "+moment(add.state.date).format('llll'),
               "gameId":add.props.game.gameId,
               "type":6,
                })
+
             add.setState({canceled:true})
           }
         });
       } else if ( (user.id == this.state.organiser) && (this.state.partner != undefined) ) {
-        console.log("2");
         var query = new Parse.Query("Game");
         query.equalTo('objectId', this.props.game.gameId); 
         query.first({
           success: function(game) {
             game.set('canceled', true);
             game.save();
+
             Parse.Cloud.run("createNotification", { 
               "userId":add.state.partner.id,
-              "message":"A annulé votre partie le "+moment(add.state.date).format('llll'),
+              "token": add.state.partnerToken,
+              "firstName": user.get('firstName'),
+              "channel":"game-requests",
+              "message":"a annulé votre partie le "+moment(add.state.date).format('llll'),
               "gameId":add.props.game.gameId,
               "type":6,
                })
+
             add.setState({canceled:true})
           }
         });
       } else if ( (user.id == this.state.organiser) && (this.state.partner == undefined) ) {
-        console.log("3");
         var query = new Parse.Query("Game");
         query.equalTo('objectId', this.props.game.gameId); 
         query.first({
@@ -648,6 +670,7 @@ class GameViewContent extends React.Component {
 }
 
   _onPressDeleteGame() {
+    Amplitude.logEvent("Delete Game Button clicked");
       Alert.alert(
         'Vous confirmez vouloir annuler cette partie ?',
         '',
@@ -672,23 +695,25 @@ class GameViewContent extends React.Component {
       ) 
   }
 
-  _onPressChoosePartner(id, firstName, lastName) {
+  _onPressChoosePartner(id, firstName, lastName, token) {
     const date = new Date();
+    Amplitude.logEvent("Choose Partner Button clicked");
     const user = Parse.User.current() || Parse.User.currentAsync();
     if ( (this.state.organiser == user.id) && (this.state.partner == undefined) && (this.state.gameDate>date) ) {
         Alert.alert(
         'Vous confirmez vouloir jouer avec : '+firstName+' '+lastName+'.'+' ?',
         '',
         [
-          {text: 'Non'},
-          {text: 'Oui', onPress: () => this._onPressConfirmPartner(id)},
+          {text: translate.no[this.props.user.currentLocale]},
+          {text: translate.yes[this.props.user.currentLocale], onPress: () => this._onPressConfirmPartner(id, firstName, token)},
         ],
         { cancelable: false }
       ) 
     } 
 }
 
-  _onPressConfirmPartner(id) {
+  _onPressConfirmPartner(id, firstName, token) {
+    Amplitude.logEvent("Confirm Partner Button clicked");
     var add = this;
     var query = new Parse.Query("Game");
     query.equalTo('objectId', this.props.game.gameId); 
@@ -699,7 +724,10 @@ class GameViewContent extends React.Component {
         game.save();
         Parse.Cloud.run("createNotification", { 
           "userId":id,
-          "message":"A accepté votre proposition de partie le "+moment(add.state.date).format('llll'),
+          "token": token,
+          "firstName": firstName,
+          "channel":"game-requests",
+          "message":"a accepté ta proposition de partie le "+moment(add.state.date).format('llll'),
           "gameId":add.props.game.gameId,
           "type":4,
            })
@@ -714,16 +742,18 @@ class GameViewContent extends React.Component {
             var objectId = users.id;
             var firstName = users.get('firstName');
             var lastName = users.get('lastName')[0];
-            var picture = users.get('picture').url();
+            if (picture != undefined) {
+              var picture = users.get('picture');
+            } else {picture =undefined}
             var currentLevel = users.get('currentLevel');
             var highestLevel = users.get('highestLevel');
             var birthday = users.get('birthday');
+            var expoPushToken = users.get("expoPushToken");
 
-            moment.locale('fr');
             if (birthday != undefined) {
-              var age = moment().diff(birthday, 'years')+' ans';
+              var age = moment().diff(birthday, 'years')+' '+translate.old[add.props.user.currentLocale];
             } else {
-              var age = 'inc.';
+              var age = translate.inc[add.props.user.currentLocale];
             }
 
             if (currentLevel == undefined) {
@@ -834,7 +864,6 @@ class GameViewContent extends React.Component {
               var highestLevel = '-15';
             }
 
-
             partnerObject.push({
               objectId:objectId,
               firstName:firstName,
@@ -842,7 +871,8 @@ class GameViewContent extends React.Component {
               age:age,
               picture:picture,
               currentLevel:currentLevel,
-              highestLevel:highestLevel
+              highestLevel:highestLevel,
+              token:expoPushToken
             })
 
             add.setState({partner:{"__type":"Pointer","className":"_User","objectId":id}, attendees:null, data:partnerObject})
@@ -882,7 +912,7 @@ class GameViewContent extends React.Component {
     var date = new Date();
     if (this.state.loading) return null;
     if (!this.state.canceled && (this.state.gameDate>date) ) return (
-      <Text style={{paddingLeft:10}}> Pas encore de participants. </Text>
+      <Text style={{paddingLeft:10}}> {translate.noParticipants[this.props.user.currentLocale]} </Text>
     );
     return null;
   }
@@ -911,37 +941,37 @@ class GameViewContent extends React.Component {
 
       if (gameCondition == 'outside') {
         var imageCondition = <Image style={{marginBottom:5}} source={require('../../assets/icons/Conditions/Exterior.imageset/pic.png')}/>;
-        var textCondition = "Extérieur";
+        var textCondition = translate.outdoor[this.props.user.currentLocale];
       } else if (gameCondition == 'inside') {
         var imageCondition = <Image style={{marginBottom:5}} source={require('../../assets/icons/Conditions/Interior.imageset/indoor.png')}/>;
-        var textCondition = "Intérieur";
+        var textCondition = translate.indoor[this.props.user.currentLocale];
       }
 
       if (gameSurface == 'hard') {
         var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/DurTerrain.imageset/img_dur.png')}/>;
-        var textSurface = 'Dur';
+        var textSurface = translate.hard[this.props.user.currentLocale];
       } else if (gameSurface == 'grass') {
         var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/GazonTerrain.imageset/img_gazon.png')}/>;
-        var textSurface = 'Gazon';
+        var textSurface = translate.grass[this.props.user.currentLocale];
       } else if (gameSurface == 'carpet') {
         var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/MoquetteTerrain.imageset/img_moquette.png')}/>;
-        var textSurface = 'Moquette';
+        var textSurface = translate.carpet[this.props.user.currentLocale];
       } else if (gameSurface == 'synthetic') {
         var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/SynthTerrain.imageset/img_synth.png')}/>;
-        var textSurface = 'Synthétique';
+        var textSurface = translate.synthetic[this.props.user.currentLocale];
       } else if (gameSurface == 'clay') {
         var imageSurface = <Image style={{marginBottom:5}} source={require('../../assets/icons/Terrains/TerreTerrain.imageset/img_terre.png')}/>;
-        var textSurface = 'Terre battue';
+        var textSurface = translate.clay[this.props.user.currentLocale];
       }
 
       if ( organiser && (organiser == user.id) && (partner == undefined) && (gameDate>date) && !canceled ) {
-        var title = "Participants à confirmer";
+        var title = translate.confirmPartner[this.props.user.currentLocale];
         var hideChevron = false;
       } else if ( organiser && (organiser == user.id) && (partner != undefined) ) {
-        var title = "Partenaire";
+        var title = translate.partner[this.props.user.currentLocale];
         var hideChevron = true;
       } else if ( organiser && (organiser != user.id) ) {
-        var title = "Créateur de la partie";
+        var title = translate.gameCreator[this.props.user.currentLocale];
         var hideChevron = true;
       }
 
@@ -951,8 +981,6 @@ class GameViewContent extends React.Component {
 
       if ( attendees && (attendees != undefined) && (attendees.length > 0) ) {
         var isAttendee = attendees.some(contains);
-        console.log('isAttendee');
-        console.log(isAttendee);
       }
 
       if (canceled) {
@@ -972,9 +1000,9 @@ class GameViewContent extends React.Component {
             justifyContent:'center',
             alignItems:'stretch'
              }}>
-            <TouchableWithoutFeedback onPress={this._onPressDeleteGame}>
-            <Text style={styles.buttonLogIn}>Annuler la partie</Text>
-            </TouchableWithoutFeedback>
+            <TouchableOpacity onPress={this._onPressDeleteGame}>
+            <Text style={styles.buttonLogIn}>{translate.cancelGame[this.props.user.currentLocale]}</Text>
+            </TouchableOpacity>
           </View>
           );
         } else if ( organiser && (partner==undefined) && (user.id != organiser) && !isAttendee && (gameDate>date)) {
@@ -984,9 +1012,9 @@ class GameViewContent extends React.Component {
             justifyContent:'center',
             alignItems:'stretch'
              }}>
-            <TouchableWithoutFeedback onPress={this._onPressAnswerButton}>
-            <Text style={styles.buttonLogIn}>Participer à la partie</Text>
-            </TouchableWithoutFeedback>
+            <TouchableOpacity onPress={this._onPressAnswerButton}>
+            <Text style={styles.buttonLogIn}>{translate.participateGame[this.props.user.currentLocale]}</Text>
+            </TouchableOpacity>
           </View>
           );
         } else if ( organiser && (partner==undefined) && (user.id != organiser) && isAttendee && (gameDate>date)) {
@@ -996,9 +1024,9 @@ class GameViewContent extends React.Component {
             justifyContent:'center',
             alignItems:'stretch'
              }}>
-            <TouchableWithoutFeedback onPress={this._onPressAnswerButton}>
-            <Text style={styles.buttonLogIn}>En attente</Text>
-            </TouchableWithoutFeedback>
+            <TouchableOpacity onPress={this._onPressAnswerButton}>
+            <Text style={styles.buttonLogIn}>{translate.waiting[this.props.user.currentLocale]}</Text>
+            </TouchableOpacity>
           </View>
           );
         } else if ( organiser && (partner!=undefined) && (user.id != organiser) && (user.id != partner.id) && (gameDate>date) ) {
@@ -1008,7 +1036,7 @@ class GameViewContent extends React.Component {
             justifyContent:'center',
             alignItems:'stretch'
              }}>
-            <Text style={styles.buttonLogIn}>Partie complète</Text>
+            <Text style={styles.buttonLogIn}>{translate.gameFull[this.props.user.currentLocale]}</Text>
           </View>
           );
         }
@@ -1023,20 +1051,20 @@ class GameViewContent extends React.Component {
         <View style={styles.page}>
 
          {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> DATE </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> {translate.date[this.props.user.currentLocale].toUpperCase()} </Text>
           ) : null 
          }
 
          {
           this.state.fontAvenirLoaded ? (<View style={{marginBottom:15}}>
-            <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> Le {moment(this.state.gameDate).format('LLLL')} </Text>
-             <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> Prix : {this.state.gamePrice} € </Text>
+            <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> {translate.on[this.props.user.currentLocale]} {moment(this.state.gameDate).format('LLLL')} </Text>
+             <Text style={{fontFamily: 'Avenir', paddingLeft:10}}> {translate.price[this.props.user.currentLocale]} : {this.state.gamePrice} € </Text>
             </View>
           ) : null 
          }
         
         {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> LIEU </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'AvenirNext', paddingLeft:10}}> {translate.location[this.props.user.currentLocale].toUpperCase()} </Text>
           ) : null 
          }
 
@@ -1067,7 +1095,7 @@ class GameViewContent extends React.Component {
         </View>
 
           {
-          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> TERRAIN </Text>
+          this.state.fontAvenirLoaded ? (<Text style={{marginBottom:15, fontFamily: 'AvenirNext', paddingLeft:10}}> {translate.field[this.props.user.currentLocale].toUpperCase()} </Text>
           ) : null 
          }
 
@@ -1105,13 +1133,13 @@ class GameViewContent extends React.Component {
                   avatarOverlayContainerStyle={{backgroundColor:'transparent'}}
                   titleContainerStyle={{marginLeft:15, marginTop:3}}
                   containerStyle={{ borderBottomWidth:0, height:60, justifyContent:'center'}}
-                  avatar={{ uri : item.picture }  || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
+                  avatar={ ( item.picture && { uri : item.picture.url } )  || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') }
                   title={<Text style={{fontSize:12, fontWeight:'bold'}}>{item.firstName} {item.lastName}. ({item.age})</Text>}
                   subtitleNumberOfLines={1}
                   subtitleContainerStyle={{marginLeft:15, width:300}}
                   subtitle={<Text style={{fontSize:12, paddingTop:2}}>{item.currentLevel} ({item.highestLevel})</Text>}
                   hideChevron={{hideChevron}}
-                  onPress={()=>{this._onPressChoosePartner(item.objectId, item.firstName, item.lastName)}}
+                  onPress={()=>{this._onPressChoosePartner(item.objectId, item.firstName, item.lastName, item.token)}}
                   />
                 )}
               />

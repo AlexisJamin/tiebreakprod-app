@@ -1,9 +1,9 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
 
 
-import GameViewHeader from './GameViewHeader'
-import GameViewContent from './GameViewContent'
+import Header from '../Header/Header';
+import GameViewContent from './GameViewContent';
 
 
 export default class CreateGame extends React.Component {
@@ -12,11 +12,11 @@ export default class CreateGame extends React.Component {
 
     	<View style={{flex: 1, backgroundColor:'white'}} >
  
-            <View style={{height:120}}>
-            <GameViewHeader navigation={this.props.navigation}/>
+            <View style={{flex:0.16, marginBottom:40}}>
+            <Header navigation={this.props.navigation} screenProps={{header:"gameDetails", back:true}} />
             </View>
 
-             <View style={{flex: 4}}>
+             <View style={{flex:0.84}}>
             <GameViewContent navigation={this.props.navigation}/>
             </View>
 

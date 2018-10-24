@@ -1,9 +1,24 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native';
-import Svg, { Line } from 'react-native-svg';
-import { Font } from 'expo';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { Font, Svg, Amplitude } from 'expo';
+import { Entypo } from '@expo/vector-icons';
+import { connect } from 'react-redux';
 
-export default class HomeContent extends React.Component {
+import translate from '../../translate.js';
+
+function mapStateToProps(store) {
+  return { user: store.user, button: store.button, window:store.window }
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+        handleSubmit: function(value) { 
+        dispatch( {type: 'button', value: value} ) 
+    }
+  }
+};
+
+class HomeContent extends React.Component {
 
   constructor(props) {
     super(props);
@@ -24,51 +39,74 @@ export default class HomeContent extends React.Component {
     });
   }
 
+    navigationRoute(route, index) {
+      this.props.handleSubmit({
+        ChatButtonIndex:this.props.button.ChatButtonIndex,
+        CommunityButtonIndex:index,
+        CalendarButtonIndex:this.props.button.CalendarButtonIndex,
+        ProfileButtonIndex:this.props.button.ProfileButtonIndex,
+      })
+      this.props.navigation.navigate(route);
+    };
+
+  _onPressFindFriends = () => {
+    Amplitude.logEvent("Find Friends Button clicked");
+    this.navigationRoute('Community',0);
+  }
+
+  _onPressCreateGame = () => {
+    Amplitude.logEvent("Create Game Button clicked");
+    this.props.navigation.navigate('CreateGame');
+  }
+
   render() {
     return (
 
-      <View style={{flex:1, justifyContent:'space-around', marginBottom:160}}>
+      <View style={{flex:1, marginTop:20}}>
 
-        <TouchableWithoutFeedback>
-        <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
+        <TouchableOpacity onPress={()=> this._onPressFindFriends()}>
+        <View style={{flexDirection:'row', justifyContent: 'space-around', marginBottom:50}}>
         <View>
-          <Image source={require('../../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
+          <ImageBackground 
+          source={require('../../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
           style={{
             justifyContent: 'center',
-            alignItems:'center'
+            alignItems:'center',
+            width:85,
+            height:85
            }}>
-            <Image source={require('../../assets/icons/Buy/Buy.imageset/buy.png')}/>
-          </Image>
+            <Entypo name="magnifying-glass" size={40} color='white' />
+          </ImageBackground>
         </View>
 
         <View style={{top: 10}}>
         {
-        this.state.fontAvenirNextLoaded ? ( <Text style={styles.title}> RÉSERVER UN TERRAIN </Text> ) : null 
+        this.state.fontAvenirNextLoaded ? ( <Text style={[styles.title, {width:this.props.window.width*0.6}]}>{translate.findFriends[this.props.user.currentLocale].toUpperCase()}</Text> ) : null 
         }
         {
-        this.state.fontAvenirLoaded ? ( <Text style={styles.subtitle}> Bientôt disponible ! </Text> ) : null 
+        this.state.fontAvenirLoaded ? ( <Text style={[styles.subtitle, {width:this.props.window.width*0.6}]}>{translate.findFriendsDescription[this.props.user.currentLocale]}</Text> ) : null 
         }       
         </View>
 
         <View style={{top: 30}}>
-          <Image source={require('../../assets/icons/General/ArrowRightBlack.imageset/fill72.png')} />
+          <Entypo name="chevron-right" size={20} />
         </View>
         </View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
+        
 
         <View style={{
-          height:30,
           alignItems:'center'
         }}>
           <Svg
-            height="60"
-            width="250"
+            height={60}
+            width={250}
           >
-            <Line
-              x1="0"
-              y1="0"
-              x2="250"
-              y2="0"
+            <Svg.Line
+              x1={0}
+              y1={0}
+              x2={250}
+              y2={0}
               stroke="rgb(210,210,210)"
               strokeWidth="2"
              />
@@ -76,41 +114,41 @@ export default class HomeContent extends React.Component {
         </View>
 
 
-            <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('CreateGame')}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+            <TouchableOpacity onPress={() => this._onPressCreateGame()}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-around', marginBottom:20}}>
             <View>
-              <Image source={require('../../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
+              <ImageBackground source={require('../../assets/icons/AppSpecific/OrangeCircle.imageset/btn3Copy.png')} 
               style={{
-            justifyContent: 'center',
-            alignItems: 'center'
+                justifyContent: 'center',
+                alignItems: 'center',
+                width:85,
+                height:85
                }}>
-                <Image source={require('../../assets/icons/Add/Add.imageset/combinedShape.png')} />
-              </Image>
+                 <Entypo name="calendar" size={40} color='white' />
+              </ImageBackground>
             </View>
 
             <View style={{top: 10}}>
             {
             this.state.fontAvenirNextLoaded ? ( 
               <View>
-              <Text style={styles.title}> PROPOSER UNE PARTIE </Text> 
-              <Text style={[styles.title, styles.margin]}> (À SES AMIS) </Text> 
+              <Text style={[styles.title, {width:this.props.window.width*0.6}]}>{translate.proposeGameToFriends[this.props.user.currentLocale].toUpperCase()}</Text> 
               </View>) : null 
             }
             {
             this.state.fontAvenirLoaded ? ( 
               <View>
-              <Text style={styles.subtitle}> Vous avez reservé un terrain mais </Text> 
-              <Text style={styles.subtitle}> vous n'avez pas de partenaire. </Text> 
+              <Text style={[styles.subtitle, {width:this.props.window.width*0.6}]}>{translate.proposeGameToFriendsSubtitle[this.props.user.currentLocale]}</Text> 
                 </View> ) : null 
             }       
             </View>
 
             <View style={{top: 30}}>
-              <Image source={require('../../assets/icons/General/ArrowRightBlack.imageset/fill72.png')} />
+              <Entypo name="chevron-right" size={20} />
             </View>
 
           </View>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
 
         </View>
 
@@ -118,13 +156,15 @@ export default class HomeContent extends React.Component {
   }
 }
 
+export default connect(mapStateToProps, mapDispatchToProps) (HomeContent);
+
 const styles = StyleSheet.create({
   title: {
     color: 'black',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: 'AvenirNext',
     fontSize: 14,
-    textAlign: 'left'
+    textAlign:'left'
   },
   subtitle: {
     color: 'black',
@@ -132,7 +172,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 12,
     textAlign: 'left',
-    paddingTop: 10
+    paddingTop: 10,
+    width:200
   },
   margin: {
     marginTop:5

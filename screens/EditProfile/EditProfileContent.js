@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Image, Text, TextInput, Keyboard, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
-import { Font, Constants, ImagePicker, registerRootComponent } from 'expo';
+import { Alert, StyleSheet, View, Image, Text, TextInput, Keyboard, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Font, Constants, ImagePicker, registerRootComponent, Permissions, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Parse } from 'parse/react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Modal from 'react-native-modalbox';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { NavigationActions } from 'react-navigation';
 
-import moment from 'moment';
-import 'moment/locale/fr';
+import translate from '../../translate.js';
+
+import moment from 'moment/min/moment-with-locales';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -47,11 +49,11 @@ constructor(props) {
       picture:this.props.user.picture,
       birthday:this.props.user.birthday
     };
+
+    moment.locale(this.props.user.currentLocale);
   }
 
   async componentDidMount() {
-
-    moment.locale('fr');
 
     await Font.loadAsync({
       'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
@@ -87,6 +89,8 @@ constructor(props) {
           user.set("birthday", edit.state.birthday);
           user.save();
 
+          Amplitude.setUserProperties({gender:this.state.gender, isPicture:true, age:moment().diff(this.state.birthday, 'years')});
+
                 edit.props.handleSubmit({
                 lastName:edit.state.lastName,
                 firstName:edit.state.firstName,
@@ -98,8 +102,9 @@ constructor(props) {
                 picture:picture.url(),
                 birthday:edit.state.birthday,
                 new:false,
+                currentLocale:edit.props.user.currentLocale
               })
-                 edit.props.navigation.goBack();
+                 edit.props.navigation.dispatch(NavigationActions.back());
                 });
           } 
           else {
@@ -113,6 +118,8 @@ constructor(props) {
           user.set("birthday", this.state.birthday);
           user.save();
 
+          Amplitude.setUserProperties({gender:this.state.gender, age:moment().diff(this.state.birthday, 'years')});
+
            this.props.handleSubmit({
                 lastName:this.state.lastName,
                 firstName:this.state.firstName,
@@ -123,9 +130,10 @@ constructor(props) {
                 availability:this.state.availability,
                 picture:this.state.picture,
                 birthday:this.state.birthday,
-                new:false
+                new:false,
+                currentLocale:this.props.user.currentLocale
               })
-                 this.props.navigation.goBack();
+                 this.props.navigation.dispatch(NavigationActions.back());
                   }
         } else {
         Alert.alert('Veuillez compléter tous les champs');
@@ -159,8 +167,6 @@ constructor(props) {
   }
 
   render() {
-
-    moment.locale('fr');
     let { image } = this.state;
     let { picture } = this.state;
     const maximumDate = moment().subtract(18, 'years').toDate();
@@ -275,19 +281,19 @@ constructor(props) {
   }
 
   if (this.props.user.gender == undefined) {
-    var defaultValueGender = "Genre";
+    var defaultValueGender = translate.gender[this.props.user.currentLocale];
   } else if (this.props.user.gender == 'male') {
-    var defaultValueGender = 'Homme';
+    var defaultValueGender = translate.man[this.props.user.currentLocale];
   } else if (this.props.user.gender == 'female') {
-    var defaultValueGender = 'Femme';
+    var defaultValueGender = translate.woman[this.props.user.currentLocale];
   }
 
   if (this.props.user.style == undefined) {
-    var defaultValueStyle = "Style";
+    var defaultValueStyle = translate.style[this.props.user.currentLocale];
   } else if (this.props.user.style == 'right') {
-    var defaultValueStyle = 'Droitier';
+    var defaultValueStyle = translate.rightHanded[this.props.user.currentLocale];
   } else if (this.props.user.style == 'left') {
-    var defaultValueStyle = 'Gaucher';
+    var defaultValueStyle = translate.leftHanded[this.props.user.currentLocale];
   }
 
 
@@ -318,9 +324,9 @@ constructor(props) {
            marginBottom: 20,
            }}>
 
-           <TouchableWithoutFeedback onPress={() => this.refs.modal.open()}>
+           <TouchableOpacity onPress={() => this.refs.modal.open()}>
            {profileImage}
-           </TouchableWithoutFeedback>
+           </TouchableOpacity>
        
            </View>
 
@@ -354,21 +360,21 @@ constructor(props) {
 
           <ModalDropdown 
           style={styles.input} 
-          dropdownStyle={styles.modalDrop} 
+          dropdownStyle={styles.modalDropDual} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
           defaultValue={defaultValueGender}
-          options={['Homme', 'Femme']}
+          options={[translate.man[this.props.user.currentLocale], translate.woman[this.props.user.currentLocale]]}
           onSelect={(index) => {this.modalGender(index)}}
           />
 
           <ModalDropdown 
           style={styles.input} 
-          dropdownStyle={styles.modalDrop} 
+          dropdownStyle={styles.modalDropDual} 
           textStyle={styles.text}
           dropdownTextStyle={styles.text}
           defaultValue={defaultValueStyle}
-          options={['Gaucher', 'Droitier']}
+          options={[translate.leftHanded[this.props.user.currentLocale], translate.rightHanded[this.props.user.currentLocale]]}
           onSelect={(index) => {this.modalStyle(index)}}
           />
 
@@ -392,57 +398,70 @@ constructor(props) {
           onSelect={(index, highestLevel) => this.setState({highestLevel: index})}
           />
 
-          <TouchableWithoutFeedback onPress={this._showDateTimePicker}>
+          <TouchableOpacity onPress={this._showDateTimePicker}>
             <View style={styles.date}>
-              <Text style={{color:'black'}}>{ (this.state.birthday && moment(this.state.birthday).format('L')) || "Choisir une date d'anniversaire" }</Text>
+              <Text style={{color:'black'}}>{ (this.state.birthday && moment(this.state.birthday).format('L')) || translate.chooseBirthday[this.props.user.currentLocale] }</Text>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
           <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
           mode="date"
           maximumDate={maximumDate}
-          cancelTextIOS="Annuler"
-          confirmTextIOS="Valider"
-          titleIOS="Choisir une date d'anniversaire"
+          cancelTextIOS={translate.cancel[this.props.user.currentLocale]}
+          confirmTextIOS={translate.validate[this.props.user.currentLocale]}
+          titleIOS={translate.chooseBirthday[this.props.user.currentLocale]}
+          locale={this.props.user.currentLocale}
+          date={this.state.birthday || new Date()}
         />
 
-          <TouchableWithoutFeedback onPress={this._onPressValidateButton}>
-          <Text style={styles.buttonValidate}>Valider</Text>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity onPress={this._onPressValidateButton}>
+          <Text style={styles.buttonValidate}>{translate.validate[this.props.user.currentLocale]}</Text>
+          </TouchableOpacity>
 
           </View>
 
 
         </KeyboardAwareScrollView>
 
-        <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
+        <Modal 
+          style={[styles.modal]} 
+          position={"bottom"} 
+          ref={"modal"}>
           
-          <TouchableWithoutFeedback>
-          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 10}}>
-          <Text style={styles.modalTitle}>Choisir la source</Text>
+          <TouchableOpacity style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 10}}>
+          <View>
+          <Text style={styles.modalTitle}>{translate.chooseSource[this.props.user.currentLocale]}</Text>
           </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
 
-          <TouchableWithoutFeedback onPress={this._pickImage}>
-          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.modalText}>Bibliothèque</Text>
+          <TouchableOpacity 
+            onPress={this._pickImage}
+            style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+          <View>
+          <Text style={styles.modalText}>{translate.library[this.props.user.currentLocale]}</Text>
           </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
 
-          <TouchableWithoutFeedback onPress={this._takePhoto}>
-          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.modalText}>Caméra</Text>
+          <TouchableOpacity 
+            onPress={this._takePhoto}
+            style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+          <View>
+          <Text style={styles.modalText}>{translate.camera[this.props.user.currentLocale]}</Text>
           </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
 
           {this._maybeRenderImage()}
           {this._maybeRenderUploadingOverlay()}
 
-          <TouchableWithoutFeedback onPress={() => this.refs.modal.close()}>
-          <Text style={styles.modalText}>Annuler</Text>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity 
+            onPress={() => this.refs.modal.close()}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+          <Text style={styles.modalText}>{translate.cancel[this.props.user.currentLocale]}</Text>
+          </TouchableOpacity>
         </Modal>
 
         </View>
@@ -495,48 +514,43 @@ constructor(props) {
           }}>
           <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
         </View>
-
-        <Text
-          onPress={this._copyToClipboard}
-          onLongPress={this._share}
-          style={{ paddingVertical: 10, paddingHorizontal: 10 }}>
-          {image}
-        </Text>
       </View>
     );
   };
 
-  _share = () => {
-    Share.share({
-      message: this.state.image,
-      title: 'Check out this photo',
-      url: this.state.image,
-    });
-  };
-
-  _copyToClipboard = () => {
-    Clipboard.setString(this.state.image);
-    alert('Copied image URL to clipboard');
-  };
-
-  _takePhoto = async () => {
-    let pickerResult = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      base64: true
-    });
-
-    this._handleImagePicked(pickerResult);
+ _takePhoto = async () => {
+     const res = await Promise.all([
+            Permissions.askAsync(Permissions.CAMERA),
+            Permissions.askAsync(Permissions.CAMERA_ROLL)
+        ]);
+    if(res[0].status === 'granted' && res[1].status === 'granted') {
+      let pickerResult = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        base64: true
+      });
+      this._handleImagePicked(pickerResult);
+       } else {
+      this.refs.modal.close();
+    }
   };
 
   _pickImage = async () => {
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      base64: true
-    });
+    const res = await Promise.all([
+            Permissions.askAsync(Permissions.CAMERA),
+            Permissions.askAsync(Permissions.CAMERA_ROLL)
+        ]);
+    if(res[0].status === 'granted' && res[1].status === 'granted') {
+      let pickerResult = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        base64: true
+      });
+      this._handleImagePicked(pickerResult);
+    } else {
+      this.refs.modal.close();
+    }
 
-    this._handleImagePicked(pickerResult);
   };
 
   _handleImagePicked = async pickerResult => {
@@ -599,10 +613,16 @@ const styles = StyleSheet.create({
     paddingLeft:10,
     fontSize:14
   },
+  modalDropDual: {
+    marginLeft:1,
+    width:250,
+    height:80, 
+    marginTop:10,
+  },
   modalDrop: {
     marginLeft:1,
-    width:295,
-    height:80, 
+    width:250,
+    height:150, 
     marginTop:10,
   },
   text: {

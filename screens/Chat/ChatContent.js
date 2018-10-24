@@ -1,8 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, FlatList, TextInput, RefreshControl, ActivityIndicator } from 'react-native';
+import { Amplitude } from 'expo';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
+
+import translate from '../../translate.js';
 
 function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, userPreferences: store.userPreferences, button: store.button }
@@ -40,8 +43,6 @@ class ChatContent extends React.Component {
     query.descending("updatedAt");
     query.find({
       success: function(Conversation) {
-        console.log('Conversation.length');
-        console.log(Conversation.length);
         // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
         if (Conversation.length != 0) {
           var ConversationCopy = [];
@@ -51,16 +52,12 @@ class ChatContent extends React.Component {
 
           for (var i = 0; i < ConversationCopy.length; i++) {
 
-            console.log('Conversation query2');
-            console.log('ConversationCopy[i].lastMessage.objectId');
-            console.log(ConversationCopy[i].lastMessage.objectId);
             // enables to see lastMessage
             var query2 = new Parse.Query("Message");
             (function(query, conversation, i, edit) { 
               query.equalTo('objectId', ConversationCopy[i].lastMessage.objectId); 
               query.first({
                 success: function(Message) {
-                  console.log('Conversation Message'+i);
                 // don't understand why but can't access to the Objects contained in the Parse Array "Club". Works with JSON.parse(JSON.stringify()).
                     var MessageCopy = JSON.parse(JSON.stringify(Message));
                     var messageParam = {message : MessageCopy.message};
@@ -69,12 +66,10 @@ class ChatContent extends React.Component {
                   }
               });
            })(query2, ConversationCopy, i, edit);
-           console.log('Conversation query2 stop');
          
             var roomUsersCopy = ConversationCopy[i].roomUsers.concat();
             var roomUsersFiltered = roomUsersCopy.filter(userId => userId != user.id);
 
-            console.log('Conversation query3');
             // enables to see user
             var query3 = new Parse.Query(Parse.User);
             (function(query, conversation, i, edit) { 
@@ -84,13 +79,13 @@ class ChatContent extends React.Component {
                   var lastName = users.get("lastName");
                   var firstName = users.get("firstName");
                   var picture = users.get("picture");
-                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id};
+                  var expoPushToken = users.get("expoPushToken");
+                  var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id, fromUserToken:expoPushToken};
                   Object.assign(conversation[i], fromUserParam);
                   edit.setState({ data: conversation, loading:false });
                 }
               });
            })(query3, ConversationCopy, i, edit);
-           console.log('Conversation query3 stop');
          }
         } else {edit.setState({loading:false})}
       },
@@ -110,22 +105,17 @@ class ChatContent extends React.Component {
     var subscription = query.subscribe();
 
     subscription.on('open', () => {
-     console.log('subscription opened');
     });
 
     subscription.on('create', (conversation) => {
-     console.log('conversation created');
       this.onRefresh();
     });
 
     subscription.on('update', (conversation) => {
-      console.log('conversation updated');
       this.onRefresh();
-       console.log('conversation updated ok');
     });
 
     subscription.on('delete', (conversation) => {
-      console.log('conversation deleted');
       this.setState({data:null})
       this.onRefresh();
     });
@@ -167,8 +157,8 @@ renderSeparator() {
         }}
       >
         <Image source={require('../../assets/icons/AppSpecific/BigYellowBall.imageset/icTennisBallBig.png')} />
-        <Text style={{marginTop:10}}> Aucune conversation.</Text>
-        <Text style={{marginTop:10}}> Ajoutez des ami(e)s pour chatter ! </Text>
+        <Text style={{marginTop:20}}> {translate.noChat[this.props.user.currentLocale]}</Text>
+        <Text style={{marginTop:20}}> {translate.addFriendToChat[this.props.user.currentLocale]} </Text>
       </View>
     );
   }
@@ -218,10 +208,8 @@ renderSeparator() {
                     var lastName = users.get("lastName");
                     var firstName = users.get("firstName");
                     var picture = users.get("picture");
-                    if (picture != undefined) {
-                      var picture = picture.url()
-                    }
-                    var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id};
+                    var expoPushToken = users.get("expoPushToken");
+                    var fromUserParam = {fromUserFirstName: firstName, fromUserLastName: lastName[0], fromUserPicture: picture, fromUserId:id, fromUserToken:expoPushToken};
                     Object.assign(conversation[i], fromUserParam);
                     edit.setState({ data: conversation, refreshing:false });
                   }
@@ -236,22 +224,21 @@ renderSeparator() {
       });
     }
 
-  goToChat(id, firstName, userId) {
-    console.log('id');
-    console.log(id);
+  goToChat(id, firstName, userId, userToken) {
+    Amplitude.logEvent("GoToChat Button clicked");
     this.props.handleSubmit({
       firstName:firstName,
       id:id,
       userId:userId,
+      userToken:userToken
     })
     this.props.navigation.navigate("Messenger");
-    console.log('goToChat');
 }
 
 render () {
   return (
 
-     <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
+     <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
 
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}
@@ -279,9 +266,9 @@ render () {
           avatar={ ( item.fromUserPicture && { uri : item.fromUserPicture.url() } ) || require('../../assets/icons/General/Placeholder.imageset/3639e848-bc9c-11e6-937b-fa2a206349a2.png') } 
           title={<Text style={{fontSize:15, fontWeight:'bold'}}>{item.fromUserFirstName} {item.fromUserLastName}.</Text>}
           subtitleContainerStyle={{marginLeft:30, width:300}}
-          subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'normal'}}>Dernier message : "{item.message}" </Text>}
+          subtitle={<Text style={{fontSize:13, paddingTop:6, fontWeight:'normal'}}>{translate.lastMessage[this.props.user.currentLocale]} : "{item.message}" </Text>}
           hideChevron={true}
-          onPress={()=>{this.goToChat(item.objectId, item.fromUserFirstName, item.fromUserId)}}
+          onPress={()=>{this.goToChat(item.objectId, item.fromUserFirstName, item.fromUserId, item.fromUserToken)}}
           />
         )}
       />

@@ -1,11 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
-import { Font } from 'expo';
+import { Font, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 
+import translate from '../../translate.js';
+
 function mapStateToProps(store) {
-  return { button: store.button }
+  return { button: store.button, user: store.user, window:store.window }
 };
 
 class ChatButton extends React.Component {
@@ -29,18 +31,19 @@ class ChatButton extends React.Component {
   updateIndex (selectedIndex) {
     this.setState({selectedIndex});
     if (selectedIndex==0) {
+      Amplitude.logEvent("Notifications Button clicked");
       this.props.navigation.navigate("Notifications");
-      console.log("clic sur bouton notifs");
     } else {
+      Amplitude.logEvent("Chat Button clicked");
       this.props.navigation.navigate("ChatContent");
-      console.log("clic sur bouton chat");
     }
   }
 
   render() {
 
-    const buttons = ['Notifications', 'Chat']
+    const buttons = [translate.notifications[this.props.user.currentLocale], translate.chat[this.props.user.currentLocale]]
     const { selectedIndex } = this.state;
+    var heightWindow = this.props.window.height*0.2;
 
     return (
 
@@ -51,7 +54,7 @@ class ChatButton extends React.Component {
       textStyle={styles.title}
       selectedBackgroundColor={'rgb(42,127,83)'}
       selectedTextStyle={styles.subtitle}
-      containerStyle={styles.container}/>
+      containerStyle={[styles.container, {height:heightWindow}]}/>
 
         
     );
@@ -67,7 +70,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir',
     fontSize: 15,
     textAlign: 'center',
-    top: 40,
+    top: 50,
   },
    subtitle: {
     color: 'white',
@@ -78,7 +81,6 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    height: 120,
     marginRight: 0,
     marginLeft: 0,
   },

@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, ImageBackground } from 'react-native';
 import { Font } from 'expo';
+import { connect } from 'react-redux';
+
+import translate from '../../translate.js';
 
 import ProfileViewContentDispoHours from './ProfileViewContentDispoHours';
 
+function mapStateToProps(store) {
+  return { user: store.user }
+};
 
-export default class ProfileViewContentDispo extends React.Component {
+class ProfileViewContentDispo extends React.Component {
 
 constructor() {
     super();
@@ -36,19 +42,19 @@ constructor() {
         }
 
         if (this.props.days == 'Mon') {
-          var days = 'Lun';
+          var days = translate.monday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Tue') {
-          var days = 'Mar';
+          var days = translate.tuesday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Wed') {
-          var days = 'Mer';
+          var days = translate.wednesday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Thu') {
-          var days = 'Jeu';
+          var days = translate.thursday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Fri') {
-          var days = 'Ven';
+          var days = translate.friday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Sat') {
-          var days = 'Sam';
+          var days = translate.saturday[this.props.user.currentLocale].slice(0,3);
         } else if (this.props.days == 'Sun') {
-          var days = 'Dim';
+          var days = translate.sunday[this.props.user.currentLocale].slice(0,3);
         }
 
 
@@ -63,9 +69,16 @@ constructor() {
                 
 
                     <View style={{alignItems:'center', marginLeft:20}}>
-                      <Image source={require('../../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}>
-                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', textAlign:'center', marginTop: 12}}>{days}</Text>
-                      </Image>
+                      <ImageBackground 
+                          source={require('../../assets/icons/AppSpecific/DayCircle.imageset/imgDayBg.png')}
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width:40,
+                            height:40
+                           }}>
+                       <Text style={{color: 'white', backgroundColor: 'rgba(0,0,0,0)', textAlign:'center'}}>{days}</Text>
+                      </ImageBackground>
                     </View>
 
               <View style={{flexDirection: 'row', flexWrap:'wrap', marginLeft:15, marginRight:15, alignItems:'center'}}>
@@ -78,4 +91,5 @@ constructor() {
   }
 }
 
+export default connect(mapStateToProps, null) (ProfileViewContentDispo);
 

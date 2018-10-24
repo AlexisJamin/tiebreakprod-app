@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableWithoutFeedback, Alert, Platform } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import { Font, Amplitude } from 'expo';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Modal from 'react-native-modalbox';
 import { Parse } from 'parse/react-native';
 import { connect } from 'react-redux';
+
+import translate from '../../translate.js';
 
 function mapStateToProps(store) {
   return { user: store.user, userClub: store.userClub, chat: store.chat }
@@ -30,7 +33,7 @@ class MessengerContent extends React.Component {
     this.MuteFriend = this.MuteFriend.bind(this);
     this.onPressAvatar = this.onPressAvatar.bind(this);
     this.state = {
-      messages: [],
+      messages: []
     };
   }
 
@@ -96,13 +99,9 @@ class MessengerContent extends React.Component {
     var subscription = query.subscribe();
 
     subscription.on('open', () => {
-     console.log('subscription opened');
     });
 
     subscription.on('create', function (messages = []) {
-     console.log('messages');
-     console.log(messages);
-     console.log('Message created with text: ', messages.get('message'));
      let array = [];
      var senderId = messages.get('sender').id;
      if (senderId != user.id) {
@@ -123,10 +122,11 @@ class MessengerContent extends React.Component {
         }));
      }
     });
-
   }
 
   onSend(messages = []) {
+    Amplitude.logEvent("OnSendMessage Button clicked");
+    var user = Parse.User.current() || Parse.User.currentAsync();
     var send = this;
     var message = new Parse.Object("Message");
     message.set("createdAt", Date());
@@ -150,10 +150,13 @@ class MessengerContent extends React.Component {
             send.setState((previousState) => ({
               messages: GiftedChat.append(previousState.messages, messages),
             }));
-            
+
             Parse.Cloud.run("createNotification", { 
             "userId":send.props.chat.userId,
-            "message":"vous a envoyé un message",
+            "token":send.props.chat.userToken,
+            "firstName":user.get('firstName'),
+            "message":"t'a envoyé un message.",
+            "channel":"chat-messages",
             "conversationId":Conversation.id,
             "type":8,
              })
@@ -198,6 +201,7 @@ class MessengerContent extends React.Component {
 
   onPressViewProfile() {
      var view = this;
+     Amplitude.logEvent("ProfileView Button clicked");
      var User = Parse.Object.extend("User");
      var query1 = new Parse.Query(User);
      query1.get(this.props.chat.userId,{
@@ -216,6 +220,7 @@ class MessengerContent extends React.Component {
           }
           var clubs = user.get("clubs");
           var birthday = user.get("birthday");
+          var expoPushToken = user.get("expoPushToken");
           var id = user.id;
 
           view.props.handleSubmit({
@@ -233,7 +238,8 @@ class MessengerContent extends React.Component {
             friendRequestReceived:false,
             clubs:clubs,
             id:id,
-            birthday:birthday
+            birthday:birthday,
+            userToken:expoPushToken
           })
         view.refs.modal.close();
         view.props.navigation.navigate("ProfileView");
@@ -245,13 +251,13 @@ class MessengerContent extends React.Component {
     } 
 
 onPressMute() {
-  console.log('onPressMute');
+  Amplitude.logEvent("Mute Button clicked");
   Alert.alert(
     'Voulez-vous bloquer '+this.props.chat.firstName+' définitivement ?',
     'Cette action est irréversible',
     [
-      {text: 'Oui', onPress: () => this.MuteFriend()},
-      {text: 'Non', onPress: () => this.onCloseModal()},
+      {text: translate.yes[this.props.user.currentLocale], onPress: () => this.MuteFriend()},
+      {text: translate.no[this.props.user.currentLocale], onPress: () => this.onCloseModal()},
     ],
     { cancelable: false }
   )
@@ -259,7 +265,7 @@ onPressMute() {
 
 
 MuteFriend() {
-  console.log('muteFriend');
+  Amplitude.logEvent("Confirm Mute Button clicked");
   var user = Parse.User.current() || Parse.User.currentAsync();
   var add = this;
   var relation1 = new Parse.Query("Relation");
@@ -304,7 +310,7 @@ MuteFriend() {
 }
 
 onPressAvatar(friend) {
-    console.log(friend);
+    Amplitude.logEvent("Avatar Button clicked");
     var user = Parse.User.current() || Parse.User.currentAsync();
     if (friend._id != user.id) {
       this.refs.modal.open();
@@ -336,26 +342,33 @@ render () {
       {keyboardSpacer}
 
       <Modal style={[styles.modal]} position={"bottom"} ref={"modal"}>
-          
           <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 10}}>
           <Text style={styles.modalTitle}>{this.props.chat.firstName}</Text>
           </View>
 
-          <TouchableWithoutFeedback onPress={this.onPressViewProfile}>
-          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.modalText}>Voir le profil</Text>
+          <TouchableOpacity 
+            onPress={this.onPressViewProfile}
+            style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+          <View>
+          <Text style={styles.modalText}>{translate.viewProfile[this.props.user.currentLocale]}</Text>
           </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
 
-          <TouchableWithoutFeedback onPress={this.onPressMute}>
-          <View style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}>
-          <Text style={styles.modalText}>Bloquer {this.props.chat.firstName}</Text>
+          <TouchableOpacity 
+            onPress={this.onPressMute}
+            style={{borderBottomWidth:1, borderColor:'rgb(213,212,216)', width:"100%", paddingBottom: 20}}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+          <View>
+          <Text style={styles.modalText}>{translate.block[this.props.user.currentLocale]} {this.props.chat.firstName}</Text>
           </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
 
-          <TouchableWithoutFeedback onPress={this.onCloseModal}>
-          <Text style={styles.modalText}>Annuler</Text>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity 
+            onPress={this.onCloseModal}
+            hitSlop={{top:10, left:50, bottom:10, right:50}}>
+          <Text style={styles.modalText}>{translate.cancel[this.props.user.currentLocale]}</Text>
+          </TouchableOpacity>
         </Modal>
 
         </View>
@@ -368,7 +381,6 @@ export default connect(mapStateToProps, mapDispatchToProps) (MessengerContent);
 
 const styles = StyleSheet.create({
   modal: {
-    flexDirection:'column',
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 250,

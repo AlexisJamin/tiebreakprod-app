@@ -1,47 +1,23 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, Alert } from 'react-native'
-import { NavigationActions } from 'react-navigation'
-import { Parse } from 'parse/react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
+import { NavigationActions } from 'react-navigation';
+import { Parse } from 'parse/react-native';
+import { connect } from 'react-redux';
 
-import MenuHeader from './MenuHeader'
-import MenuContent from './MenuContent'
+import Header from '../Header/Header';
+import MenuContent from './MenuContent';
 
-export default class Home extends React.Component {
+import translate from '../../translate.js';
+
+function mapStateToProps(store) {
+  return { user: store.user }
+};
+
+class Menu extends React.Component {
 
   constructor() {
     super();
-    this._onPressLogOutButton = this._onPressLogOutButton.bind(this);
-    this._onPressConfirmLogOut = this._onPressConfirmLogOut.bind(this);
   }
-
-    _onPressLogOutButton() {
-
-      Alert.alert(
-        'Vous confirmez vouloir vous déconnecter ?',
-        '',
-        [
-          {text: 'Non'},
-          {text: 'Oui', onPress: () => this._onPressConfirmLogOut()},
-        ],
-        { cancelable: false }
-      ) 
-  }
-
-  _onPressConfirmLogOut() {
-    console.log("déconnecté !");
-    var logout = this;
-    Parse.User.logOut().then(function() {
-      const resetAction = NavigationActions.reset({
-        index: 0, 
-        actions: [
-        NavigationActions.navigate({ routeName: 'Login'})
-        ]
-      });
-      logout.props.navigation.dispatch(resetAction);
-    })
-    
-  }
-
 
   render() {
     return (
@@ -63,24 +39,21 @@ export default class Home extends React.Component {
 
       </View>
           
-          <View style={{height:120}}>
-          <MenuHeader navigation={this.props.navigation}/>
+          <View style={{flex:0.17, marginBottom:40}}>
+          <Header navigation={this.props.navigation} screenProps={{header:"menu", back:false}} />
           </View>
 
+          <View style={{flex:0.83}}>
           <MenuContent navigation={this.props.navigation}/>
-
-
-          <View style={{alignItems:'stretch'}}>
-            <TouchableWithoutFeedback onPress={this._onPressLogOutButton}>
-            <Text style={styles.buttonLogIn}>Se déconnecter</Text>
-            </TouchableWithoutFeedback>
-        </View>
+          </View>
 
         </View>
 
     );
   }
 }
+
+export default connect(mapStateToProps, null) (Menu);
 
 const styles = StyleSheet.create({
   buttonLogIn: {

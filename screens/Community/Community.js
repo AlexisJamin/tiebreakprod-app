@@ -1,14 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TextInput, Keyboard, Platform, Alert } from 'react-native';
-import { Constants, Location, Permissions, IntentLauncherAndroid } from 'expo';
+import { Constants, Location, Permissions, IntentLauncherAndroid, Amplitude } from 'expo';
 import { TabNavigator } from 'react-navigation';
+import { Parse } from 'parse/react-native';
 
-import CommunityHeader from './CommunityHeader';
+import Header from '../Header/Header';
 import CommunityButton from './CommunityButton';
 import CommunityContent from './CommunityContent';
-import CommunityFriends from './CommunityFriends';
+import CommunityPreferences from './CommunityPreferences';
 
 import { connect } from 'react-redux';
+
+import translate from '../../translate.js';
+
+function mapStateToProps(store) {
+  return { user: store.user, button: store.button }
+};
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -21,7 +28,7 @@ function mapDispatchToProps(dispatch) {
 const CommunityNavigator = TabNavigator(
 {
   CommunityContent: {screen: CommunityContent, navigationOptions: {tabBarVisible: false}},
-  CommunityFriends: {screen: CommunityFriends, navigationOptions: {tabBarVisible: false}},
+  CommunityPreferences: {screen: CommunityPreferences, navigationOptions: {tabBarVisible: false}},
 },
 {
   swipeEnabled: false,
@@ -38,49 +45,38 @@ class Community extends React.Component {
     this.state = {
       location:null
     };
+    this.getLocation();
   }
 
-  async componentWillMount() {
+ getLocation() {
      if (Platform.OS === 'android' && !Constants.isDevice) {
       Alert.alert('isDevice'); 
     } else {
-      this._getLocationAsync();
-      console.log('_getLocationAsync ok');
+      this._getLocationAsync().then(()=>{
+        var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
+        var user = Parse.User.current() || Parse.User.currentAsync();
+        user.set("geolocation", point);
+        user.save();
+      });
     }
 }
 
   _searchPlayer(player) {
-    console.log('player');
-    console.log(player);
+    Amplitude.logEvent("Search Player TextInput");
     this.props.handleSubmit({player:player});
   }
 
   _getIntentLauncherAndroidAsync = async () => {
     await IntentLauncherAndroid.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
     let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
-    console.log('location');
-    console.log(location);
     this.setState({ location: location });
-    console.log('setState ok');
-    if (this.state.location) {
-      console.log('this.state.location ok');
-      var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
-      var user = new Parse.User();
-      user.set("geolocation", point);
-      user.save();
-    }
   };
 
   _getLocationAsync = async () => {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
     let service = await Location.getProviderStatusAsync();
-    console.log('status');
-    console.log(status);
-    console.log('service');
-    console.log(service);
 
     if (status != 'granted') {
-     console.log('Permission to access location was denied');
      Alert.alert(
           "Vous n'avez pas autorisé Tie Break à accéder à votre localisation. Allez dans Réglages > Confidentialité pour l'activer.",
           "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
@@ -104,17 +100,7 @@ class Community extends React.Component {
       }
     } else if (service.locationServicesEnabled) {
         let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
-        console.log('location');
-        console.log(location);
         this.setState({ location: location });
-        console.log('setState ok');
-        if (this.state.location) {
-          console.log('this.state.location ok');
-          var point = new Parse.GeoPoint({latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude});
-          var user = new Parse.User();
-          user.set("geolocation", point);
-          user.save();
-        }
       }
   };
 
@@ -128,32 +114,36 @@ class Community extends React.Component {
         width:'100%',
         height:'100%',
         flexDirection:'row', 
-        alignItems:'flex-start',
+        alignItems:'flex-start'
       }}>
   
           <View style={{flex:1, alignItems:'stretch'}}>
           <CommunityButton navigation={this.props.navigation}/>
-          <TextInput 
-          style={styles.searchBar}
-          keyboardType="default"
-          returnKeyType='done'
-          autoCorrect={false}
-          placeholder='Rechercher un joueur (prénom)'
-          underlineColorAndroid='rgba(0,0,0,0)'
-          blurOnSubmit={false}
-          autoCapitalize='sentences'
-          onChangeText={(player) => this._searchPlayer(player)}
-          onSubmitEditing={Keyboard.dismiss}
-          />
+          { this.props.button.CommunityButtonIndex===0 &&
+            <TextInput 
+              style={styles.searchBar}
+              keyboardType="default"
+              returnKeyType='done'
+              autoCorrect={false}
+              placeholder={translate.searchPlayer[this.props.user.currentLocale]}
+              underlineColorAndroid='rgba(0,0,0,0)'
+              blurOnSubmit={false}
+              autoCapitalize='sentences'
+              onChangeText={(player) => this._searchPlayer(player)}
+              onSubmitEditing={Keyboard.dismiss}
+            />
+          }
           </View>
 
         </View>
 
-          <View style={{height:80, marginBottom:90}}>
-           <CommunityHeader navigation={this.props.navigation}/>
+          <View style={{flex:0.17, marginBottom:70}}>
+           <Header navigation={this.props.navigation} screenProps={{header:"community", back:true}} />
           </View>
 
+          <View style={{flex:0.83}}>
           <CommunityNavigator navigation={this.props.navigation}/>
+          </View>
         
 
       </View>
@@ -164,14 +154,14 @@ class Community extends React.Component {
 
 Community.router = CommunityNavigator.router;
 
-export default connect(null, mapDispatchToProps) (Community);
+export default connect(mapStateToProps, mapDispatchToProps) (Community);
 
 styles = StyleSheet.create({
   searchBar: {
     paddingLeft:20,
     fontSize:13,
-    maxHeight:40,
-    flex:.1,
+    maxHeight:45,
+    flex:1,
     borderWidth:6,
     borderColor:'#E4E4E4'
   }

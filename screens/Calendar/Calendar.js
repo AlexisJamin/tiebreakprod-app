@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 
-import CalendarHeader from './CalendarHeader';
+import Header from '../Header/Header';
 import CalendarButton from './CalendarButton';
 import CalendarFuture from './CalendarFuture';
 import CalendarPast from './CalendarPast';
@@ -40,11 +40,13 @@ export default class Calendar extends React.Component {
 
       </View>
 
-          <View style={{height:80, marginBottom:60}}>
-           <CalendarHeader navigation={this.props.navigation}/>
+          <View style={{flex:0.16, marginBottom:40}}>
+           <Header navigation={this.props.navigation} screenProps={{header:"myCalendar", back:true}} />
           </View>
         
-        <CalendarNavigator navigation={this.props.navigation}/>
+        <View style={{flex:0.84}}>
+        <CalendarNavigator navigation={this.props.navigation} />
+        </View>
 
         </View>
 

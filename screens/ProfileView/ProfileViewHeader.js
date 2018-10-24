@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import { Font } from 'expo';
+import { View, Image, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { Font, Amplitude } from 'expo';
+import { Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import { Parse } from 'parse/react-native';
 
@@ -55,16 +56,12 @@ class ProfileViewHeader extends React.Component {
       query.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id }); 
       query.find({
         success: function(relation) {
-          console.log('fromUser Header');
           var relationCopy = JSON.parse(JSON.stringify(relation));
             if (relationCopy[0].status == 1) {
-            console.log('friendRequestSent Header');
             edit.setState({friendRequestSent:true, isFriend:false, friendRequestRefused:false, friendRequestReceived:false})
           } else if (relationCopy[0].status == 2) {
-            console.log('friendRequestRefused Header');
             edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
           } else if (relationCopy[0].status == 3) {
-            console.log('isFriend Header');
             edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
           } 
         },
@@ -78,16 +75,12 @@ class ProfileViewHeader extends React.Component {
       query2.equalTo('toUser', { "__type": "Pointer", "className": "_User", "objectId": user.id }); 
       query2.find({
         success: function(relation) {
-          console.log('toUser Header');
           var relationCopy = JSON.parse(JSON.stringify(relation));
             if (relationCopy[0].status == 1) {
-            console.log('friendRequestReceived Header');
             edit.setState({friendRequestReceived:true, isFriend:false, friendRequestSent:false, friendRequestRefused:false})
           } else if (relationCopy[0].status == 2) {
-            console.log('friendRequestRefused Header');
             edit.setState({friendRequestRefused:true, isFriend:false, friendRequestReceived:false, friendRequestSent:false})
           } else if (relationCopy[0].status == 3) {
-            console.log('isFriend Header');
             edit.setState({isFriend:true, friendRequestReceived:false, friendRequestSent:false, friendRequestRefused:false})
           }
         },
@@ -99,6 +92,7 @@ class ProfileViewHeader extends React.Component {
 
   _onPressAddFriend () {
     var add = this;
+    Amplitude.logEvent("Add Friend Button clicked");
     var user = Parse.User.current() || Parse.User.currentAsync();
     var otherUser = { "__type": "Pointer", "className": "_User", "objectId": this.props.viewProfile.id };
     var relation = new Parse.Object("Relation");
@@ -109,12 +103,17 @@ class ProfileViewHeader extends React.Component {
     relation.set("status", 1);
     relation.save(null, {
         success: function(relation) {
+
           Parse.Cloud.run("createNotification", { 
             "userId": add.props.viewProfile.id,
+            "token": add.props.viewProfile.userToken,
+            "firstName": user.get('firstName'),
+            "channel":"friend-requests",
             "message": "Souhaite devenir votre ami(e)",
-            "relationId":relation.id,
-            "type":0,
+            "relationId": relation.id,
+            "type": 0,
              })
+
           add.props.handleSubmit({
                 lastName:add.props.viewProfile.lastName,
                 firstName:add.props.viewProfile.firstName,
@@ -127,6 +126,7 @@ class ProfileViewHeader extends React.Component {
                 clubs: add.props.viewProfile.clubs,
                 id: add.props.viewProfile.id,
                 birthday:add.props.viewProfile.birthday,
+                userToken:add.props.viewProfile.userToken,
                 friendRequestSent:true,
                 friendRequestReceived:false,
                 isFriend:false,
@@ -141,21 +141,17 @@ class ProfileViewHeader extends React.Component {
 
   goToChat() {
     var user = Parse.User.current() || Parse.User.currentAsync();
+    Amplitude.logEvent("GoToChat Button clicked");
     var go = this;
-    console.log('user.id');
-    console.log(user.id);
-    console.log('this.props.viewProfile.id');
-    console.log(this.props.viewProfile.id);
     var conversation = new Parse.Query("Conversation");
     conversation.containsAll('roomUsers', [user.id, this.props.viewProfile.id]); 
     conversation.first({
       success: function(conversation) {
-        console.log('conversation.id');
-        console.log(conversation.id);
         go.props.handleSubmitChat({
           id:conversation.id,
           firstName:go.props.viewProfile.firstName,
           userId:go.props.viewProfile.id,
+          userToken:go.props.viewProfile.userToken
         })
         go.props.navigation.navigate("Messenger");
       }
@@ -166,13 +162,13 @@ class ProfileViewHeader extends React.Component {
 
     var header= null;
     if (this.state.isFriend && !this.props.viewProfile.fromChat) {
-      header= (<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={this.goToChat}>
-       <Image source={require('../../assets/icons/General/Chat.imageset/icChat.png')} />
-       </TouchableWithoutFeedback>);
+      header= (<TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this.goToChat}>
+        <Entypo name="message" size={25} color='white' style={{bottom:4}} />
+       </TouchableOpacity>);
     } else if (this.state.isFriend == false && this.state.friendRequestSent == false && this.state.friendRequestReceived == false && !this.state.friendRequestRefused) {
-      header=(<TouchableWithoutFeedback onPress={this._onPressAddFriend} hitSlop={{top:300, left:300, bottom:300, right:300}}>
-       <Image source={require('../../assets/icons/General/AddFriend.imageset/icAddFriend.png')} />
-       </TouchableWithoutFeedback>);
+      header=(<TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={this._onPressAddFriend}>
+       <Entypo name="add-user" size={25} color='white' style={{bottom:4}} />
+       </TouchableOpacity>);
     } else {
       header= null;
     }
@@ -180,7 +176,8 @@ class ProfileViewHeader extends React.Component {
     return (
 
        
-       <Image style={{flex:1, width:null, height:null, resizeMode: 'cover'}} source={require('../../assets/icons/AppSpecific/Header.imageset/header_bg.png')} >
+       <ImageBackground style={{flex:1, width:null, height:null, resizeMode: 'cover'}} 
+       source={require('../../assets/icons/AppSpecific/HeaderMin.imageset/header_bg.png')} >
        
        <View style={{
         flex:1,
@@ -189,9 +186,9 @@ class ProfileViewHeader extends React.Component {
         top: 40
         }}>
 
-     		<TouchableWithoutFeedback hitSlop={{top:300, left:300, bottom:300, right:300}} onPress={() => this.props.navigation.goBack()}>
-        <Image source={require('../../assets/icons/General/BackWhite.imageset/ic_back_white.png')} />
-        </TouchableWithoutFeedback>
+     		<TouchableOpacity hitSlop={{top:50, left:50, bottom:50, right:50}} onPress={() => this.props.navigation.goBack()}>
+        <Entypo name="chevron-left" size={25} color='white' style={{bottom:4}} />
+        </TouchableOpacity>
 
        <Text style={{color: 'rgba(0,0,0,0)', backgroundColor:'rgba(0,0,0,0)'}}>H</Text> 
 
@@ -199,7 +196,7 @@ class ProfileViewHeader extends React.Component {
        
        </View>
        
-       </Image>
+       </ImageBackground>
       
     );
   }

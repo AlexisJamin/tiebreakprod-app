@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
 
 
-import EditProfileHeader from './EditProfileHeader'
+import Header from '../Header/Header';
 import EditProfileContent from './EditProfileContent'
 
 
@@ -30,11 +30,11 @@ export default class EditProfile extends React.Component {
 
       </View>
  
-            <View style={{height:120}}>
-            <EditProfileHeader navigation={this.props.navigation}/>
+            <View style={{flex:0.16}}>
+            <Header navigation={this.props.navigation} screenProps={{header:"editProfile", back:false}} />
             </View>
 
-             <View style={{flex: 4}}>
+             <View style={{flex:0.84}}>
             <EditProfileContent navigation={this.props.navigation}/>
             </View>
 

@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Platform, ImageStore, ImageEditor } from 'react-native';
-import { Facebook, Font, Constants, Location, Permissions, IntentLauncherAndroid } from 'expo';
+import { StyleSheet, View, Image, Alert, Text, TextInput, TouchableOpacity, Keyboard, Platform, ImageStore, ImageEditor, ActivityIndicator } from 'react-native';
+import { Facebook, Font, Constants, Location, Permissions, IntentLauncherAndroid, Svg, DangerZone, Notifications, Amplitude } from 'expo';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import Svg, { Line } from 'react-native-svg';
 import { Parse } from 'parse/react-native';
+
+import moment from 'moment/min/moment-with-locales';
+
+import translate from '../../translate.js';
 
 
 function mapDispatchToProps(dispatch) {
@@ -23,6 +26,9 @@ function mapDispatchToProps(dispatch) {
     },
         handleSubmitButton: function(value) { 
         dispatch( {type: 'button', value: value} ) 
+    },
+        handleSubmitReservationOption: function(value) { 
+        dispatch( {type: 'reservationOption', value: value} ) 
     }
   }
 }
@@ -34,29 +40,53 @@ constructor(props) {
     super(props);
     this._onPressLogInButton = this._onPressLogInButton.bind(this);
     this._onPressSignInButton = this._onPressSignInButton.bind(this);
-     this.getImageFromFacebook = this.getImageFromFacebook.bind(this);
+    this._onPressLoginFacebook = this._onPressLoginFacebook.bind(this);
+    this.getImageFromFacebook = this.getImageFromFacebook.bind(this);
     this.state = {
       fontAvenirNextLoaded: false,
       fontAvenirLoaded: false,
       location:null,
-      pictureBase64:null
+      pictureBase64:null,
+      loading:false,
+      disabled:false,
+      currentLocale:'en',
+      renderAllContent: false,
     };
+    this.getCurrentLocale();
+    this.parseUserCurrentAsync();
   }
 
-   async componentWillMount() {
+  async getCurrentLocale() {
+
+    const currentLocaleUtil = await DangerZone.Localization.getCurrentLocaleAsync();
+
+    if (Platform.OS === 'android' && currentLocaleUtil.length>0) {
+      var currentLocale = currentLocaleUtil.split("_")[0];
+      if (currentLocale === 'fr' || currentLocale === 'de' || currentLocale === 'en') {
+        moment.locale(currentLocale);
+        this.setState({currentLocale:currentLocale})
+      } 
+    } else if (Platform.OS === 'ios' && currentLocaleUtil.length>0) {
+      var currentLocale = currentLocaleUtil.split("_")[0];
+      if (currentLocale === 'fr' || currentLocale === 'de' || currentLocale === 'en') {
+        moment.locale(currentLocale);
+        this.setState({currentLocale:currentLocale})
+      } 
+    }
+
+    if (Platform.OS === 'android' && !Constants.isDevice) {
+          Alert.alert('isDevice'); 
+        } else {
+          this._getLocationAsync();
+        } 
+  }
+
+  async parseUserCurrentAsync() {
+
       var login = this;
 
-       if (Platform.OS === 'android' && !Constants.isDevice) {
-          Alert.alert('isDevice'); 
-        } 
-        else {
-          this._getLocationAsync();
-          console.log('_getLocationAsync ok');
-        } 
-
       Parse.User.currentAsync().then(function(user) {
-              console.log('user');
-              console.log(user);
+
               if (user != null) {
 
                 var lastName = user.get("lastName");
@@ -72,16 +102,34 @@ constructor(props) {
                 var filterGender = user.get("filterGender");
                 var filterStyle = user.get("filterStyle");
                 var filterFieldType = user.get("filterFieldType");
+                var badgeNumber = user.get("badgeNumber");
 
-                console.log("user.existed() 2");
+                if (badgeNumber) {
+                  Notifications.setBadgeNumberAsync(badgeNumber);
+                }
+
                 if (user.get("picture") != undefined) {
                   var picture = user.get("picture").url();
+                  var isPicture = true;
                 } else {
                   var picture = undefined;
+                  var isPicture = false;
                 }
-                var birthday = user.get("birthday");
 
-                console.log("user.existed() 3");
+                if (user.get("birthday") != undefined) {
+                  var birthday = user.get("birthday");
+                } else {
+                  var birthday = undefined;
+                }
+                let availabilities=0;
+                for (var i = 0; i < availability.length; i++) {
+                  availabilities = availabilities + availability[i].hours.length;
+                }
+
+                var clubs = user.get("clubs");
+
+                Amplitude.setUserId(user.id);
+                Amplitude.setUserProperties({gender:gender, isPicture:isPicture, age:moment().diff(birthday, 'years'), availabilities:availabilities, clubNumber: (clubs && clubs.length)||0});
 
                 login.props.handleSubmit({
                   lastName:lastName,
@@ -94,7 +142,8 @@ constructor(props) {
                   userId:user.id,
                   picture: picture,
                   birthday:birthday,
-                  new:false
+                  new:false,
+                  currentLocale:login.state.currentLocale
                 })
 
                 login.props.handleSubmitPreferences({
@@ -107,22 +156,27 @@ constructor(props) {
                 })
 
                 login.props.handleSubmitButton({
-                  ChatButtonIndex:null,
+                  ChatButtonIndex:0,
                   CommunityButtonIndex:null,
                   CalendarButtonIndex:null,
-                  ProfileButtonIndex:null
+                  ProfileButtonIndex:0,
+                  ReservationButtonIndex:null
                 })
 
-                console.log("user.existed() 4");
-
-                var clubs = user.get("clubs");
-
-                console.log("user.existed() 5");
+                login.props.handleSubmitReservationOption({
+                  filterCondition:2,
+                  filterType:2,
+                  filterHours:[8,22],
+                  filterDiscount:0,
+                  range:30,
+                  date:null,
+                  surface:null
+                })
                  
                 if (clubs != undefined) {
                   for (var i = 0; i < clubs.length; i++) {
                    var queryClub = new Parse.Query("Club");
-                   queryClub.get(clubs[i].id, {
+                   queryClub.get(clubs[i].id || clubs[i], {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
@@ -134,34 +188,39 @@ constructor(props) {
                     });
                   }
                 } else { login.props.handleSubmitClub2({toto:'toto'}) }
-                 
-                console.log("user.existed() 6");
 
                 login.props.navigation.navigate("Swiper");
 
               } 
             });
-}
-
-  async componentDidMount() {
-    await Font.loadAsync({
-      'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
-      'Avenir': require('../../assets/fonts/Avenir.ttf'),
-    });
-    this.setState({ 
-      fontAvenirNextLoaded: true,
-      fontAvenirLoaded: true 
-    });
   }
+
+   async componentDidMount() {
+
+    setTimeout(() => {
+        this.setState({renderAllContent: true});
+      }, 200);
+
+      await Font.loadAsync({
+        'AvenirNext': require('../../assets/fonts/AvenirNext.ttf'),
+        'Avenir': require('../../assets/fonts/Avenir.ttf'),
+      });
+      this.setState({ 
+        fontAvenirNextLoaded: true,
+        fontAvenirLoaded: true 
+      });
+}
     
     _onPressLogInButton() {
 
    var user = new Parse.User();
    var login = this;
+   this.setState({loading:true, disabled:true});
+   Amplitude.logEvent("Login Button clicked");
+
 
    Parse.User.logIn(this.state.username, this.state.password, {
    success: function(user) {
-    console.log("Trouvé !");
 
     var userId = user.id;
     // Do stuff after successful login.
@@ -184,12 +243,29 @@ constructor(props) {
                 var filterGender = users.get("filterGender");
                 var filterStyle = users.get("filterStyle");
                 var filterFieldType = users.get("filterFieldType");
+
                 if (users.get("picture") != undefined) {
                   var picture = users.get("picture").url();
+                  var isPicture = true;
                 } else {
                   var picture = undefined;
+                  var isPicture = false;
                 }
-                var birthday = users.get("birthday");
+                if (users.get("birthday") != undefined) {
+                  var birthday = users.get("birthday");
+                } else {
+                  var birthday = undefined;
+                }
+
+                var clubs = users.get("clubs");
+
+                let availabilities=0;
+                for (var i = 0; i < availability.length; i++) {
+                  availabilities = availabilities + availability[i].hours.length;
+                }
+
+                Amplitude.setUserId(users.id);
+                Amplitude.setUserProperties({gender:gender, isPicture:isPicture, age:moment().diff(birthday, 'years'), availabilities:availabilities, clubNumber: (clubs && clubs.length)||0});
 
                 login.props.handleSubmit({
                   lastName:lastName,
@@ -202,7 +278,8 @@ constructor(props) {
                   userId:userId,
                   picture: picture,
                   birthday:birthday, 
-                  new:false
+                  new:false,
+                  currentLocale:login.state.currentLocale
                 })
 
                 login.props.handleSubmitPreferences({
@@ -215,47 +292,60 @@ constructor(props) {
                 })
 
                 login.props.handleSubmitButton({
-                  ChatButtonIndex:null,
+                  ChatButtonIndex:0,
                   CommunityButtonIndex:null,
                   CalendarButtonIndex:null,
-                  ProfileButtonIndex:null
+                  ProfileButtonIndex:0,
+                  ReservationButtonIndex:null
                 })
 
-                var clubs = users.get("clubs");
+                login.props.handleSubmitReservationOption({
+                  filterCondition:2,
+                  filterType:2,
+                  filterHours:[8,22],
+                  filterDiscount:0,
+                  range:30,
+                  date:null,
+                  surface:null
+                }) 
+
                 var Club = Parse.Object.extend("Club");
-                 
-                 for (var i = 0; i < clubs.length; i++) {
-                 var queryClub = new Parse.Query(Club);
-                    queryClub.get(clubs[i].id, {
+                
+                if (clubs != undefined) {
+                  for (var i = 0; i < clubs.length; i++) {
+                   var queryClub = new Parse.Query("Club");
+                   queryClub.get(clubs[i].id || clubs[i], {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
                       login.props.handleSubmitClub({id:club.id, name:clubName})
-                    },
-                    error: function(object, error) {
-                      // The object was not retrieved successfully.
-                    }
-                  });
-                }  
+                      },
+                      error: function(object, error) {
+                        // The object was not retrieved successfully.
+                      }
+                    });
+                  }
+                } else { login.props.handleSubmitClub2({toto:'toto'}) }
+
               },
            error: function(object, error) {
               // The object was not retrieved successfully.
           }
-         }); 
-           console.log('ET wants to go home');
-
-    login.props.navigation.navigate("Swiper");
+         }).then(()=>{
+            
+            login.props.navigation.navigate("Swiper");
+            
+         }) 
    },
    error: function(user, error) {
-    console.log("pas trouvé")
     Alert.alert("Identifiant et/ou mot de passe invalide(s)");
     // The login failed. Check error to see why.
+   login.setState({loading:false, disabled:false})
    }
    });
   };
 
   getImageFromFacebook(url) {
-    console.log('getImageFromFacebook');
     const imageURL = url;
     Image.getSize(imageURL, (width, height) => {
       var imageSize = {
@@ -269,7 +359,6 @@ constructor(props) {
         }
       };
       ImageEditor.cropImage(imageURL, imageSize, (imageURI) => {
-        console.log(imageURI);
         ImageStore.getBase64ForTag(imageURI, (base64Data) => {
           this.setState({pictureBase64: base64Data});
           if (Platform.OS === 'ios') {
@@ -282,12 +371,12 @@ constructor(props) {
   
   _handleFacebookLogin = async () => {
     var login = this;
+    this.setState({loading:false})
     try {
       const { type, token, expires } = await Facebook.logInWithReadPermissionsAsync(
         '233912777050369', // Replace with your own app id in standalone app
-        { permissions: ['public_profile', 'user_friends', 'email'] }
+        { permissions: ['public_profile', 'user_friends', 'email'], behavior: 'native' }
       );
-      var expdate = new Date(expires*1000);
 
       switch (type) {
         case 'success': {
@@ -295,47 +384,48 @@ constructor(props) {
           const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture.type(large),email`);
           const profile = await response.json();
           var name = profile.name.split(" ");
+          var expdate = new Date(expires*1000);
 
-          this.getImageFromFacebook(profile.picture.data.url);
+          if (profile.picture) {  
+            this.getImageFromFacebook(profile.picture.data.url);
+          }
 
           let authData = {
             id: profile.id,
             access_token: token,
             expiration_date: expdate
           };
+          
           Parse.FacebookUtils.logIn(authData,{
             success: function(user) {
-              console.log('user');
-              console.log(user);
               
               if (!user.existed()) {
-
-                console.log("!user.existed()");
                 user.set('firstName', name[0]);
                 user.set('lastName', name[1]);
                 user.set('username', profile.email);
                 user.set('email', profile.email);
+                user.set("badgeNumber", 0);
                 if (login.state.pictureBase64) {
-                  console.log('login.state.pictureBase64');
                   var picture = new Parse.File("picture.bin", { base64: login.state.pictureBase64 });
                   user.set('picture', picture);
+                  var isPicture = true;
+                } else {
+                  var isPicture = false;
                 }
-                console.log('set en cours');
                 user.set("availability", [{"day":"Monday","hours":[]},{"day":"Tuesday","hours":[]},{"day":"Wednesday","hours":[]},{"day":"Thursday","hours":[]},{"day":"Friday","hours":[]},{"day":"Saturday","hours":[]},{"day":"Sunday","hours":[]}]);
                 if (login.state.location) {
-                  console.log('login.state.location');
                   var point = new Parse.GeoPoint({latitude: login.state.location.coords.latitude, longitude: login.state.location.coords.longitude});
                   user.set("geolocation", point);
                 }
-                console.log('set en cours 3');
                 user.set("filterCondition", "indifferent");
                 user.set("filterAge", {"to":70,"from":18});
                 user.set("filterLevel", {"to":24,"from":0});
                 user.set("filterGender", "indifferent");
                 user.set("filterStyle", "indifferent");
-                user.set("filterFieldType", {"range":30,"key":"aroundMe","latitude":null,"longitude":null});
+                user.set("filterFieldType", {"range":30,"key":"aroundMe"});
                 user.save();
-                console.log('set en cours save');
+
+                Amplitude.setUserId(user.id);
 
                 login.props.handleSubmit({
                   firstName:name[0],
@@ -348,7 +438,8 @@ constructor(props) {
                   userId:user.id,
                   birthday:undefined,
                   picture:(profile.picture && profile.picture.data.url)||undefined,
-                  new:true
+                  new:true,
+                  currentLocale:login.state.currentLocale
                 })
 
                 login.props.handleSubmitPreferences({
@@ -357,25 +448,33 @@ constructor(props) {
                   filterLevel:{"to":24,"from":0},
                   filterGender:"indifferent",
                   filterStyle:"indifferent",
-                  filterFieldType:{"range":30,"key":"aroundMe","latitude":null,"longitude":null}
+                  filterFieldType:{"range":30,"key":"aroundMe"}
                 })
 
                 login.props.handleSubmitButton({
-                  ChatButtonIndex:null,
+                  ChatButtonIndex:0,
                   CommunityButtonIndex:null,
                   CalendarButtonIndex:null,
-                  ProfileButtonIndex:null
+                  ProfileButtonIndex:0,
+                  ReservationButtonIndex:null
+                })
+
+                login.props.handleSubmitReservationOption({
+                  filterCondition:2,
+                  filterType:2,
+                  filterHours:[8,22],
+                  filterDiscount:0,
+                  range:30,
+                  date:null,
+                  surface:null
                 })
 
                 login.props.handleSubmitClub2({toto:'toto'})
-                console.log('redux ok');
 
                 login.props.navigation.navigate("Swiper");
               } 
 
               else {
-
-                console.log("user.existed()");
 
                 var lastName = user.get("lastName");
                 var firstName = user.get("firstName");
@@ -391,15 +490,28 @@ constructor(props) {
                 var filterStyle = user.get("filterStyle");
                 var filterFieldType = user.get("filterFieldType");
 
-                console.log("user.existed() 2");
                 if (user.get("picture") != undefined) {
                   var picture = user.get("picture").url();
+                  var isPicture = true;
                 } else {
                   var picture = undefined;
+                  var isPicture = false;
                 }
-                var birthday = user.get("birthday");
+                if (users.get("birthday") != undefined) {
+                  var birthday = user.get("birthday");
+                } else {
+                  var birthday = undefined;
+                }
 
-                console.log("user.existed() 3");
+                let availabilities=0;
+                for (var i = 0; i < availability.length; i++) {
+                  availabilities = availabilities + availability[i].hours.length;
+                }
+                
+                var clubs = user.get("clubs");
+
+                Amplitude.setUserId(user.id);
+                Amplitude.setUserProperties({gender:gender, isPicture:isPicture, age:moment().diff(birthday, 'years'), availabilities:availabilities, clubNumber: (clubs && clubs.length)||0});
 
                 login.props.handleSubmit({
                   lastName:lastName,
@@ -412,7 +524,8 @@ constructor(props) {
                   userId:user.id,
                   picture: picture,
                   birthday:birthday,
-                  new:false
+                  new:false,
+                  currentLocale:login.state.currentLocale
                 })
 
                 login.props.handleSubmitPreferences({
@@ -425,22 +538,28 @@ constructor(props) {
                 })
 
                 login.props.handleSubmitButton({
-                  ChatButtonIndex:null,
+                  ChatButtonIndex:0,
                   CommunityButtonIndex:null,
                   CalendarButtonIndex:null,
-                  ProfileButtonIndex:null
+                  ProfileButtonIndex:0,
+                  ReservationButtonIndex:null
                 })
 
-                console.log("user.existed() 4");
+                login.props.handleSubmitReservationOption({
+                  filterCondition:2,
+                  filterType:2,
+                  filterHours:[8,22],
+                  filterDiscount:0,
+                  range:30,
+                  date:null,
+                  surface:null
+                })
 
-                var clubs = user.get("clubs");
-
-                console.log("user.existed() 5");
                  
                 if (clubs != undefined) {
                   for (var i = 0; i < clubs.length; i++) {
                    var queryClub = new Parse.Query("Club");
-                   queryClub.get(clubs[i].id, {
+                   queryClub.get(clubs[i].id || clubs[i], {
                       success: function(club) {
                       // The object was retrieved successfully.
                       var clubName = club.get("name");
@@ -452,8 +571,7 @@ constructor(props) {
                     });
                   }
                 } else { login.props.handleSubmitClub2({toto:'toto'}) }
-                 
-                console.log("user.existed() 6");
+                
                 login.props.navigation.navigate("Swiper");  
           
               } 
@@ -461,13 +579,14 @@ constructor(props) {
             error: function(user, error) {
               console.log(user, error);
             }
-          })
+          }) 
           break;
         }
         case 'cancel': {
           Alert.alert(
             'Connexion annulée!',
           );
+          login.setState({disabled:false})
           break;
         }
         default: {
@@ -475,6 +594,7 @@ constructor(props) {
             'Oops!',
             'Login failed!',
           );
+          login.setState({disabled:false})
         }
       }
     } catch (e) {
@@ -482,35 +602,36 @@ constructor(props) {
         'Oops!',
         'Login failed!',
       );
+      login.setState({disabled:false})
     }
-  };
+  }; 
+
+  _onPressLoginFacebook() {
+    this.setState({loading:true, disabled:true});
+    Amplitude.logEvent("Facebook Login Button clicked");
+    this._handleFacebookLogin();
+  }
+  
 
   _onPressSignInButton() {
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
     });
+    Amplitude.logEvent("SignIn Button clicked");
     this.props.navigation.navigate("SignIn");
   };
 
   _getIntentLauncherAndroidAsync = async () => {
     await IntentLauncherAndroid.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
     let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
-    console.log('location');
-    console.log(location);
     this.setState({ location: location });
-    console.log('setState ok');
   };
 
   _getLocationAsync = async () => {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
     let service = await Location.getProviderStatusAsync();
-    console.log('status');
-    console.log(status);
-    console.log('service');
-    console.log(service);
 
     if (status != 'granted') {
-     console.log('Permission to access location was denied');
      Alert.alert(
           "Vous n'avez pas autorisé Tie Break à accéder à votre localisation. Allez dans Réglages > Confidentialité pour l'activer.",
           "La localisation est indispensable pour trouver des ami(e)s ou réserver des terrains");
@@ -534,14 +655,40 @@ constructor(props) {
       }
     } else if (service.locationServicesEnabled) {
         let location = await Location.getCurrentPositionAsync({enableHighAccuracy:true});
-        console.log('location');
-        console.log(location);
         this.setState({ location: location });
-        console.log('setState ok');
       }
   };
 
   render() {
+
+        if (!this.state.renderAllContent) {
+        return (
+
+              <View style={{
+                flex:1,
+                backgroundColor:'white',
+              }}>
+
+
+              <View style={{
+                position:'absolute',
+                width:'100%',
+                height:'100%',
+                flexDirection:'row', 
+                alignItems:'flex-end',
+              }}>
+
+              <Image style={{
+                flex:1,
+                resizeMode: 'stretch'}} 
+                source={require('../../assets/icons/AppSpecific/Footer.imageset/group3.png')} /> 
+
+              </View>
+
+              </View>
+
+         );
+      }
 
     return (
 
@@ -549,6 +696,7 @@ constructor(props) {
         flex:1,
         backgroundColor:'white',
       }}>
+
 
       <View style={{
         position:'absolute',
@@ -565,7 +713,10 @@ constructor(props) {
 
       </View>
 
+      { this.state.renderAllContent &&
+
       <KeyboardAwareScrollView enableOnAndroid={true} style={{alignItems:'center', backgroundColor:'transparent'}}>
+
 
           <View style={{alignItems:'center', marginTop: 80, marginBottom: 40}}>
             <Image source={require('../../assets/icons/AppSpecific/Logo.imageset/logoBlack.png')}/>
@@ -579,7 +730,7 @@ constructor(props) {
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect={false}
-            placeholder='Email'
+            placeholder={translate.email[this.state.currentLocale]}
             underlineColorAndroid='rgba(0,0,0,0)'
             onChangeText={(username) => this.setState({username})}
             value={this.state.username}
@@ -593,42 +744,57 @@ constructor(props) {
             returnKeyType='done'
             autoCapitalize='none'
             autoCorrect={false}
-            placeholder='Mot de passe'
+            placeholder={translate.password[this.state.currentLocale]}
             underlineColorAndroid='rgba(0,0,0,0)'
             secureTextEntry={true}
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
             onSubmitEditing={Keyboard.dismiss}
             />
-            <Text style={styles.subtitle}>Mot de passe oublié?</Text>
-            <TouchableOpacity onPress={this._onPressLogInButton}>
-            <Text style={styles.buttonLogIn}>Connexion</Text>
+            <Text style={styles.subtitle}>{translate.forgotPassword[this.state.currentLocale]}</Text>
+            <TouchableOpacity 
+              onPress={this._onPressLogInButton}
+              disabled={this.state.disabled}>
+            <Text style={styles.buttonLogIn}>{translate.login[this.state.currentLocale]}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this._handleFacebookLogin}>
-            <Text style={styles.buttonFacebook}>Se connecter avec Facebook</Text>
+            <TouchableOpacity 
+              onPress={this._onPressLoginFacebook}
+              disabled={this.state.disabled}
+              >
+            <Text style={styles.buttonFacebook}>{translate.facebookLogin[this.state.currentLocale]}</Text>
             </TouchableOpacity>
+
+          
+
             <View style={{flex:1, top: 20, alignItems: 'center'}}>
             <Svg
-              height="40"
-              width="150"
+              height={40}
+              width={150}
             >
-              <Line
-                x1="0"
-                y1="0"
-                x2="150"
-                y2="0"
+              <Svg.Line
+                x1={0}
+                y1={0}
+                x2={150}
+                y2={0}
                 stroke="rgb(210,210,210)"
                 strokeWidth="2"
                />
             </Svg>
             </View>
-            <TouchableWithoutFeedback onPress={this._onPressSignInButton}>
-            <Text style={styles.buttonSignIn}>Créer un compte</Text>
-            </TouchableWithoutFeedback>
+            <TouchableOpacity onPress={this._onPressSignInButton}>
+            <Text style={styles.buttonSignIn}>{translate.signIn[this.state.currentLocale]}</Text>
+            </TouchableOpacity>
 
           </View>
 
+          {this.state.loading &&
+              <View style={styles.loading}>
+                <ActivityIndicator size='large' />
+              </View>
+          }
+
             </KeyboardAwareScrollView>
+        }
 
         </View>
 
@@ -707,4 +873,14 @@ const styles = StyleSheet.create({
   container: {
     justifyContent:'center'
   },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#F5FCFF88'
+  }
 });
