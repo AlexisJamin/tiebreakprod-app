@@ -9,6 +9,8 @@ import { Parse } from 'parse/react-native';
 
 import translate from '../../translate.js';
 
+import moment from 'moment/min/moment-with-locales';
+
 function mapDispatchToProps(dispatch) {
   return {
         handleSubmit: function(value) { 
@@ -58,6 +60,32 @@ class SignIn extends React.Component {
       disabled:false,
       currentLocale:'en'
     };
+    this.getCurrentLocale();
+  }
+
+  async getCurrentLocale() {
+
+    const currentLocaleUtil = await DangerZone.Localization.getCurrentLocaleAsync();
+
+    if (Platform.OS === 'android' && currentLocaleUtil.length>0) {
+      var currentLocale = currentLocaleUtil.split("_")[0];
+      if (currentLocale === 'fr' || currentLocale === 'de' || currentLocale === 'en') {
+        moment.locale(currentLocale);
+        this.setState({currentLocale:currentLocale})
+      } 
+    } else if (Platform.OS === 'ios' && currentLocaleUtil.length>0) {
+      var currentLocale = currentLocaleUtil.split("_")[0];
+      if (currentLocale === 'fr' || currentLocale === 'de' || currentLocale === 'en') {
+        moment.locale(currentLocale);
+        this.setState({currentLocale:currentLocale})
+      } 
+    }
+
+    if (Platform.OS === 'android' && !Constants.isDevice) {
+          Alert.alert('isDevice'); 
+        } else {
+          this._getLocationAsync();
+        } 
   }
 
   async componentDidMount() {
@@ -69,25 +97,6 @@ class SignIn extends React.Component {
       fontAvenirNextLoaded: true,
       fontAvenirLoaded: true 
     });
-
-    const currentLocaleUtil = await DangerZone.Localization.getCurrentLocaleAsync();
-      if (Platform.OS === 'android' && currentLocaleUtil.length>0) {
-        var currentLocale = currentLocaleUtil.split("_")[0];
-        if (currentLocale === 'fr' || currentLocale === 'de' || currentLocale === 'en') {
-          this.setState({currentLocale:currentLocale})
-        } 
-      } else if (Platform.OS === 'ios' && currentLocaleUtil.length>0) {
-        var currentLocale = currentLocaleUtil.split("_")[0];
-        if (currentLocale === 'fr' || currentLocale === 'de' || currentLocale === 'en') {
-          this.setState({currentLocale:currentLocale})
-        } 
-      }
-
-     if (Platform.OS === 'android' && !Constants.isDevice) {
-      Alert.alert('isDevice'); 
-    } else {
-      this._getLocationAsync();
-    }
 
   }
 
@@ -372,7 +381,7 @@ class SignIn extends React.Component {
       try {
         const { type, token, expires } = await Facebook.logInWithReadPermissionsAsync(
           '233912777050369', // Replace with your own app id in standalone app
-          { permissions: ['public_profile', 'user_friends', 'email'], behavior: 'native' }
+          { permissions: ['public_profile', 'user_friends', 'email'] }
         );
         var expdate = new Date(expires*1000);
 
@@ -481,9 +490,10 @@ class SignIn extends React.Component {
                   var filterStyle = user.get("filterStyle");
                   var filterFieldType = user.get("filterFieldType");
 
+
                   if (user.get("picture") != undefined) {
-                    var picture = user.get("picture").url();
-                    var isPicture = true;
+                  var picture = user.get("picture").url();
+                  var isPicture = true;
                   } else {
                     var picture = undefined;
                     var isPicture = false;
@@ -498,9 +508,11 @@ class SignIn extends React.Component {
                   for (var i = 0; i < availability.length; i++) {
                     availabilities = availabilities + availability[i].hours.length;
                   }
+                  
+                  var clubs = user.get("clubs");
 
                   Amplitude.setUserId(user.id);
-                  Amplitude.setUserProperties({gender:gender, isPicture:isPicture, age:moment().diff(birthday, 'years'), availabilities:availabilities});
+                  Amplitude.setUserProperties({gender:gender, isPicture:isPicture, age:moment().diff(birthday, 'years'), availabilities:availabilities, clubNumber: (clubs && clubs.length)||0});
 
                   login.props.handleSubmit({
                     lastName:lastName,
@@ -544,25 +556,23 @@ class SignIn extends React.Component {
                     surface:null
                   })
 
-                  var clubs = user.get("clubs");
-                   
                   if (clubs != undefined) {
-                    for (var i = 0; i < clubs.length; i++) {
-                     var queryClub = new Parse.Query("Club");
-                     queryClub.get(clubs[i].id || clubs[i], {
-                        success: function(club) {
-                        // The object was retrieved successfully.
-                        var clubName = club.get("name");
-                        login.props.handleSubmitClub({id:club.id, name:clubName})
-                        },
-                        error: function(object, error) {
-                          // The object was not retrieved successfully.
-                        }
-                      });
-                    }
-                  } else { login.props.handleSubmitClub2({toto:'toto'}) }
-                   
-                  login.props.navigation.navigate("Swiper");  
+                  for (var i = 0; i < clubs.length; i++) {
+                   var queryClub = new Parse.Query("Club");
+                   queryClub.get(clubs[i].id || clubs[i], {
+                      success: function(club) {
+                      // The object was retrieved successfully.
+                      var clubName = club.get("name");
+                      login.props.handleSubmitClub({id:club.id, name:clubName})
+                      },
+                      error: function(object, error) {
+                        // The object was not retrieved successfully.
+                      }
+                    });
+                  }
+                } else { login.props.handleSubmitClub2({toto:'toto'}) }
+                
+                login.props.navigation.navigate("Swiper");  
             
                 } 
               },

@@ -370,16 +370,20 @@ constructor(props) {
   }
   
   _handleFacebookLogin = async () => {
+    console.log('Facebook');
     var login = this;
     this.setState({loading:false})
     try {
       const { type, token, expires } = await Facebook.logInWithReadPermissionsAsync(
         '233912777050369', // Replace with your own app id in standalone app
-        { permissions: ['public_profile', 'user_friends', 'email'], behavior: 'native' }
+        { 
+          permissions: ['public_profile', 'user_friends', 'email']
+        }
       );
 
       switch (type) {
         case 'success': {
+          console.log('success');
           // Get the user's name using Facebook's Graph API
           const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture.type(large),email`);
           const profile = await response.json();
@@ -497,7 +501,7 @@ constructor(props) {
                   var picture = undefined;
                   var isPicture = false;
                 }
-                if (users.get("birthday") != undefined) {
+                if (user.get("birthday") != undefined) {
                   var birthday = user.get("birthday");
                 } else {
                   var birthday = undefined;
