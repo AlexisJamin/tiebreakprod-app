@@ -621,7 +621,7 @@ constructor(props) {
     Parse.User.logOut().then(() => {
     var currentUser = Parse.User.current();  // this will now be null
     });
-    Amplitude.logEvent("SignIn Button clicked");
+    Amplitude.logEvent("SignIn Button clicked on Login Screen");
     this.props.navigation.navigate("SignIn");
   };
 

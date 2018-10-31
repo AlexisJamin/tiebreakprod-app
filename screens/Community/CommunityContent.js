@@ -64,6 +64,7 @@ class CommunityContent extends React.Component {
       var edit = this;
       var user = Parse.User.current() || Parse.User.currentAsync();
       var userGeoPoint = user.get("geolocation");
+      Amplitude.logEvent("Search Player Button clicked");
 
       if (userGeoPoint != undefined) {
         

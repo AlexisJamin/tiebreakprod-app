@@ -300,7 +300,7 @@ constructor(props) {
 
     return (
 
-      <View style={{flex:1, backgroundColor:'white', marginTop:40}}>
+      <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
 
         <ScrollView>
 

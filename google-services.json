@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "310969590483-3r47jk1mp0brbdbibin6na1k2v95338h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tiebreak.tiebreak",
+            "certificate_hash": "27122123c610ed19252c8e8a37112976a6eeb4eb"
+          }
+        },
+        {
           "client_id": "310969590483-dcg5gld6v4j8ai39hfcobag6c6jkab70.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310969590483-dcg5gld6v4j8ai39hfcobag6c6jkab70.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

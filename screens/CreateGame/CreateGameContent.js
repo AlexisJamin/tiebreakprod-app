@@ -115,7 +115,7 @@ class CreateGameContent extends React.Component {
       var add = this;
       var friends = [];
       var user = Parse.User.current() || Parse.User.currentAsync();
-      Amplitude.logEvent("Create Game Button clicked");
+      Amplitude.logEvent("Validate Create Game Button clicked");
 
       if (this.state.selectedConditionIndex == 0) {
         var condition = 'inside';
@@ -359,6 +359,8 @@ class CreateGameContent extends React.Component {
           ) : null 
          }
 
+         <View style={{alignItems:'center', justifyContent:'center'}}>
+
          <ButtonGroup 
           onPress={(index) => this.setState({selectedConditionIndex:index})}
           selectedIndex={this.state.selectedConditionIndex}
@@ -368,6 +370,8 @@ class CreateGameContent extends React.Component {
           selectedTextStyle={styles.subtitle}
           containerStyle={styles.courts}
           />
+          
+          </View>
           
           {
           this.state.fontAvenirLoaded ? (<Text style={{marginBottom:10, fontFamily: 'Avenir', paddingLeft:10}}> {translate.surfaceType[this.props.user.currentLocale]} </Text>

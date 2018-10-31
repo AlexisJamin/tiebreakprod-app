@@ -238,7 +238,7 @@ renderSeparator() {
 render () {
   return (
 
-     <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
+     <View style={{flex:1, backgroundColor:'white', marginTop:30}}>
 
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0}}

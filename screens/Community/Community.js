@@ -137,7 +137,7 @@ class Community extends React.Component {
 
         </View>
 
-          <View style={{flex:0.17, marginBottom:70}}>
+          <View style={{flex:0.17, marginBottom:90}}>
            <Header navigation={this.props.navigation} screenProps={{header:"community", back:true}} />
           </View>
 

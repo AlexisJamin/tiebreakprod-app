@@ -890,7 +890,7 @@ class FriendsContent extends React.Component {
 render () {
   return (
 
-    <View style={{flex:1, backgroundColor:'white', marginTop:0}}>
+    <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
 
    <List
    containerStyle={{borderTopWidth:0, borderBottomWidth:0, marginTop:20}}

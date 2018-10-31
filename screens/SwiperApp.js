@@ -116,6 +116,7 @@ function mapDispatchToProps(dispatch) {
           activeTintColor: '#24513d',
           inactiveTintColor: 'gray',
           showIcon: true,
+          paddingBottom:0,
           labelStyle: {
             fontSize: 13
           },

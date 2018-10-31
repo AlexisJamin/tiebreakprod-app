@@ -240,7 +240,7 @@ _onPressEditClub = () => {
 
     return (
 
-      <View style={{flex:1, backgroundColor:'white', marginTop:20}}>
+      <View style={{flex:1, backgroundColor:'white', marginTop:40}}>
 
         <ScrollView>
 
